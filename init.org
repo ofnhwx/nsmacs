@@ -1,0 +1,576 @@
+#+title: init.org
+#+startup: overview
+
+* Bootstrap
+** 起動時間短縮のための設定
+*** 起動中の設定
+#+begin_src emacs-lisp :lexical no
+(defvar default-file-name-handler-alist file-name-handler-alist)
+(setq file-name-handler-alist nil)
+(setq gc-cons-percentage 1.0)
+(setq gc-cons-threshold most-positive-fixnum)
+#+end_src
+*** 起動後の設定
+#+begin_src emacs-lisp :lexical no
+(defun e:emacs-startup-config ()
+  (setq file-name-handler-alist default-file-name-handler-alist)
+  (setq gc-cons-percentage 0.1)
+  (setq gc-cons-threshold 1000000000))
+(add-hook 'emacs-startup-hook #'e:emacs-startup-config)
+#+end_src
+** 設定で使用するマクロ定義
+*** e:default!
+#+begin_src emacs-lisp
+(defmacro e:default! (variable default)
+  `(setq-default ,variable ,default))
+#+end_src
+*** e:local!
+#+begin_src emacs-lisp
+(defmacro e:local! (variable value)
+  `(setq-local ,variable ,value))
+#+end_src
+*** e:variable!
+#+begin_src emacs-lisp
+(defmacro e:variable! (variable value)
+  `(set-variable ',variable ,value))
+#+end_src
+*** e:cache!
+#+begin_src emacs-lisp
+(defmacro e:cache! (variable path)
+  `(e:variable! ,variable ,(expand-file-name path e:cache-dir)))
+#+end_src
+*** e:if!
+#+begin_src emacs-lisp
+(defmacro e:if! (condition &rest body)
+  (declare (indent defun))
+  (if condition
+      `(progn ,@body)))
+#+end_src
+** 起動ディレクトリの調整
+#+begin_src emacs-lisp
+(e:variable! user-emacs-directory (file-name-directory (or load-file-name buffer-file-name)))
+(e:variable! e:cache-dir   (expand-file-name ".cache"  user-emacs-directory))
+(e:variable! e:private-dir (expand-file-name "private" user-emacs-directory))
+#+end_src
+** eary-init.el
+*** 不要なUI要素を非表示
+#+begin_src emacs-lisp :tangle early-init.el
+(menu-bar-mode   -1)
+(scroll-bar-mode -1)
+(tool-bar-mode   -1)
+(tooltip-mode    -1)
+#+end_src
+*** 未ロードならロードする
+#+begin_src emacs-lisp
+(unless early-init-file
+  (load (expand-file-name "early-init" user-emacs-directory)))
+#+end_src
+** パッケージ関連の設定
+#+begin_src emacs-lisp
+(e:variable! package-archives
+             '(("melpa"  . "https://melpa.org/packages/")
+               ("org"    . "https://orgmode.org/elpa/")
+               ("gnu"    . "https://elpa.gnu.org/packages/")
+               ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
+(e:variable! package-user-dir
+             (expand-file-name (format "elpa/%s" emacs-version) e:cache-dir))
+#+end_src
+** ライブラリ
+#+begin_src emacs-lisp
+(when (require 'package)
+  (package-initialize)
+  (unless (package-installed-p 'leaf)
+    (package-refresh-contents)
+    (package-install 'leaf)))
+
+(leaf cl-lib             :require t)
+(leaf bind-key :ensure t :require t)
+(leaf dash     :ensure t :require t)
+(leaf f        :ensure t :require t)
+(leaf s        :ensure t :require t)
+#+end_src
+* Config: Misc
+** Mac
+#+begin_src emacs-lisp
+(e:if! (eq system-type 'darwin)
+  ;; タイトルバーの見た目を変更
+  (--each '((ns-transparent-titlebar . t)
+            (ns-appearance . dark))
+    (assq-delete-all (car it) initial-frame-alist)
+    (assq-delete-all (car it) default-frame-alist)
+    (add-to-list 'initial-frame-alist it)
+    (add-to-list 'default-frame-alist it))
+  ;; 特殊キーの設定
+  (e:variable! ns-command-modifier 'meta)
+  (e:variable! ns-right-command-modifier 'super)
+  (e:variable! ns-alternate-modifier 'none)
+  ;; ちょっと行間を広げる
+  (e:default! line-spacing 2))
+#+end_src
+** Japanese
+#+begin_src emacs-lisp
+(set-language-environment "Japanese")
+#+end_src
+** Encodiing
+#+begin_src emacs-lisp
+(let ((coding-system 'utf-8))
+  (prefer-coding-system          coding-system)
+  (set-buffer-file-coding-system coding-system))
+#+end_src
+** Locale
+#+begin_src emacs-lisp
+(let ((value "ja_JP.UTF-8"))
+  (setenv "LANG" value)
+  (setenv "LC_ALL" value))
+#+end_src
+** Font
+#+begin_src emacs-lisp
+(let ((font "Cica"))
+  (set-frame-font (font-spec :name font :size 16.0) nil t)
+  (set-face-attribute 'fixed-pitch       nil :family font)
+  (set-face-attribute 'fixed-pitch-serif nil :family font)
+  (set-face-attribute 'variable-pitch    nil :family font))
+#+end_src
+* Config: Alias
+#+begin_src emacs-lisp
+(defalias 'exit 'save-buffers-kill-terminal)
+(defalias 'yes-or-no-p 'y-or-n-p)
+#+end_src
+* Config: Emacs
+** C Sources
+#+begin_src emacs-lisp
+(e:default! bidi-display-reordering nil)
+(e:default! fill-column 100)
+(e:default! truncate-lines t)
+(e:variable! create-lockfiles nil)
+(e:variable! delete-by-moving-to-trash nil)
+(e:variable! frame-resize-pixelwise t)
+(e:variable! history-delete-duplicates t)
+(e:variable! ring-bell-function #'ignore)
+(e:variable! shell-file-name
+             (or (executable-find "zsh")
+                 (executable-find "bash")
+                 (executable-find "sh")))
+(e:variable! system-time-locale "C")
+(e:variable! truncate-partial-width-windows nil)
+(e:variable! window-resize-pixelwise t)
+#+end_src
+** cus-edit
+#+begin_src emacs-lisp
+(leaf cus-edit
+  :config
+  (e:variable! custom-file (make-temp-file "emacs-custom-" nil ".el")))
+#+end_src
+** recentf
+#+begin_src emacs-lisp
+(leaf recentf
+  :hook (emacs-startup-hook . recentf-mode)
+  :config
+  (eval-when-compile (require 'recentf))
+  (e:variable! recentf-filename-handlers '(abbreviate-file-name))
+  (e:variable! recentf-max-menu-items 20)
+  (e:variable! recentf-max-saved-items 3000)
+  (e:cache! recentf-save-file "recentf")
+  (define-advice recentf-save-list (:before (&rest _) cleanup)
+    "存在しないファイルを履歴から削除する"
+    (setq recentf-list (->> recentf-list
+                            (-map 'f-short)
+                            (-distinct)
+                            (--filter (and (or (file-remote-p it)
+                                               (f-exists? it))
+                                           (recentf-include-p it)))))))
+#+end_src
+* Config: Evil
+#+begin_src emacs-lisp :noweb yes
+(leaf evil
+  :ensure (evil evil-collection)
+  :require t
+  :bind (:evil-motion-state-map
+         ("SPC" . e:root-command-map))
+  :init
+  (e:variable! evil-want-keybinding nil)
+  :config
+  (evil-mode)
+  <<evil-collection>>)
+#+end_src
+** evil-collection
+#+name: evil-collection
+#+begin_src emacs-lisp :tangle no
+(leaf evil-collection
+  :config
+  (evil-collection-init))
+#+end_Src
+* Config: Themes
+** modus-themes
+#+begin_src emacs-lisp
+(leaf modus-themes
+  :ensure t
+  :init
+  (modus-themes-load-themes)
+  (modus-themes-load-vivendi))
+#+end_src
+
+* Config: Packages(startup)
+** atomic-chrome
+#+begin_src emacs-lisp :lexical no
+(leaf atomic-chrome
+  :ensure t
+  :hook (emacs-startup-hook . atomic-chrome-start-server))
+#+end_src
+** beacon
+#+begin_src emacs-lisp
+(leaf beacon
+  :ensure t
+  :hook (emacs-startup-hook . beacon-mode))
+#+end_src
+** marginalia
+#+begin_src emacs-lisp
+(leaf marginalia
+  :ensure t
+  :hook (emacs-startup-hook . marginalia-mode))
+#+end_src
+** minions
+#+begin_src emacs-lisp
+(leaf minions
+  :ensure t
+  :hook (emacs-startup-hook . minions-mode))
+#+end_src
+** vertico
+#+begin_src emacs-lisp
+(leaf vertico
+  :ensure t
+  :hook (emacs-startup-hook . vertico-mode)
+  :config
+  (e:variable! vertico-count 20)
+  (e:variable! vertico-cycle t))
+#+end_src
+** which-key
+#+begin_src emacs-lisp
+(leaf which-key
+  :ensure t
+  :hook (emacs-startup-hook . which-key-mode)
+  :init
+  (e:variable! which-key-show-early-on-C-h t)
+  (e:variable! which-key-sort-order 'which-key-key-order-alpha))
+#+end_src
+** winum
+#+begin_src emacs-lisp
+(leaf winum
+  :ensure t
+  :hook (emacs-startup-hook . winum-mode))
+#+end_src
+* Config: Packages(deferred)
+** ace-window
+#+begin_src emacs-lisp
+(leaf ace-window
+  :ensure t
+  :defer-config
+  (e:variable! aw-keys (number-sequence ?1 ?9))
+  (e:variable! aw-scope 'frame))
+#+end_src
+** affe
+#+begin_src emacs-lisp
+(leaf affe
+  :ensure t
+  :defvar (affe-find-command)
+  :defer-config
+  (e:variable! affe-find-command (or (executable-find "fd") affe-find-command))
+  (e:variable! affe-regexp-function 'orderless-pattern-compiler)
+  (e:variable! affe-highlight-function 'orderless--highlight))
+#+end_src
+** avy
+#+begin_src emacs-lisp
+(leaf avy
+  :ensure t
+  :defer-config
+  (e:variable! avy-keys (number-sequence ?a ?z))
+  (e:variable! avy-all-windows nil)
+  (e:variable! avy-all-windows-alt t))
+#+end_src
+** company
+#+begin_src emacs-lisp :noweb yes
+(leaf company
+  :ensure (company company-box)
+  :hook (prog-mode-hook . company-mode)
+  :config
+  <<company-box>>)
+#+end_src
+*** company-box
+#+name: company-box
+#+begin_src emacs-lisp :tangle no
+(leaf company-box
+  :config
+  (company-box-mode 1))
+#+end_src
+** consult
+#+begin_src emacs-lisp
+(leaf consult
+  :ensure t)
+#+end_src
+** flycheck
+#+begin_src emacs-lisp
+(leaf flycheck
+  :ensure t)
+#+end_src
+** helpful
+#+begin_src emacs-lisp
+(leaf helpful
+  :ensure t)
+#+end_src
+** helm
+#+begin_src emacs-lisp
+(leaf helm
+  :ensure t
+  :bind (([remap eval-expression] . helm-eval-expression-with-eldoc)))
+#+end_src
+** lsp-mode
+#+begin_src emacs-lisp
+(leaf lsp-mode
+  :ensure t
+  :defer-config
+  (e:cache! lsp-session-file "lsp/session"))
+#+end_src
+** magit
+#+begin_src emacs-lisp :noweb yes
+(leaf magit
+  :ensure (magit magit-libgit)
+  :defun (magit-add-section-hook)
+  :defer-config
+  (e:variable! magit-delete-by-moving-to-trash nil)
+  (e:variable! magit-diff-refine-hunk 'all)
+  (e:variable! magit-diff-refine-ignore-whitespace t)
+  (e:variable! magit-log-margin '(t "%Y-%m-%d %H:%M" magit-log-margin-width t 15))
+  (magit-add-section-hook 'magit-status-sections-hook 'magit-insert-modules-overview    'magit-insert-stashes t)
+  (magit-add-section-hook 'magit-status-sections-hook 'magit-insert-skip-worktree-files 'magit-insert-stashes t)
+  <<magit-libgit>>)
+#+end_src
+*** magit-libgit
+#+name: magit-libgit
+#+begin_src emacs-lisp :tangle no
+(leaf magit-libgit
+  :config
+  (libgit-load))
+#+end_src
+** orderless
+#+begin_src emacs-lisp
+(leaf orderless
+  :ensure t
+  :init
+  (setq completion-styles '(orderless))
+  (setq orderless-matching-styles '(orderless-literal orderless-regexp orderless-migemo))
+  :defer-config
+  (defun orderless-migemo (component)
+    (when (fboundp 'migemo-get-pattern)
+      (let ((pattern (migemo-get-pattern component)))
+        (condition-case nil
+            (progn (string-match-p pattern "") pattern)
+          (invalid-regexp nil))))))
+#+end_src
+** projectile
+#+begin_src emacs-lisp :lexical no
+(leaf projectile
+  :ensure t)
+#+end_src
+** transient
+#+begin_src emacs-lisp
+(leaf transient
+  :ensure t
+  :defer-config
+  (e:cache! transient-history-file "transient/history.el")
+  (e:cache! transient-levels-file  "transient/levels.el")
+  (e:cache! transient-values-file  "transient/values.el"))
+#+end_src
+** vterm
+#+begin_src emacs-lisp
+(leaf vterm
+  :ensure (vterm vterm-toggle)
+  :bind (:vterm-mode-map
+         ("C-c C-g" . keyboard-quit)
+         ("C-g" . vterm-send-C-g)
+         ("C-j" . e:vterm-input-something)
+         ("<wheel-up>" . ignore)
+         ("<wheel-down>" . ignore))
+  :config
+  (e:variable! vterm-max-scrollback 20000)
+  (e:variable! vterm-shell "tmux new -A -s emacs")
+  (defun e:vterm-input-something ()
+    (interactive)
+    (let ((input (read-string "input: ")))
+      (with-no-warnings (vterm-send-string input)))))
+#+end_src
+* Config: Languages
+** Ruby
+#+begin_src emacs-lisp
+(leaf ruby-mode
+  :ensure t
+  :hook (ruby-mode-hook . lsp-deferred)
+  :config
+  (e:variable! ruby-insert-encoding-magic-comment nil))
+#+end_src
+** TypeScript(tsx)
+#+begin_src emacs-lisp
+(leaf typescript-tsx-mode
+  :ensure web-mode
+  :hook (typescript-tsx-mode-hook . lsp-deferred)
+  :mode "\\.tsx\\'"
+  :init
+  (define-derived-mode typescript-tsx-mode web-mode "TypeScript[tsx]"))
+#+end_src
+** Vue
+#+begin_src emacs-lisp
+(leaf vue-mode
+  :ensure t
+  :hook (vue-mode-hook . lsp-deferred))
+#+end_src
+* Config: Keybind(root)
+** Root
+#+begin_src emacs-lisp
+(prog1 (define-prefix-command 'e:root-command-map)
+  (bind-keys :map e:root-command-map
+             ("SPC" . ("M-x" . execute-extended-command))
+             ("!" . shell-command)
+             ("%" . query-replace)
+             ("&" . async-shell-command)
+             ("^" . ace-window)
+             ("|" . shell-command-on-region)
+             ("1" . ("window 1" . winum-select-window-1))
+             ("2" . ("window 2" . winum-select-window-2))
+             ("3" . ("window 3" . winum-select-window-3))
+             ("4" . ("window 4" . winum-select-window-4))
+             ("5" . ("window 5" . winum-select-window-5))
+             ("6" . ("window 6" . winum-select-window-6))
+             ("7" . ("window 7" . winum-select-window-7))
+             ("8" . ("window 8" . winum-select-window-8))
+             ("9" . ("window 9" . winum-select-window-9))
+             ("b" . ("Buffers"         . e:buffer-command-map))
+             ("f" . ("Files"           . e:file-command-map))
+             ("g" . ("Git/VC"          . e:git-command-map))
+             ("h" . ("Help"            . e:help-command-map))
+             ("j" . ("Jump/Join/Split" . e:jump-command-map))
+             ("o" . ("Org"             . e:org-command-map))
+             ("p" . ("Projects"        . e:project-command-map))
+             ("q" . ("Quit"            . e:quit-command-map))
+             ("s" . ("Search/Symbol"   . e:search-command-map))
+             ("w" . ("Windows"         . e:window-command-map))
+             ))
+#+end_src
+** Buffer
+#+begin_src emacs-lisp
+(prog1 (define-prefix-command 'e:buffer-command-map)
+  (bind-keys :map e:buffer-command-map
+             ("b" . consult-buffer)
+             ))
+#+end_src
+** File
+#+begin_src emacs-lisp
+(prog1 (define-prefix-command 'e:file-command-map)
+  (bind-keys :map e:file-command-map
+             ("f" . find-file)
+             ("g" . affe-grep)
+             ("r" . recentf-open-files)
+             ("z" . affe-find)
+             ))
+#+end_src
+** Git / VC
+#+begin_src emacs-lisp
+(prog1 (define-prefix-command 'e:git-command-map)
+  (bind-keys :map e:git-command-map
+             ("s" . magit-status)
+             ))
+#+end_src
+** Help
+#+begin_src emacs-lisp
+(prog1 (define-prefix-command 'e:help-command-map)
+  (bind-keys :map e:help-command-map
+             ("d" . ("describe" . e:help/describe-command-map))
+             ("h" . ("helpful"  . e:help/helpful-command-map))
+             ))
+(prog1 (define-prefix-command 'e:help/describe-command-map)
+  (bind-keys :map e:help/describe-command-map
+             ("a" . consult-apropos)
+             ("v" . describe-variable)
+             ))
+(prog1 (define-prefix-command 'e:help/helpful-command-map)
+  (bind-keys :map e:help/helpful-command-map
+             ("h" . helpful-at-point)
+             ("v" . helpful-variable)
+             ))
+#+end_src
+** Jump / Join / Split
+#+begin_src emacs-lisp
+(prog1 (define-prefix-command 'e:jump-command-map)
+  (bind-keys :map e:jump-command-map
+             ("i" . consult-imenu)
+             ))
+#+end_src
+** Org
+#+begin_src emacs-lisp
+(prog1 (define-prefix-command 'e:org-command-map)
+  (bind-keys :map e:org-command-map
+             ))
+#+end_src
+** Project
+#+begin_src emacs-lisp
+(prog1 (define-prefix-command 'e:project-command-map)
+  (bind-keys :map e:project-command-map
+             ("!" . projectile-run-shell-command-in-root)
+             ("%" . projectile-replace-regexp)
+             ("&" . projectile-run-async-shell-command-in-root)
+             ("D" . projectile-dired)
+             ("F" . projectile-find-file-dwim)
+             ("G" . projectile-regenerate-tags)
+             ("I" . projectile-invalidate-cache)
+             ("R" . projectile-replace)
+             ("T" . projectile-test-project)
+             ("a" . projectile-toggle-between-implementation-and-test)
+             ("b" . projectile-switch-to-buffer)
+             ("c" . projectile-compile-project)
+             ("d" . projectile-find-dir)
+             ("e" . projectile-edit-dir-locals)
+             ("f" . projectile-find-file)
+             ("g" . projectile-find-tag)
+             ("k" . projectile-kill-buffers)
+             ("p" . projectile-switch-project)
+             ("r" . projectile-recentf)
+             ("v" . projectile-vc)
+             ))
+#+end_src
+** Quit
+#+begin_src emacs-lisp
+(prog1 (define-prefix-command 'e:quit-command-map)
+  (bind-keys :map e:quit-command-map
+             ("q" . kill-emacs)
+             ))
+#+end_src
+** Search / Symbol
+#+begin_src emacs-lisp
+(prog1 (define-prefix-command 'e:search-command-map)
+  (bind-keys :map e:search-command-map
+             ("s" . consult-line)
+             ))
+#+end_src
+** Window
+#+begin_src emacs-lisp
+(prog1 (define-prefix-command 'e:window-command-map)
+  (bind-keys :map e:window-command-map
+             ("D" . ace-delete-window)
+             ("M" . ace-swap-window)
+             ("W" . ace-window)
+             ("d" . delete-window)
+             ("w" . other-window)
+             ))
+#+end_src
+* Config: Keybind(map)
+** global-map
+#+begin_src emacs-lisp
+(bind-keys :map global-map
+           ("C-;" . vterm-toggle)
+           ("C-^" . ace-window)
+           )
+#+end_src
+** ctl-x-map
+#+begin_src emacs-lisp
+(bind-keys :map ctl-x-map
+           ("C-c" . execute-extended-command)
+           )
+#+end_src
