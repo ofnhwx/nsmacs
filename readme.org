@@ -34,11 +34,6 @@
 (defmacro e:variable! (variable value)
   `(set-variable ',variable ,value))
 #+end_src
-*** e:cache!
-#+begin_src emacs-lisp
-(defmacro e:cache! (variable path)
-  `(e:variable! ,variable ,(expand-file-name path e:cache-dir)))
-#+end_src
 *** e:if!
 #+begin_src emacs-lisp
 (defmacro e:if! (condition &rest body)
@@ -49,8 +44,8 @@
 ** 起動ディレクトリの調整
 #+begin_src emacs-lisp
 (e:variable! user-emacs-directory (file-name-directory (or load-file-name buffer-file-name)))
-(e:variable! e:cache-dir   (expand-file-name ".cache"  user-emacs-directory))
-(e:variable! e:private-dir (expand-file-name "private" user-emacs-directory))
+(e:variable! no-littering-etc-directory (expand-file-name "etc/" user-emacs-directory))
+(e:variable! no-littering-var-directory (expand-file-name "var/" user-emacs-directory))
 #+end_src
 ** eary-init.el
 *** 不要なUI要素を非表示
@@ -72,8 +67,7 @@
                ("org"    . "https://orgmode.org/elpa/")
                ("gnu"    . "https://elpa.gnu.org/packages/")
                ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
-(e:variable! package-user-dir
-             (expand-file-name (format "elpa/%s" emacs-version) e:cache-dir))
+(e:variable! package-user-dir (expand-file-name (format "elpa/%s" emacs-version) no-littering-var-directory))
 #+end_src
 ** ライブラリ
 #+begin_src emacs-lisp
@@ -83,11 +77,12 @@
     (package-refresh-contents)
     (package-install 'leaf)))
 
-(leaf cl-lib             :require t)
-(leaf bind-key :ensure t :require t)
-(leaf dash     :ensure t :require t)
-(leaf f        :ensure t :require t)
-(leaf s        :ensure t :require t)
+(leaf cl-lib       :ensure t :require t)
+(leaf bind-key     :ensure t :require t)
+(leaf dash         :ensure t :require t)
+(leaf f            :ensure t :require t)
+(leaf s            :ensure t :require t)
+(leaf no-littering :ensure t :require t)
 #+end_src
 * Config: Misc
 ** Mac
@@ -170,7 +165,6 @@
   (e:variable! recentf-filename-handlers '(abbreviate-file-name))
   (e:variable! recentf-max-menu-items 20)
   (e:variable! recentf-max-saved-items 3000)
-  (e:cache! recentf-save-file "recentf")
   (define-advice recentf-save-list (:before (&rest _) cleanup)
     "存在しないファイルを履歴から削除する"
     (setq recentf-list (->> recentf-list
@@ -326,9 +320,7 @@
 ** lsp-mode
 #+begin_src emacs-lisp
 (leaf lsp-mode
-  :ensure t
-  :defer-config
-  (e:cache! lsp-session-file "lsp/session"))
+  :ensure t)
 #+end_src
 ** magit
 #+begin_src emacs-lisp :noweb yes
@@ -374,11 +366,7 @@
 ** transient
 #+begin_src emacs-lisp
 (leaf transient
-  :ensure t
-  :defer-config
-  (e:cache! transient-history-file "transient/history.el")
-  (e:cache! transient-levels-file  "transient/levels.el")
-  (e:cache! transient-values-file  "transient/values.el"))
+  :ensure t)
 #+end_src
 ** vterm
 #+begin_src emacs-lisp
