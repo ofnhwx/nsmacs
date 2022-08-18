@@ -2,21 +2,31 @@
 #+startup: overview
 
 * Bootstrap
-** 起動時間短縮のための設定
-*** 起動中の設定
+** eary-init.el
+*** 起動時間短縮のための設定
 #+begin_src emacs-lisp :lexical no
 (defvar default-file-name-handler-alist file-name-handler-alist)
 (setq file-name-handler-alist nil)
 (setq gc-cons-percentage 1.0)
 (setq gc-cons-threshold most-positive-fixnum)
-#+end_src
-*** 起動後の設定
-#+begin_src emacs-lisp :lexical no
+
 (defun e:emacs-startup-config ()
   (setq file-name-handler-alist default-file-name-handler-alist)
   (setq gc-cons-percentage 0.1)
   (setq gc-cons-threshold 1000000000))
 (add-hook 'emacs-startup-hook #'e:emacs-startup-config)
+#+end_src
+*** 不要なUI要素を非表示
+#+begin_src emacs-lisp :tangle early-init.el
+(menu-bar-mode   -1)
+(scroll-bar-mode -1)
+(tool-bar-mode   -1)
+(tooltip-mode    -1)
+#+end_src
+*** 未ロードならロードする
+#+begin_src emacs-lisp
+(unless early-init-file
+  (load (expand-file-name "early-init" user-emacs-directory)))
 #+end_src
 ** 設定で使用するマクロ定義
 *** e:default!
@@ -47,19 +57,6 @@
 (e:variable! no-littering-etc-directory (expand-file-name "etc/" user-emacs-directory))
 (e:variable! no-littering-var-directory (expand-file-name "var/" user-emacs-directory))
 #+end_src
-** eary-init.el
-*** 不要なUI要素を非表示
-#+begin_src emacs-lisp :tangle early-init.el
-(menu-bar-mode   -1)
-(scroll-bar-mode -1)
-(tool-bar-mode   -1)
-(tooltip-mode    -1)
-#+end_src
-*** 未ロードならロードする
-#+begin_src emacs-lisp
-(unless early-init-file
-  (load (expand-file-name "early-init" user-emacs-directory)))
-#+end_src
 ** パッケージ関連の設定
 #+begin_src emacs-lisp
 (e:variable! package-archives
@@ -67,7 +64,7 @@
                ("org"    . "https://orgmode.org/elpa/")
                ("gnu"    . "https://elpa.gnu.org/packages/")
                ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
-(e:variable! package-user-dir (expand-file-name (format "elpa/%s" emacs-version) no-littering-var-directory))
+(e:variable! package-user-dir (no-littering-expand-var-file-name (format "elpa/%s" emacs-version)))
 #+end_src
 ** ライブラリ
 #+begin_src emacs-lisp
@@ -78,7 +75,7 @@
     (package-install 'leaf)))
 
 (leaf cl-lib       :ensure t :require t)
-(leaf bind-key     :ensure t :require t)
+(leaf general      :ensure t :require t)
 (leaf dash         :ensure t :require t)
 (leaf f            :ensure t :require t)
 (leaf s            :ensure t :require t)
