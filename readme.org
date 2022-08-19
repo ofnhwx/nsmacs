@@ -4,7 +4,7 @@
 * Bootstrap
 ** eary-init.el
 *** 起動時間短縮のための設定
-#+begin_src emacs-lisp :lexical no
+#+begin_src emacs-lisp
 (defvar default-file-name-handler-alist file-name-handler-alist)
 (setq file-name-handler-alist nil)
 (setq gc-cons-percentage 1.0)
@@ -64,22 +64,27 @@
                ("org"    . "https://orgmode.org/elpa/")
                ("gnu"    . "https://elpa.gnu.org/packages/")
                ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
-(e:variable! package-user-dir (no-littering-expand-var-file-name (format "elpa/%s" emacs-version)))
-#+end_src
-** ライブラリ
-#+begin_src emacs-lisp
+(e:variable! package-user-dir (expand-file-name (format "elpa/%s" emacs-version) no-littering-var-directory))
+
 (when (require 'package)
   (package-initialize)
   (unless (package-installed-p 'leaf)
     (package-refresh-contents)
     (package-install 'leaf)))
-
-(leaf cl-lib       :ensure t :require t)
-(leaf general      :ensure t :require t)
-(leaf dash         :ensure t :require t)
-(leaf f            :ensure t :require t)
-(leaf s            :ensure t :require t)
+#+end_src
+** ライブラリ
+#+begin_src emacs-lisp
+(leaf cl-lib :ensure t :require t)
+(leaf dash   :ensure t :require t)
+(leaf f      :ensure t :require t)
+(leaf s      :ensure t :require t)
 (leaf no-littering :ensure t :require t)
+
+(leaf general
+  :ensure t
+  :require t
+  :config
+  (general-evil-setup))
 #+end_src
 * Config: Misc
 ** Mac
@@ -203,7 +208,7 @@
 
 * Config: Packages(startup)
 ** atomic-chrome
-#+begin_src emacs-lisp :lexical no
+#+begin_src emacs-lisp
 (leaf atomic-chrome
   :ensure t
   :hook (emacs-startup-hook . atomic-chrome-start-server))
@@ -355,8 +360,16 @@
             (progn (string-match-p pattern "") pattern)
           (invalid-regexp nil))))))
 #+end_src
+** org-mode
+#+begin_src emacs-lisp
+(leaf org
+  :ensure (org-modern)
+  :hook (org-mode-hook . org-modern-mode)
+  :defer-config
+  (e:variable! org-edit-src-content-indentation 0))
+#+end_src
 ** projectile
-#+begin_src emacs-lisp :lexical no
+#+begin_src emacs-lisp
 (leaf projectile
   :ensure t)
 #+end_src
@@ -410,152 +423,170 @@
 * Config: Keybind(root)
 ** Root
 #+begin_src emacs-lisp
-(prog1 (define-prefix-command 'e:root-command-map)
-  (bind-keys :map e:root-command-map
-             ("SPC" . ("M-x" . execute-extended-command))
-             ("!" . shell-command)
-             ("%" . query-replace)
-             ("&" . async-shell-command)
-             ("^" . ace-window)
-             ("|" . shell-command-on-region)
-             ("1" . ("window 1" . winum-select-window-1))
-             ("2" . ("window 2" . winum-select-window-2))
-             ("3" . ("window 3" . winum-select-window-3))
-             ("4" . ("window 4" . winum-select-window-4))
-             ("5" . ("window 5" . winum-select-window-5))
-             ("6" . ("window 6" . winum-select-window-6))
-             ("7" . ("window 7" . winum-select-window-7))
-             ("8" . ("window 8" . winum-select-window-8))
-             ("9" . ("window 9" . winum-select-window-9))
-             ("b" . ("Buffers"         . e:buffer-command-map))
-             ("f" . ("Files"           . e:file-command-map))
-             ("g" . ("Git/VC"          . e:git-command-map))
-             ("h" . ("Help"            . e:help-command-map))
-             ("j" . ("Jump/Join/Split" . e:jump-command-map))
-             ("o" . ("Org"             . e:org-command-map))
-             ("p" . ("Projects"        . e:project-command-map))
-             ("q" . ("Quit"            . e:quit-command-map))
-             ("s" . ("Search/Symbol"   . e:search-command-map))
-             ("w" . ("Windows"         . e:window-command-map))
-             ))
+(general-nmap
+ :prefix "SPC"
+ :prefix-command (define-prefix-command 'e:root-command-map)
+ "SPC" '(execute-extended-command :which-key "M-x")
+ "!"   'shell-command
+ "%"   'query-replace
+ "&"   'async-shell-command
+ "^"   'ace-window
+ "|"   'shell-command-on-region
+ "1"   '(winum-select-window-1 :which-key "window 1")
+ "2"   '(winum-select-window-2 :which-key "window 2")
+ "3"   '(winum-select-window-3 :which-key "window 3")
+ "4"   '(winum-select-window-4 :which-key "window 4")
+ "5"   '(winum-select-window-5 :which-key "window 5")
+ "6"   '(winum-select-window-6 :which-key "window 6")
+ "7"   '(winum-select-window-7 :which-key "window 7")
+ "8"   '(winum-select-window-8 :which-key "window 8")
+ "9"   '(winum-select-window-9 :which-key "window 9")
+ "b"   '(e:buffer-command-map  :which-key "Buffer")
+ "f"   '(e:file-command-map    :which-key "File")
+ "g"   '(e:git-command-map     :which-key "Git/VC")
+ "h"   '(e:help-command-map    :which-key "Help")
+ "j"   '(e:jump-command-map    :which-key "Jump/Join/Split")
+ "o"   '(e:org-command-map     :which-key "Org")
+ "p"   '(e:project-command-map :which-key "Project")
+ "q"   '(e:quit-command-map    :which-key "Quit")
+ "s"   '(e:search-command-map  :which-key "Search/Symbol")
+ "w"   '(e:window-command-map  :which-key "Window")
+ )
 #+end_src
 ** Buffer
 #+begin_src emacs-lisp
-(prog1 (define-prefix-command 'e:buffer-command-map)
-  (bind-keys :map e:buffer-command-map
-             ("b" . consult-buffer)
-             ))
+(general-nmap
+  :prefix "SPC b"
+  :prefix-command (define-prefix-command 'e:buffer-command-map)
+  "b" 'consult-buffer
+  )
 #+end_src
 ** File
 #+begin_src emacs-lisp
-(prog1 (define-prefix-command 'e:file-command-map)
-  (bind-keys :map e:file-command-map
-             ("f" . find-file)
-             ("g" . affe-grep)
-             ("r" . recentf-open-files)
-             ("z" . affe-find)
-             ))
+(general-nmap
+  :prefix "SPC f"
+  :prefix-command (define-prefix-command 'e:file-command-map)
+  "f" 'find-file
+  "g" 'affe-grep
+  "r" 'recentf-open-files
+  "s" 'save-buffer
+  "z" 'affe-find
+  )
 #+end_src
 ** Git / VC
 #+begin_src emacs-lisp
-(prog1 (define-prefix-command 'e:git-command-map)
-  (bind-keys :map e:git-command-map
-             ("s" . magit-status)
-             ))
+(general-nmap
+  :prefix "g"
+  :prefix-command (define-prefix-command 'e:git-command-map)
+  "s" 'magit-status
+  )
 #+end_src
 ** Help
 #+begin_src emacs-lisp
-(prog1 (define-prefix-command 'e:help-command-map)
-  (bind-keys :map e:help-command-map
-             ("d" . ("describe" . e:help/describe-command-map))
-             ("h" . ("helpful"  . e:help/helpful-command-map))
-             ))
-(prog1 (define-prefix-command 'e:help/describe-command-map)
-  (bind-keys :map e:help/describe-command-map
-             ("a" . consult-apropos)
-             ("v" . describe-variable)
-             ))
-(prog1 (define-prefix-command 'e:help/helpful-command-map)
-  (bind-keys :map e:help/helpful-command-map
-             ("h" . helpful-at-point)
-             ("v" . helpful-variable)
-             ))
+(general-nmap
+  :prefix "SPC h"
+  :prefix-command (define-prefix-command 'e:help-command-map)
+  "d" '(e:help/describe-command-map :which-key "describe")
+  "h" '(e:help/helpful-command-map  :which-key "helpful")
+  )
+(general-nmap
+  :prefix "SPC h d"
+  :prefix-command (define-prefix-command 'e:help/describe-command-map)
+  "a" 'consult-apropos
+  "f" 'describe-function
+  "v" 'describe-variable
+  )
+(general-nmap
+  :prefix "SPC h h"
+  :prefix-command (define-prefix-command 'e:help/helpful-command-map)
+  "f" 'helpful-function
+  "h" 'helpful-at-point
+  "v" 'helpful-variable
+  )
 #+end_src
 ** Jump / Join / Split
 #+begin_src emacs-lisp
-(prog1 (define-prefix-command 'e:jump-command-map)
-  (bind-keys :map e:jump-command-map
-             ("i" . consult-imenu)
-             ))
+(general-nmap
+  :prefix "SPC j"
+  :prefix-command (define-prefix-command 'e:jump-command-map)
+  "i" 'consult-imenu
+  )
 #+end_src
 ** Org
 #+begin_src emacs-lisp
-(prog1 (define-prefix-command 'e:org-command-map)
-  (bind-keys :map e:org-command-map
-             ))
+(general-nmap
+  :prefix "SPC o"
+  :prefix-command (define-prefix-command 'e:org-command-map)
+  )
 #+end_src
 ** Project
 #+begin_src emacs-lisp
-(prog1 (define-prefix-command 'e:project-command-map)
-  (bind-keys :map e:project-command-map
-             ("!" . projectile-run-shell-command-in-root)
-             ("%" . projectile-replace-regexp)
-             ("&" . projectile-run-async-shell-command-in-root)
-             ("D" . projectile-dired)
-             ("F" . projectile-find-file-dwim)
-             ("G" . projectile-regenerate-tags)
-             ("I" . projectile-invalidate-cache)
-             ("R" . projectile-replace)
-             ("T" . projectile-test-project)
-             ("a" . projectile-toggle-between-implementation-and-test)
-             ("b" . projectile-switch-to-buffer)
-             ("c" . projectile-compile-project)
-             ("d" . projectile-find-dir)
-             ("e" . projectile-edit-dir-locals)
-             ("f" . projectile-find-file)
-             ("g" . projectile-find-tag)
-             ("k" . projectile-kill-buffers)
-             ("p" . projectile-switch-project)
-             ("r" . projectile-recentf)
-             ("v" . projectile-vc)
-             ))
+(general-nmap
+  :prefix "SPC p"
+  :prefix-command (define-prefix-command 'e:project-command-map)
+  "!" 'projectile-run-shell-command-in-root
+  "%" 'projectile-replace-regexp
+  "&" 'projectile-run-async-shell-command-in-root
+  "D" 'projectile-dired
+  "F" 'projectile-find-file-dwim
+  "G" 'projectile-regenerate-tags
+  "I" 'projectile-invalidate-cache
+  "R" 'projectile-replace
+  "T" 'projectile-test-project
+  "a" 'projectile-toggle-between-implementation-and-test
+  "b" 'projectile-switch-to-buffer
+  "c" 'projectile-compile-project
+  "d" 'projectile-find-dir
+  "e" 'projectile-edit-dir-locals
+  "f" 'projectile-find-file
+  "g" 'projectile-find-tag
+  "k" 'projectile-kill-buffers
+  "p" 'projectile-switch-project
+  "r" 'projectile-recentf
+  "v" 'projectile-vc
+  )
 #+end_src
 ** Quit
 #+begin_src emacs-lisp
-(prog1 (define-prefix-command 'e:quit-command-map)
-  (bind-keys :map e:quit-command-map
-             ("q" . kill-emacs)
-             ))
+(general-nmap
+  :prefix "SPC q"
+  :prefix-command (define-prefix-command 'e:quit-command-map)
+  "q" 'kill-emacs
+  )
 #+end_src
 ** Search / Symbol
 #+begin_src emacs-lisp
-(prog1 (define-prefix-command 'e:search-command-map)
-  (bind-keys :map e:search-command-map
-             ("s" . consult-line)
-             ))
+(general-nmap
+  :prefix "SPC s"
+  :prefix-command (define-prefix-command 'e:search-command-map)
+  "s" 'consult-line
+  )
 #+end_src
 ** Window
 #+begin_src emacs-lisp
-(prog1 (define-prefix-command 'e:window-command-map)
-  (bind-keys :map e:window-command-map
-             ("D" . ace-delete-window)
-             ("M" . ace-swap-window)
-             ("W" . ace-window)
-             ("d" . delete-window)
-             ("w" . other-window)
-             ))
+(general-nmap
+  :prefix "SPC w"
+  :prefix-command (define-prefix-command 'e:window-command-map)
+  "D" 'ace-delete-window
+  "M" 'ace-swap-window
+  "W" 'ace-window
+  "d" 'delete-window
+  "w" 'other-window
+  )
 #+end_src
 * Config: Keybind(map)
 ** global-map
 #+begin_src emacs-lisp
-(bind-keys :map global-map
-           ("C-;" . vterm-toggle)
-           ("C-^" . ace-window)
-           )
+(general-define-key
+ :keymaps 'global-map
+ "C-;" 'vterm-toggle
+ "C-^" 'ace-window
+ )
 #+end_src
 ** ctl-x-map
 #+begin_src emacs-lisp
-(bind-keys :map ctl-x-map
-           ("C-c" . execute-extended-command)
-           )
+(general-define-key
+ :keymaps 'ctl-x-map
+ "C-c" 'execute-extended-command
+ )
 #+end_src
