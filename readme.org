@@ -283,25 +283,88 @@
   (e:variable! avy-all-windows nil)
   (e:variable! avy-all-windows-alt t))
 #+end_src
-** company
-#+begin_src emacs-lisp :noweb yes
-(leaf company
-  :ensure (company company-box)
-  :hook (prog-mode-hook . company-mode)
+** cape
+#+begin_src emacs-lisp
+(require 'company-org-block)
+(leaf cape
+  :ensure t
+  :commands (e:capf-functions e:cape-org-block e:cape-tabnine)
   :config
-  <<company-box>>)
+  (defalias 'e:cape-org-block
+    (cape-company-to-capf #'company-org-block))
+  (defalias 'e:cape-tabnine
+    (cape-company-to-capf #'company-tabnine))
+  (defun e:capf-functions (default-capf)
+    (let ((default-capf-with-tabnine (intern (format "%s-with-tabnine" default-capf))))
+      (defalias default-capf-with-tabnine
+	(cape-super-capf
+	 default-capf
+	 #'e:cape-tabnine))
+      (list #'cape-file
+	    default-capf-with-tabnine
+	    #'cape-dabbrev))))
 #+end_src
-*** company-box
-#+name: company-box
-#+begin_src emacs-lisp :tangle no
-(leaf company-box
+** company
+*** company-org-block
+#+begin_src emacs-lisp
+(leaf company-org-block
+  :ensure t
+  :commands (company-org-block)
   :config
-  (company-box-mode 1))
+  (e:variable! company-org-block-edit-style 'inline))
+#+end_src
+*** company-tabnine
+#+begin_src emacs-lisp
+(leaf company-tabnine
+  :ensure t)
 #+end_src
 ** consult
 #+begin_src emacs-lisp
 (leaf consult
   :ensure t)
+#+end_src
+** corf
+#+begin_src emacs-lisp :noweb yes
+(leaf corfu
+  :ensure (corfu corfu-doc)
+  :bind (:corfu-map
+         ("<escape>" . corfu-quit))
+  :hook ((prog-mode-hook . e:setup-capf/default)
+         (org-mode-hook  . e:setup-capf/org)
+         (lsp-completion-mode-hook . e:setup-capf/lsp))
+  :init
+  (e:variable! corfu-auto t)
+  :config
+  (defun e:setup-capf/default ()
+    (setq-local completion-at-point-functions
+                (e:capf-functions (car completion-at-point-functions)))
+    (corfu-mode 1))
+  (defun e:setup-capf/org ()
+    (setq-local completion-at-point-functions
+                (e:capf-functions #'e:cape-org-block))
+    (corfu-mode 1))
+  (defun e:setup-capf/lsp ()
+    (setq-local completion-at-point-functions
+                (e:capf-functions #'lsp-completion-at-point))
+    (corfu-mode 1))
+  <<corfu-doc>>
+  <<corfu-with-evil>>)
+#+end_src
+*** corfu-doc
+#+name: corfu-doc
+#+begin_src emacs-lisp :tangle no
+(leaf corfu-doc
+  :hook (corfu-mode-hook . corfu-doc-mode))
+#+end_src
+*** corfu-with-evil
+#+name: corfu-with-evil
+#+begin_src emacs-lisp :tangle no
+(leaf corfu-with-evil
+  :after (evil)
+  :config
+  (evil-make-overriding-map corfu-map)
+  (advice-add 'corfu--setup :after 'evil-normalize-keymaps)
+  (advice-add 'corfu--teardown :after 'evil-normalize-keymaps))
 #+end_src
 ** flycheck
 #+begin_src emacs-lisp
