@@ -4,7 +4,7 @@
 * Bootstrap
 ** eary-init.el
 *** 起動時間短縮のための設定
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle early-init.el
 (defvar default-file-name-handler-alist file-name-handler-alist)
 (setq file-name-handler-alist nil)
 (setq gc-cons-percentage 1.0)
@@ -128,7 +128,7 @@
   (set-face-attribute 'fixed-pitch-serif nil :family font)
   (set-face-attribute 'variable-pitch    nil :family font))
 #+end_src
-* Config: Alias
+** Alias
 #+begin_src emacs-lisp
 (defalias 'exit 'save-buffers-kill-terminal)
 (defalias 'yes-or-no-p 'y-or-n-p)
@@ -158,32 +158,26 @@
   :config
   (e:variable! custom-file (make-temp-file "emacs-custom-" nil ".el")))
 #+end_src
-** recentf
+* Config: Themes
+** modus-themes
 #+begin_src emacs-lisp
-(leaf recentf
-  :hook (emacs-startup-hook . recentf-mode)
-  :config
-  (eval-when-compile (require 'recentf))
-  (e:variable! recentf-filename-handlers '(abbreviate-file-name))
-  (e:variable! recentf-max-menu-items 20)
-  (e:variable! recentf-max-saved-items 3000)
-  (define-advice recentf-save-list (:before (&rest _) cleanup)
-    "存在しないファイルを履歴から削除する"
-    (setq recentf-list (->> recentf-list
-                            (-map 'f-short)
-                            (-distinct)
-                            (--filter (and (or (file-remote-p it)
-                                               (f-exists? it))
-                                           (recentf-include-p it)))))))
+(leaf modus-themes
+  :ensure t
+  :init
+  (modus-themes-load-themes)
+  (modus-themes-load-vivendi))
 #+end_src
 * Config: Evil
+** evil
 #+begin_src emacs-lisp :noweb yes
 (leaf evil
   :ensure (evil evil-collection)
   :require t
-  :bind (:evil-motion-state-map
-         ("SPC" . e:root-command-map))
   :init
+  (e:variable! evil-cross-lines t)
+  (e:variable! evil-disable-insert-state-bindings t)
+  (e:variable! evil-move-beyond-eol t)
+  (e:variable! evil-move-cursor-back nil)
   (e:variable! evil-want-keybinding nil)
   :config
   (evil-mode)
@@ -196,66 +190,7 @@
   :config
   (evil-collection-init))
 #+end_Src
-* Config: Themes
-** modus-themes
-#+begin_src emacs-lisp
-(leaf modus-themes
-  :ensure t
-  :init
-  (modus-themes-load-themes)
-  (modus-themes-load-vivendi))
-#+end_src
-
-* Config: Packages(startup)
-** atomic-chrome
-#+begin_src emacs-lisp
-(leaf atomic-chrome
-  :ensure t
-  :hook (emacs-startup-hook . atomic-chrome-start-server))
-#+end_src
-** beacon
-#+begin_src emacs-lisp
-(leaf beacon
-  :ensure t
-  :hook (emacs-startup-hook . beacon-mode))
-#+end_src
-** marginalia
-#+begin_src emacs-lisp
-(leaf marginalia
-  :ensure t
-  :hook (emacs-startup-hook . marginalia-mode))
-#+end_src
-** minions
-#+begin_src emacs-lisp
-(leaf minions
-  :ensure t
-  :hook (emacs-startup-hook . minions-mode))
-#+end_src
-** vertico
-#+begin_src emacs-lisp
-(leaf vertico
-  :ensure t
-  :hook (emacs-startup-hook . vertico-mode)
-  :config
-  (e:variable! vertico-count 20)
-  (e:variable! vertico-cycle t))
-#+end_src
-** which-key
-#+begin_src emacs-lisp
-(leaf which-key
-  :ensure t
-  :hook (emacs-startup-hook . which-key-mode)
-  :init
-  (e:variable! which-key-show-early-on-C-h t)
-  (e:variable! which-key-sort-order 'which-key-key-order-alpha))
-#+end_src
-** winum
-#+begin_src emacs-lisp
-(leaf winum
-  :ensure t
-  :hook (emacs-startup-hook . winum-mode))
-#+end_src
-* Config: Packages(deferred)
+* Config: Packages
 ** ace-window
 #+begin_src emacs-lisp
 (leaf ace-window
@@ -274,6 +209,12 @@
   (e:variable! affe-regexp-function 'orderless-pattern-compiler)
   (e:variable! affe-highlight-function 'orderless--highlight))
 #+end_src
+** atomic-chrome
+#+begin_src emacs-lisp
+(leaf atomic-chrome
+  :ensure t
+  :hook (emacs-startup-hook . atomic-chrome-start-server))
+#+end_src
 ** avy
 #+begin_src emacs-lisp
 (leaf avy
@@ -282,6 +223,12 @@
   (e:variable! avy-keys (number-sequence ?a ?z))
   (e:variable! avy-all-windows nil)
   (e:variable! avy-all-windows-alt t))
+#+end_src
+** beacon
+#+begin_src emacs-lisp
+(leaf beacon
+  :ensure t
+  :hook (emacs-startup-hook . beacon-mode))
 #+end_src
 ** cape
 #+begin_src emacs-lisp
@@ -324,6 +271,7 @@
   :ensure t)
 #+end_src
 ** corf
+*** corf
 #+begin_src emacs-lisp :noweb yes
 (leaf corfu
   :ensure (corfu corfu-doc)
@@ -366,6 +314,28 @@
   (advice-add 'corfu--setup :after 'evil-normalize-keymaps)
   (advice-add 'corfu--teardown :after 'evil-normalize-keymaps))
 #+end_src
+** dired
+#+begin_src emacs-lisp
+(leaf dired
+  :bind ((:dired-mode-map
+          ("C-c C-e" . wdired-change-to-wdired-mode)))
+  :config
+  (eval-when-compile (require 'dired))
+  (e:variable! dired-dwim-target t)
+  (e:variable! dired-kill-when-opening-new-dired-buffer t)
+  (e:variable! dired-listing-switches "-Ahl")
+  (e:variable! dired-omit-files (rx (or (seq bol (? ".") "#")
+                                        (seq bol (or "." "..") eol)
+                                        (seq bol ".DS_Store" eol))))
+  (e:variable! dired-recursive-copies 'always)
+  (e:variable! dired-recursive-deletes 'always)
+  (e:variable! ls-lisp-dirs-first t)
+  (e:variable! ls-lisp-format-time-list '("%Y-%m-%d %H:%M:%S" "%Y-%m-%d %H:%M:%S"))
+  (e:variable! ls-lisp-ignore-case nil)
+  (e:variable! ls-lisp-use-insert-directory-program nil)
+  (e:variable! ls-lisp-use-localized-time-format t)
+  (e:variable! ls-lisp-verbosity '(uid gid)))
+#+end_src
 ** flycheck
 #+begin_src emacs-lisp
 (leaf flycheck
@@ -388,6 +358,7 @@
   :ensure t)
 #+end_src
 ** magit
+*** magit
 #+begin_src emacs-lisp :noweb yes
 (leaf magit
   :ensure (magit magit-libgit)
@@ -407,6 +378,18 @@
 (leaf magit-libgit
   :config
   (libgit-load))
+#+end_src
+** marginalia
+#+begin_src emacs-lisp
+(leaf marginalia
+  :ensure t
+  :hook (emacs-startup-hook . marginalia-mode))
+#+end_src
+** minions
+#+begin_src emacs-lisp
+(leaf minions
+  :ensure t
+  :hook (emacs-startup-hook . minions-mode))
 #+end_src
 ** orderless
 #+begin_src emacs-lisp
@@ -436,10 +419,37 @@
 (leaf projectile
   :ensure t)
 #+end_src
+** recentf
+#+begin_src emacs-lisp
+(leaf recentf
+  :hook (emacs-startup-hook . recentf-mode)
+  :config
+  (eval-when-compile (require 'recentf))
+  (e:variable! recentf-filename-handlers '(abbreviate-file-name))
+  (e:variable! recentf-max-menu-items 20)
+  (e:variable! recentf-max-saved-items 3000)
+  (define-advice recentf-save-list (:before (&rest _) cleanup)
+    "存在しないファイルを履歴から削除する"
+    (setq recentf-list (->> recentf-list
+                            (-map 'f-short)
+                            (-distinct)
+                            (--filter (and (or (file-remote-p it)
+                                               (f-exists? it))
+                                           (recentf-include-p it)))))))
+#+end_src
 ** transient
 #+begin_src emacs-lisp
 (leaf transient
   :ensure t)
+#+end_src
+** vertico
+#+begin_src emacs-lisp
+(leaf vertico
+  :ensure t
+  :hook (emacs-startup-hook . vertico-mode)
+  :config
+  (e:variable! vertico-count 20)
+  (e:variable! vertico-cycle t))
 #+end_src
 ** vterm
 #+begin_src emacs-lisp
@@ -448,18 +458,28 @@
   :bind (:vterm-mode-map
          ("C-c C-g" . keyboard-quit)
          ("C-g" . vterm-send-C-g)
-         ("C-j" . e:vterm-input-something)
          ("<wheel-up>" . ignore)
          ("<wheel-down>" . ignore))
   :config
   (e:variable! vterm-max-scrollback 20000)
-  (e:variable! vterm-shell "tmux new -A -s emacs")
-  (defun e:vterm-input-something ()
-    (interactive)
-    (let ((input (read-string "input: ")))
-      (with-no-warnings (vterm-send-string input)))))
+  (e:variable! vterm-shell "tmux new -A -s emacs"))
 #+end_src
-* Config: Languages
+** which-key
+#+begin_src emacs-lisp
+(leaf which-key
+  :ensure t
+  :hook (emacs-startup-hook . which-key-mode)
+  :init
+  (e:variable! which-key-show-early-on-C-h t)
+  (e:variable! which-key-sort-order 'which-key-key-order-alpha))
+#+end_src
+** winum
+#+begin_src emacs-lisp
+(leaf winum
+  :ensure t
+  :hook (emacs-startup-hook . winum-mode))
+#+end_src
+* Config: Major modes
 ** Ruby
 #+begin_src emacs-lisp
 (leaf ruby-mode
@@ -483,162 +503,114 @@
   :ensure t
   :hook (vue-mode-hook . lsp-deferred))
 #+end_src
-* Config: Keybind(root)
-** Root
+* Config: Keybinds
+** Space
 #+begin_src emacs-lisp
-(general-nmap
+(general-mmap "," (general-simulate-key "SPC m"))
+(general-mmap
  :prefix "SPC"
  :prefix-command (define-prefix-command 'e:root-command-map)
  "SPC" '(execute-extended-command :which-key "M-x")
- "!"   'shell-command
- "%"   'query-replace
- "&"   'async-shell-command
- "^"   'ace-window
- "|"   'shell-command-on-region
- "1"   '(winum-select-window-1 :which-key "window 1")
- "2"   '(winum-select-window-2 :which-key "window 2")
- "3"   '(winum-select-window-3 :which-key "window 3")
- "4"   '(winum-select-window-4 :which-key "window 4")
- "5"   '(winum-select-window-5 :which-key "window 5")
- "6"   '(winum-select-window-6 :which-key "window 6")
- "7"   '(winum-select-window-7 :which-key "window 7")
- "8"   '(winum-select-window-8 :which-key "window 8")
- "9"   '(winum-select-window-9 :which-key "window 9")
- "b"   '(e:buffer-command-map  :which-key "Buffer")
- "f"   '(e:file-command-map    :which-key "File")
- "g"   '(e:git-command-map     :which-key "Git/VC")
- "h"   '(e:help-command-map    :which-key "Help")
- "j"   '(e:jump-command-map    :which-key "Jump/Join/Split")
- "o"   '(e:org-command-map     :which-key "Org")
- "p"   '(e:project-command-map :which-key "Project")
- "q"   '(e:quit-command-map    :which-key "Quit")
- "s"   '(e:search-command-map  :which-key "Search/Symbol")
- "w"   '(e:window-command-map  :which-key "Window")
+ "!" 'shell-command
+ "%" 'query-replace
+ "&" 'async-shell-command
+ "^" 'ace-window
+ "|" 'shell-command-on-region
+ "1" '(winum-select-window-1 :which-key "window 1")
+ "2" '(winum-select-window-2 :which-key "window 2")
+ "3" '(winum-select-window-3 :which-key "window 3")
+ "4" '(winum-select-window-4 :which-key "window 4")
+ "5" '(winum-select-window-5 :which-key "window 5")
+ "6" '(winum-select-window-6 :which-key "window 6")
+ "7" '(winum-select-window-7 :which-key "window 7")
+ "8" '(winum-select-window-8 :which-key "window 8")
+ "9" '(winum-select-window-9 :which-key "window 9")
+ "F" '(:ignore t :which-key "Frame")
+ "Fn" 'make-frame
+ "Fo" 'other-frame
+ "a" '(:ignore t :which-key "Application")
+ "b" '(:ignore t :which-key "Buffer")
+ "bb" 'consult-buffer
+ "bd" 'kill-buffer
+ "bw" 'read-only-mode
+ "f" '(:ignore t :which-key "File")
+ "ff" 'find-file
+ "fg" 'affe-grep
+ "fr" 'recentf-open-files
+ "fs" 'save-buffer
+ "fz" 'affe-find
+ "g" '(:ignore t :which-key "Git/VC")
+ "gs" 'magit-status
+ "h" '(:ignore t :which-key "Help")
+ "hd" '(:ignore t :which-key "describe")
+ "hda" 'consult-apropos
+ "hdf" 'describe-function
+ "hdk" 'describe-key
+ "hdv" 'describe-variable
+ "hh" '(:ignore t :which-key "helpful")
+ "hhc" 'helpful-callable
+ "hhf" 'helpful-function
+ "hhh" 'helpful-at-point
+ "hhi" 'helpful-command
+ "hhk" 'helpful-key
+ "hhm" 'helpful-macro
+ "hhs" 'helpful-symbol
+ "hhv" 'helpful-variable
+ "j" '(:ignore t :which-key "Jump/Join/Split")
+ "jd" 'dired-jump
+ "ji" 'consult-imenu
+ "m" '(:ignore t :which-key "Major mode")
+ "o" '(:ignore t :which-key "Org")
+ "p" '(:ignore t :which-key "Project")
+ "p!" 'projectile-run-shell-command-in-root
+ "p%" 'projectile-replace-regexp
+ "p&" 'projectile-run-async-shell-command-in-root
+ "pD" 'projectile-dired
+ "pF" 'projectile-find-file-dwim
+ "pG" 'projectile-regenerate-tags
+ "pI" 'projectile-invalidate-cache
+ "pR" 'projectile-replace
+ "pT" 'projectile-test-project
+ "pa" 'projectile-toggle-between-implementation-and-test
+ "pb" 'projectile-switch-to-buffer
+ "pc" 'projectile-compile-project
+ "pd" 'projectile-find-dir
+ "pe" 'projectile-edit-dir-locals
+ "pf" 'projectile-find-file
+ "pg" 'projectile-find-tag
+ "pk" 'projectile-kill-buffers
+ "pp" 'projectile-switch-project
+ "pr" 'projectile-recentf
+ "pv" 'projectile-vc
+ "q" '(:ignore t :which-key "Quit")
+ "qq" 'kill-emacs
+ "s" '(:ignore t :which-key "Search/Symbol")
+ "ss" 'consult-line
+ "w" '(:ignore t :which-key "Window")
+ "w-" 'split-window-below
+ "w/" 'split-window-right
+ "w1" 'delete-other-windows
+ "w=" 'balance-windows
+ "wD" 'ace-delete-window
+ "wH" 'evil-window-move-far-left
+ "wJ" 'evil-window-move-very-bottom
+ "wK" 'evil-window-move-very-top
+ "wL" 'evil-window-move-far-right
+ "wM" 'ace-swap-window
+ "wW" 'ace-window
+ "wd" 'delete-window
+ "wh" 'evil-window-left
+ "wj" 'evil-window-down
+ "wk" 'evil-window-up
+ "wl" 'evil-window-right
+ "ww" 'other-window
+ "x" '(:ignore t :which-key "Text")
+ "xl" '(:ignore t :which-key "lines")
+ "xls" 'sort-lines
  )
 #+end_src
-** Buffer
-#+begin_src emacs-lisp
-(general-nmap
-  :prefix "SPC b"
-  :prefix-command (define-prefix-command 'e:buffer-command-map)
-  "b" 'consult-buffer
-  )
-#+end_src
-** File
-#+begin_src emacs-lisp
-(general-nmap
-  :prefix "SPC f"
-  :prefix-command (define-prefix-command 'e:file-command-map)
-  "f" 'find-file
-  "g" 'affe-grep
-  "r" 'recentf-open-files
-  "s" 'save-buffer
-  "z" 'affe-find
-  )
-#+end_src
-** Git / VC
-#+begin_src emacs-lisp
-(general-nmap
-  :prefix "g"
-  :prefix-command (define-prefix-command 'e:git-command-map)
-  "s" 'magit-status
-  )
-#+end_src
-** Help
-#+begin_src emacs-lisp
-(general-nmap
-  :prefix "SPC h"
-  :prefix-command (define-prefix-command 'e:help-command-map)
-  "d" '(e:help/describe-command-map :which-key "describe")
-  "h" '(e:help/helpful-command-map  :which-key "helpful")
-  )
-(general-nmap
-  :prefix "SPC h d"
-  :prefix-command (define-prefix-command 'e:help/describe-command-map)
-  "a" 'consult-apropos
-  "f" 'describe-function
-  "v" 'describe-variable
-  )
-(general-nmap
-  :prefix "SPC h h"
-  :prefix-command (define-prefix-command 'e:help/helpful-command-map)
-  "f" 'helpful-function
-  "h" 'helpful-at-point
-  "v" 'helpful-variable
-  )
-#+end_src
-** Jump / Join / Split
-#+begin_src emacs-lisp
-(general-nmap
-  :prefix "SPC j"
-  :prefix-command (define-prefix-command 'e:jump-command-map)
-  "i" 'consult-imenu
-  )
-#+end_src
-** Org
-#+begin_src emacs-lisp
-(general-nmap
-  :prefix "SPC o"
-  :prefix-command (define-prefix-command 'e:org-command-map)
-  )
-#+end_src
-** Project
-#+begin_src emacs-lisp
-(general-nmap
-  :prefix "SPC p"
-  :prefix-command (define-prefix-command 'e:project-command-map)
-  "!" 'projectile-run-shell-command-in-root
-  "%" 'projectile-replace-regexp
-  "&" 'projectile-run-async-shell-command-in-root
-  "D" 'projectile-dired
-  "F" 'projectile-find-file-dwim
-  "G" 'projectile-regenerate-tags
-  "I" 'projectile-invalidate-cache
-  "R" 'projectile-replace
-  "T" 'projectile-test-project
-  "a" 'projectile-toggle-between-implementation-and-test
-  "b" 'projectile-switch-to-buffer
-  "c" 'projectile-compile-project
-  "d" 'projectile-find-dir
-  "e" 'projectile-edit-dir-locals
-  "f" 'projectile-find-file
-  "g" 'projectile-find-tag
-  "k" 'projectile-kill-buffers
-  "p" 'projectile-switch-project
-  "r" 'projectile-recentf
-  "v" 'projectile-vc
-  )
-#+end_src
-** Quit
-#+begin_src emacs-lisp
-(general-nmap
-  :prefix "SPC q"
-  :prefix-command (define-prefix-command 'e:quit-command-map)
-  "q" 'kill-emacs
-  )
-#+end_src
-** Search / Symbol
-#+begin_src emacs-lisp
-(general-nmap
-  :prefix "SPC s"
-  :prefix-command (define-prefix-command 'e:search-command-map)
-  "s" 'consult-line
-  )
-#+end_src
-** Window
-#+begin_src emacs-lisp
-(general-nmap
-  :prefix "SPC w"
-  :prefix-command (define-prefix-command 'e:window-command-map)
-  "D" 'ace-delete-window
-  "M" 'ace-swap-window
-  "W" 'ace-window
-  "d" 'delete-window
-  "w" 'other-window
-  )
-#+end_src
-* Config: Keybind(map)
-** global-map
+** Other
+*** global-map
 #+begin_src emacs-lisp
 (general-define-key
  :keymaps 'global-map
@@ -646,7 +618,7 @@
  "C-^" 'ace-window
  )
 #+end_src
-** ctl-x-map
+*** ctl-x-map
 #+begin_src emacs-lisp
 (general-define-key
  :keymaps 'ctl-x-map
