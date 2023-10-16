@@ -1,4 +1,5 @@
 *.elc
+/codeium/
 /eln-cache/
 /elpaca/
 /tree-sitter/

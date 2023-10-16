@@ -9,7 +9,7 @@
 ;;; -*- lexical-binding: t -*-
 #+end_src
 *** init.el
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 ;;; init.el
 ;;; -*- lexical-binding: t -*-
 #+end_src
@@ -24,7 +24,7 @@
 (defun e:emacs-startup-config ()
   (setq file-name-handler-alist default-file-name-handler-alist)
   (setq gc-cons-percentage 0.1)
-  (setq gc-cons-threshold 1000000000))
+  (setq gc-cons-threshold 10485760))
 (add-hook 'emacs-startup-hook #'e:emacs-startup-config)
 #+end_src
 *** 不要なUI要素を非表示
@@ -43,11 +43,18 @@
 (unless early-init-file
   (load (expand-file-name "early-init" user-emacs-directory)))
 #+end_src
-** 起動ディレクトリの調整
+** 起動時間の計測
+#+begin_src emacs-lisp :lexical no
+(when init-file-debug
+  (require 'profiler)
+  (profiler-start 'cpu))
+#+end_src
+** 各種ディレクトリ
 #+begin_src emacs-lisp
 (setq user-emacs-directory (file-name-directory (or load-file-name buffer-file-name)))
 (setq no-littering-etc-directory (expand-file-name "etc/" user-emacs-directory))
 (setq no-littering-var-directory (expand-file-name "var/" user-emacs-directory))
+(add-to-list 'load-path (expand-file-name "lisp/" user-emacs-directory))
 #+end_src
 ** マクロ定義
 *** cl-lib
@@ -78,7 +85,7 @@
 #+begin_src emacs-lisp
 (defmacro e:if! (condition &rest body)
   (declare (indent defun))
-  (if condition
+  (if (eval condition)
       `(progn ,@body)))
 #+end_src
 *** e:eval!
@@ -91,13 +98,16 @@
 #+begin_src emacs-lisp
 (defvar e:high-priority-config-queue nil)
 (defvar e:low-priority-config-queue nil)
+(defvar e:deffered-config-loaded nil)
 (defmacro e:deffered-config! (package &rest body)
   (declare (indent defun))
   (let* ((priority (or (plist-get body :priority) :low))
          (queue (if (eq priority :high) 'e:high-priority-config-queue 'e:low-priority-config-queue))
          (fn-name (intern (format "e:package-config-%s!" package))))
     `(let ((fn (defun ,fn-name () (leaf ,package ,@body))))
-       (setq ,queue (append ,queue (list fn))))))
+       (if e:deffered-config-loaded
+           (funcall fn)
+         (setq ,queue (append ,queue (list fn)))))))
 #+end_src
 *** e:package-config!
 #+begin_src emacs-lisp
@@ -110,18 +120,20 @@
 #+end_src
 *** e:mode-key-def
 #+begin_src emacs-lisp
-(defmacro e:major-mode-key-def (mode key def &rest bindings)
+(defmacro e:major-mode-key-def (modes key def &rest bindings)
   (declare (indent defun))
-  `(e:mode-key-def :major-modes ,mode ,key ,def ,@bindings))
-(defmacro e:minor-mode-key-def (mode key def &rest bindings)
+  `(e:mode-key-def :major-modes ,modes ,key ,def ,@bindings))
+(defmacro e:minor-mode-key-def (modes key def &rest bindings)
   (declare (indent defun))
-  `(e:mode-key-def :minor-modes ,mode ,key ,def ,@bindings))
-(defmacro e:mode-key-def (mode-key mode key def &rest bindings)
+  `(e:mode-key-def :minor-modes ,modes ,key ,def ,@bindings))
+(defmacro e:mode-key-def (mode-key modes key def &rest bindings)
   (declare (indent defun))
-  (let ((command (intern (format "e:%s-command" mode)))
-        (map (intern (format "e:%s-command-map" mode)))
-        (prefix-bindings nil)
-        (general-bindings nil))
+  (let* ((modes (if (listp modes) modes (list modes)))
+         (mode (or (car-safe modes) modes))
+         (command (intern (format "e:%s-command" mode)))
+         (map (intern (format "e:%s-command-map" mode)))
+         (prefix-bindings nil)
+         (general-bindings nil))
     (while key
       (if (stringp def)
           (setq prefix-bindings (append prefix-bindings (list key def)))
@@ -131,14 +143,27 @@
     `(progn
        (bind-map ,map
          :prefix-cmd ,command
-         ,mode-key (,mode)
+         ,mode-key ,modes
          :keys ("M-<return>" "M-m m")
          :evil-keys ("," "SPC m")
          :evil-states (motion normal visual))
        (general-def ,map ,@general-bindings)
-       (when ',prefix-bindings
-         (which-key-add-keymap-based-replacements ,map
-           ,@prefix-bindings)))))
+       ,(when prefix-bindings
+         `(which-key-add-keymap-based-replacements ,map
+            ,@prefix-bindings)))))
+#+end_src
+*** e:define-minor-mode-switch
+#+begin_src emacs-lisp :lexical no
+(defmacro e:define-minor-mode-switch (minor-mode)
+  `(progn
+     (defun ,(intern (format "%s-on" minor-mode)) ()
+       ,(format "[generated] Turn on `%s'" minor-mode)
+       (interactive)
+       (,minor-mode 1))
+     (defun ,(intern (format "%s-off" minor-mode)) ()
+       ,(format "[generated] Turn off `%s'" minor-mode)
+       (interactive)
+       (,minor-mode 0))))
 #+end_src
 ** 環境設定
 *** Theme
@@ -172,20 +197,20 @@
 #+end_src
 *** Mac
 #+begin_src emacs-lisp
-;; (e:if! (eq system-type 'darwin)
-;;   ;; タイトルバーの見た目を変更
-;;   (--each '((ns-transparent-titlebar . t)
-;;             (ns-appearance . dark))
-;;     (assq-delete-all (car it) initial-frame-alist)
-;;     (assq-delete-all (car it) default-frame-alist)
-;;     (add-to-list 'initial-frame-alist it)
-;;     (add-to-list 'default-frame-alist it))
-;;   ;; 特殊キーの設定
-;;   (e:variable! ns-command-modifier 'meta)
-;;   (e:variable! ns-right-command-modifier 'super)
-;;   (e:variable! ns-alternate-modifier 'none)
-;;   ;; ちょっと行間を広げる
-;;   (e:default! line-spacing 2))
+(e:if! (eq system-type 'darwin)
+  ;; タイトルバーの見た目を変更
+  (--each '((ns-transparent-titlebar . t)
+            (ns-appearance . dark))
+    (assq-delete-all (car it) initial-frame-alist)
+    (assq-delete-all (car it) default-frame-alist)
+    (add-to-list 'initial-frame-alist it)
+    (add-to-list 'default-frame-alist it))
+  ;; 特殊キーの設定
+  (e:variable! ns-command-modifier 'meta)
+  (e:variable! ns-right-command-modifier 'super)
+  (e:variable! ns-alternate-modifier 'none)
+  ;; ちょっと行間を広げる
+  (e:default! line-spacing 2))
 #+end_src
 ** ライブラリ
 *** elpaca
@@ -193,6 +218,7 @@
 #+name: install elpaca
 #+begin_src emacs-lisp :tangle no
 ;; https://github.com/progfolio/elpaca?tab=readme-ov-file#installation
+(defvar elpaca-queue-limit 10)
 (defvar elpaca-installer-version 0.5)
 (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
@@ -247,6 +273,7 @@
   (elpaca leaf (require 'leaf))
   (elpaca general (require 'general))
   (elpaca bind-map (require 'bind-map))
+  (elpaca hercules (require 'hercules))
   (elpaca no-littering (require 'no-littering))
   (elpaca-wait))
 #+end_src
@@ -272,6 +299,9 @@
 (e:variable! history-delete-duplicates t)
 (e:variable! read-process-output-max 1048576)
 (e:variable! ring-bell-function #'ignore)
+(e:variable! scroll-conservatively 101)
+(e:variable! scroll-margin 5)
+(e:variable! scroll-preserve-screen-position t)
 (e:variable! shell-file-name
              (or (executable-find "zsh")
                  (executable-find "bash")
@@ -283,12 +313,27 @@
 (e:variable! undo-outer-limit 1006632960) ;; => 960mb.
 (e:variable! use-short-answers t)
 (e:variable! window-resize-pixelwise t)
-(progn
-  (defvar last-gc-elapsed 0.0)
-  (add-hook 'post-gc-hook
-            (defun e:post-gc-message ()
-              (message "GC! > %.4f[sec]" (- gc-elapsed last-gc-elapsed))
-              (setq last-gc-elapsed gc-elapsed))))
+#+end_src
+** auto-revert
+#+begin_src emacs-lisp
+(e:deffered-config! auto-revert
+  :config
+  (global-auto-revert-mode 1))
+#+end_src
+** browse-url
+#+begin_src emacs-lisp
+(e:deffered-config! browse-url
+  :commands (browse-url-by-choosen)
+  :defun (browse-url-default-browser)
+  :defvar (browse-url-generic-program)
+  :defer-config
+  (e:variable! browse-url-browser-function 'browse-url-by-choosen)
+  (defun browse-url-by-choosen (url &optional new-window)
+    "選択したブラウザで URL を開く."
+    (let ((browsers '(eww-browse-url browse-url-default-browser xwidget-webkit-browse-url)))
+      (when browse-url-generic-program
+        (add-to-list 'browsers 'browse-url-generic t))
+      (funcall (intern (completing-read "Choose Browser: " browsers)) url new-window))))
 #+end_src
 ** comp
 #+begin_src emacs-lisp
@@ -313,6 +358,7 @@
 #+begin_src emacs-lisp
 (e:deffered-config! dired
   :defer-config
+  (e:variable! dired-auto-revert-buffer t)
   (e:variable! dired-dwim-target t)
   (e:variable! dired-listing-switches "-Ahl")
   (e:variable! dired-omit-files (rx (or (seq bol (? ".") "#")
@@ -342,14 +388,13 @@
 ** display-line-numbers
 #+begin_src emacs-lisp
 (e:deffered-config! display-line-numbers
-  :hook ((find-file-hook . e:display-line-numbers-mode-on)
-         (prog-mode-hook . e:display-line-numbers-mode-on)
-         (html-mode-hook . e:display-line-numbers-mode-on)
-         (org-mode-hook  . e:display-line-numbers-mode-on))
+  :hook ((find-file-hook . display-line-numbers-mode-on)
+         (prog-mode-hook . display-line-numbers-mode-on)
+         (html-mode-hook . display-line-numbers-mode-on)
+         (org-mode-hook  . display-line-numbers-mode-on))
   :defer-config
   (e:default! display-line-numbers-width 4)
-  (defun e:display-line-numbers-mode-on ()
-    (display-line-numbers-mode 1)))
+  (e:define-minor-mode-switch display-line-numbers-mode))
 #+end_src
 ** emacs-lock
 #+begin_src emacs-lisp
@@ -359,11 +404,32 @@
     (with-current-buffer buffer
       (emacs-lock-mode 'kill))))
 #+end_src
+** epg-config
+#+begin_src emacs-lisp :lexical no
+(e:deffered-config! epg-config
+  :defer-config
+  (e:variable! epg-pinentry-mode 'loopback))
+#+end_src
+** eww
+#+begin_src emacs-lisp :lexical no
+(e:deffered-config! eww
+  :defun (eww-current-url)
+  :defer-config
+  (general-def eww-mode-map
+    "e" 'eww-open-current-url-with-default-browser)
+  (e:variable! eww-search-prefix "https://www.google.com/search?q=")
+  (defun eww-open-current-url-with-default-browser ()
+    (interactive)
+    (browse-url-default-browser (eww-current-url))))
+#+end_src
 ** files
 #+begin_src emacs-lisp
 (e:deffered-config! files
   :defer-config
-  (e:variable! make-backup-files nil))
+  (e:variable! auto-save-default nil)
+  (e:variable! make-backup-files nil)
+  (e:variable! mode-require-final-newline nil)
+  (e:variable! require-final-newline nil))
 #+end_src
 ** frame
 #+begin_src emacs-lisp
@@ -371,11 +437,31 @@
   :defer-config
   (blink-cursor-mode 0))
 #+end_src
+** google-translate
+#+begin_src emacs-lisp :lexical no
+(e:package-config! google-translate
+  :defer-config
+  (e:variable! google-translate-default-source-language "en")
+  (e:variable! google-translate-default-target-language "ja"))
+#+end_src
 ** hl-line
 #+begin_src emacs-lisp
 (e:deffered-config! hl-line
   :config
+  (e:define-minor-mode-switch hl-line-mode)
   (global-hl-line-mode 1))
+#+end_src
+** indent
+#+begin_src emacs-lisp
+(e:deffered-config! indent
+  :defer-config
+  (e:variable! standard-indent 2))
+#+end_src
+** novice
+#+begin_src emacs-lisp
+(e:deffered-config! novice
+  :defer-config
+  (e:variable! disabled-command-function nil))
 #+end_src
 ** recentf
 #+begin_src emacs-lisp
@@ -403,11 +489,19 @@
   :config
   (savehist-mode 1))
 #+end_src
+** saveplace
+#+begin_src emacs-lisp
+(e:deffered-config! save-place
+  :config
+  (save-place-mode 1))
+#+end_src
 ** simple
 #+begin_src emacs-lisp
 (e:deffered-config! simple
   :defer-config
-  (e:default! indent-tabs-mode nil))
+  (e:default! indent-tabs-mode nil)
+  (e:variable! set-mark-command-repeat-pop t)
+  (column-number-mode 1))
 #+end_src
 ** so-long
 #+begin_src emacs-lisp
@@ -444,17 +538,17 @@
     (when (timerp (car args))
       (apply fn args))))
 #+end_src
-** vc-fooks
+** vc-hooks
 #+begin_src emacs-lisp
-(e:deffered-config!
+(e:deffered-config! vc-hooks
   :defer-config
   (e:variable! vc-follow-symlinks t))
 #+end_src
 ** whitespace
 #+begin_src emacs-lisp
 (e:deffered-config! whitespace
-  :hook ((find-file-hook . e:whitespace-mode-on)
-         (prog-mode-hook . e:whitespace-mode-on))
+  :hook ((find-file-hook . whitespace-mode-on)
+         (prog-mode-hook . whitespace-mode-on))
   :defer-config
   (e:variable! whitespace-style '(face
                                   trailing
@@ -473,12 +567,12 @@
     (set-face-attribute 'whitespace-tab      nil :foreground color :strike-through t)
     (set-face-attribute 'whitespace-space    nil :foreground color)
     (set-face-attribute 'whitespace-newline  nil :foreground color))
-  (defun e:whitespace-mode-on ()
-    (whitespace-mode 1)))
+  (e:define-minor-mode-switch whitespace-mode))
 #+end_src
 ** winner
 #+begin_src emacs-lisp
 (e:deffered-config! winner
+  :config
   (winner-mode 1))
 #+end_src
 ** 個人設定
@@ -495,7 +589,11 @@
 #+begin_src emacs-lisp
 (e:package-config! evil
   :priority :high
-  :defun (evil-make-overriding-map evil-half-cursor)
+  :defun (evil-get-auxiliary-keymap
+          evil-half-cursor
+          evil-make-overriding-map
+          evil-normalize-keymaps
+          evil-set-command-property)
   :init
   (e:variable! evil-cross-lines t)
   (e:variable! evil-disable-insert-state-bindings t)
@@ -515,14 +613,23 @@
   (evil-mode 1)
   :config
   (general-def 'motion
-    "TAB" 'nil
+    "TAB" nil
     "C-\\" 'ignore
     "C-^" nil)
   (general-def 'normal
     "<down>" 'evil-next-visual-line
     "<up>"   'evil-previous-visual-line
     "j" 'evil-next-visual-line
-    "k" 'evil-previous-visual-line))
+    "k" 'evil-previous-visual-line)
+  (general-def 'insert
+    "C-z" nil))
+#+end_src
+** evil-args
+#+begin_src emacs-lisp
+(e:package-config! evil-args
+  :config
+  (general-def evil-inner-text-objects-map "a" 'evil-inner-arg)
+  (general-def evil-outer-text-objects-map "a" 'evil-outer-arg))
 #+end_src
 ** evil-collection
 #+begin_src emacs-lisp
@@ -541,6 +648,20 @@
   (general-def 'normal "s" evilem-map)
   (general-def 'visual "x" evilem-map))
 #+end_src
+** evil-goggles
+#+begin_src emacs-lisp
+(e:package-config! evil-goggles
+  :after (evil)
+  :config
+  (evil-goggles-mode 1))
+#+end_src
+** evil-lion
+#+begin_src emacs-lisp
+(e:package-config! evil-lion
+  :after (evil)
+  :config
+  (evil-lion-mode 1))
+#+end_src
 ** evil-nerd-commenter
 #+begin_src emacs-lisp
 (e:package-config! evil-nerd-commenter
@@ -556,12 +677,29 @@
   (global-evil-surround-mode))
 #+end_src
 * Config: SKK
-** functions
+** skk
 #+begin_src emacs-lisp
-(e:deffered-config! skk-functions
+(e:package-config! ddskk
+  :advice (:around evil-refresh-cursor ad:evil-refresh-cursor@with-skk)
   :defun (skk-latin-mode-on)
   :defvar (skk-mode-hook)
-  :config
+  :hook ((evil-insert-state-entry-hook . e:skk-mode)
+         (evil-insert-state-exit-hook . skk-mode-exit))
+  :bind (([remap toggle-input-method] . skk-mode)
+         ("C-¥" . skk-mode))
+  :init
+  (e:var! skk-user-directory "ddskk")
+  (e:variable! ccc-default-cursor-color "DarkGoldenrod2")
+  (e:variable! default-input-method "japanese-skk")
+  (e:variable! skk-egg-like-newline t)
+  ;; TODO: 辞書の場所を真面目に考える
+  ;; (e:variable! skk-large-jisyo (f-expand "dic-mirror/SKK-JISYO.L" e:external-directory))
+  (e:variable! skk-share-private-jisyo t)
+  (e:variable! skk-show-annotation t)
+  (e:variable! skk-sticky-key ";")
+  (e:variable! skk-use-jisx0201-input-method t)
+  (ccc-setup)
+  :defer-config
   (defun e:skk-mode ()
     "skk の有効化で半角英数入力にする"
     (interactive)
@@ -570,31 +708,17 @@
       (if (bound-and-true-p skk-mode)
           (skk-latin-mode-on)
         (let ((skk-mode-hook (-union skk-mode-hook '(skk-latin-mode-on))))
-          (skk-mode))))))
-#+end_src
-** skk
-#+begin_src emacs-lisp
-(e:package-config! ddskk
-  :hook (((evil-insert-state-entry-hook evil-emacs-state-entry-hook) . e:skk-mode)
-         ((evil-insert-state-exit-hook evil-emacs-state-exit-hook) . skk-mode-exit))
-  :bind (([remap toggle-input-method] . skk-mode)
-         ("C-¥" . skk-mode))
-  :config
-  (e:var! skk-user-directory "ddskk")
-  (e:variable! default-input-method "japanese-skk")
-  (e:variable! skk-egg-like-newline t)
-  ;; TODO: 辞書の場所を真面目に考える
-  ;; (e:variable! skk-large-jisyo (f-expand "dic-mirror/SKK-JISYO.L" e:external-directory))
-  (e:variable! skk-preload t)
-  (e:variable! skk-share-private-jisyo t)
-  (e:variable! skk-show-annotation t)
-  (e:variable! skk-sticky-key ";")
-  (e:variable! skk-use-jisx0201-input-method t))
+          (skk-mode)))))
+  (defun ad:evil-refresh-cursor@with-skk (fn &rest args)
+    (unless (and (eq evil-state 'insert)
+                 (bound-and-true-p skk-mode))
+      (apply fn args))))
 #+end_src
 ** skk-server
 #+begin_src emacs-lisp
 (e:deffered-config! skk-server
   :after (skk)
+  :defun (e:prodigy-yaskkserv2 . prodigy)
   :defvar (skk-server-prog yaskkserv2-dictionary)
   :preface
   (e:variable! skk-server-prog (executable-find "yaskkserv2"))
@@ -606,8 +730,18 @@
   (e:variable! skk-server-inhibit-startup-server t)
   (e:variable! skk-server-host "127.0.0.1")
   (e:variable! skk-server-portnum 1178)
-  (and (fboundp 'e:prodigy-yaskkserv2)
-       (e:prodigy-yaskkserv2)))
+  (defun e:prodigy-yaskkserv2 ()
+    (interactive)
+    (let ((service "yaskkserv2"))
+      (unless (prodigy-find-service service)
+        (prodigy-define-service
+          :name service
+          :command skk-server-prog
+          :args `("--no-daemonize" "--google-suggest" ,yaskkserv2-dictionary)
+          :tags '(general)
+          :stop-signal 'int))
+      (prodigy-start-service (prodigy-find-service service))))
+  (e:prodigy-yaskkserv2))
 #+end_src
 ** ddskk-posframe
 #+begin_src emacs-lisp
@@ -618,30 +752,12 @@
 #+end_src
 * Config: UI & Completions
 ** cape
-*** cape
-#+begin_src emacs-lisp
-(e:package-config! cape
-  :defun (e:capf-functions
-          (cape-tabnine . company-tabnine))
-  :hook ((prog-mode-hook . e:setup-capf/default)
-         (org-mode-hook . e:setup-capf/org)
-         (lsp-completion-mode . e:setup-capf/lsp))
+*** codeium
+#+begin_src emacs-lisp :lexical no
+(e:package-config! (codeium :host github :repo "Exafunction/codeium.el")
+  :commands (cape-codeium)
   :defer-config
-  (defun e:capf-functions (default-capf)
-    (let ((default-capf-with-tabnine (intern (format "%s-with-tabnine" default-capf))))
-      (defalias default-capf-with-tabnine
-        (cape-capf-nonexclusive
-         (cape-capf-buster
-          (cape-capf-super default-capf
-                           #'cape-tabnine
-                           #'cape-dabbrev))))
-      (list #'cape-file default-capf-with-tabnine)))
-  (defun e:setup-capf/default ()
-    (setq-local completion-at-point-functions (e:capf-functions (car completion-at-point-functions))))
-  (defun e:setup-capf/org ()
-    (setq-local completion-at-point-functions (e:capf-functions 'cape-org-block)))
-  (defun e:setup-capf/lsp ()
-    (setq-local completion-at-point-functions (e:capf-functions 'lsp-completion-at-point))))
+  (defalias 'cape-codeium (cape-interactive-capf #'codeium-completion-at-point)))
 #+end_src
 *** company-org-block
 #+begin_src emacs-lisp
@@ -658,16 +774,50 @@
   :defer-config
   (defalias 'cape-tabnine (cape-interactive-capf (cape-company-to-capf #'company-tabnine))))
 #+end_src
+*** cape
+#+begin_src emacs-lisp
+(e:package-config! cape
+  :defun (e:capf-function)
+  :hook ((prog-mode-hook . e:setup-capf/default)
+         (org-mode-hook . e:setup-capf/org)
+         (lsp-completion-mode-hook . e:setup-capf/lsp))
+  :defer-config
+  (defun e:capf-function (name &rest capfs)
+    (let ((fun (intern (format "e:cape-%s" name)))
+          (capfs (-concat capfs '(cape-tabnine cape-dabbrev))))
+      (defalias fun
+        (cape-interactive-capf
+         (cape-capf-nonexclusive
+          (cape-capf-buster
+           (apply #'cape-capf-super capfs)))))
+      (list #'cape-file fun)))
+  (defun e:setup-capf/default ()
+    (interactive)
+    (e:local! completion-at-point-functions
+              (e:capf-function major-mode (car completion-at-point-functions))))
+  (defun e:setup-capf/org ()
+    (interactive)
+    (e:local! completion-at-point-functions
+              (e:capf-function "org" #'cape-elisp-block #'cape-org-block)))
+  (defun e:setup-capf/lsp ()
+    (interactive)
+    (e:local! completion-at-point-functions
+              (e:capf-function "lsp" #'lsp-completion-at-point))))
+#+end_src
 ** consult
 #+begin_src emacs-lisp
 (e:package-config! consult
   :advice (:around consult-line ad:consult-line@with-orderless)
-  :commands (consult-line-dwim consult-ripgrep-dwim consult-ripgrep-cwd consult-ripgrep-cwd-dwim)
-  :defun (consult-ripgrep)
+  :commands (consult-faces consult-line-dwim consult-ripgrep-dwim consult-ripgrep-cwd consult-ripgrep-cwd-dwim)
+  :defun (consult-ripgrep consult--read)
   :defer-config
   (defun ad:consult-line@with-orderless (fn &rest args)
     (let ((completion-styles '(orderless)))
       (apply fn args)))
+  (defun consult-faces ()
+    (interactive)
+    (consult--read (--map (format "%s" it) (face-list))
+                   :prompt "Face: "))
   (defun consult-line-dwim ()
     (interactive)
     (consult-line (thing-at-point 'symbol)))
@@ -685,35 +835,45 @@
 #+begin_src emacs-lisp
 (e:package-config! (copilot :host github :repo "zerolfx/copilot.el" :files (:defaults "dist"))
   :advice ((:before-until corfu-complete ad:copilot-accept-completion-func)
-           (:before-until indent-for-tab-command ad:copilot-accept-completion-func))
-  :defun (copilot-accept-completion)
-  :hook (prog-mode-hook . copilot-mode)
+           (:before-until indent-for-tab-command ad:copilot-accept-completion-func)
+           (:before cape-codeium ad:copilot-cancel)
+           (:before corfu-quick-complete ad:copilot-cancel))
+  :defun (copilot-accept-completion
+          copilot-clear-overlay)
+  :hook ((prog-mode-hook . copilot-mode)
+         (org-mode-hook . copilot-mode))
   :defer-config
   (general-def copilot-mode-map
-   "C-z" 'copilot-complete
-   "<backtab>" 'copilot-complete)
+   "<backtab>" 'copilot-complete
+   "C-z" 'copilot-complete)
   (general-def copilot-completion-map
    "<escape>" 'copilot-clear-overlay
    "C-n" 'copilot-next-completion
-   "C-p" 'copilot-previous-completion)
+   "C-p" 'copilot-previous-completion
+   "C-z" 'copilot-complete)
   ;; (add-to-list 'copilot-enable-predicates 'ignore)
   (defun ad:copilot-accept-completion-func (&rest _)
-    (copilot-accept-completion)))
+    (copilot-accept-completion))
+  (defun ad:copilot-cancel (&rest _)
+    (copilot-clear-overlay)))
 #+end_src
 ** corfu
 #+begin_src emacs-lisp
 (e:package-config! corfu
   :defvar (corfu-map)
-  :hook ((emacs-startup-hook . global-corfu-mode)
-         (corfu-mode-hook . corfu-echo-mode)
+  :hook ((corfu-mode-hook . corfu-echo-mode)
          (corfu-mode-hook . corfu-popupinfo-mode)
          (minibuffer-setpu-hook . corfu-enable-always-in-minibuffer))
-  :defer-config
+  :init
   (e:variable! corfu-auto t)
   (e:variable! corfu-auto-prefix 1)
+  (e:variable! corfu-cycle t)
+  (global-corfu-mode)
+  :defer-config
   (general-def corfu-map
     "<escape>" 'corfu-quit
-    "C-q" 'corfu-quick-complete)
+    "C-q" 'corfu-quick-complete
+    "C-z" 'cape-codeium)
   (with-eval-after-load 'evil
     (evil-make-overriding-map corfu-map)
     (advice-add 'corfu--setup :after 'evil-normalize-keymaps)
@@ -731,7 +891,14 @@
 #+end_src
 ** embark
 #+begin_src emacs-lisp
-(e:package-config! embark)
+(e:package-config! embark
+  :config
+  (general-def minibuffer-mode-map
+    :prefix "C-c"
+    "C-a" 'embark-act
+    "C-c" 'embark-collect
+    "C-d" 'embark-dwim
+    "C-e" 'embark-export))
 #+end_src
 ** embark-consult
 #+begin_src emacs-lisp
@@ -774,8 +941,9 @@
 #+begin_src emacs-lisp
 (e:package-config! orderless
   :commands (orderless-migemo)
-  :defer-config
+  :init
   (e:variable! orderless-matching-styles '(orderless-literal orderless-regexp orderless-migemo))
+  :defer-config
   (defun orderless-migemo (component)
     (when (fboundp 'migemo-get-pattern)
       (let ((pattern (migemo-get-pattern component)))
@@ -807,8 +975,10 @@
   :defvar (org-directory)
   :config
   (defun org-support/archive-file ()
+    (require 'org)
     (f-expand (format-time-string "archives/%Y.org") org-directory))
   (defun org-support/tasks-file ()
+    (require 'org)
     (f-expand "tasks.org" org-directory))
   (defun org-support/popup-tasks ()
     (interactive)
@@ -922,6 +1092,20 @@
   :config
   (atomic-chrome-start-server))
 #+end_src
+** apheleia
+#+begin_src emacs-lisp :lexical no
+(e:package-config! apheleia
+  :defvar (apheleia-formatters apheleia-mode-alist)
+  :defer-config
+  ;; formatters
+  (setf (alist-get 'rubocop apheleia-formatters)
+        '((if (e:bundle-exists "rubocop")
+              '("bundle" "exec" "rubocop")
+            "rubocop")
+          file "--autocorrect" "--stderr" "--format" "quiet" "--fail-level" "fatal"))
+  ;; mode-alist
+  (setf (alist-get 'ruby-mode apheleia-mode-alist) '(rubocop)))
+#+end_src
 ** avy
 #+begin_src emacs-lisp
 (e:package-config! avy
@@ -936,12 +1120,60 @@
   (e:variable! avy-all-windows nil)
   (e:variable! avy-all-windows-alt t))
 #+end_src
+** browse-at-remote
+#+begin_src emacs-lisp
+(e:package-config! browse-at-remote)
+#+end_src
+** consult-flycheck
+#+begin_src emacs-lisp :lexical no
+(e:package-config! consult-flycheck)
+#+end_src
+** consult-todo
+#+begin_src emacs-lisp :lexical no
+(e:package-config! (consult-todo :host github :repo "liuyinz/consult-todo"))
+#+end_src
+** devdocs
+#+begin_src emacs-lisp :lexical no
+(e:package-config! devdocs)
+#+end_src
+** difftastic
+#+begin_src emacs-lisp :lexical no
+(e:package-config! difftastic
+  :config
+  (with-eval-after-load 'magit-diff
+    (transient-append-suffix 'magit-diff '(-1 -1)
+      [("D" "Difftastic diff (dwim)" difftastic-magit-diff)
+       ("S" "Difftastic show" difftastic-magit-show)])))
+#+end_src
 ** doom-modeline
 #+begin_src emacs-lisp
 (e:package-config! doom-modeline
   :config
+  (e:variable! doom-modeline-buffer-file-name-style 'buffer-name)
   (e:variable! doom-modeline-minor-modes t)
   (doom-modeline-mode 1))
+#+end_src
+** dtrt-indent
+#+begin_src emacs-lisp :lexical no
+(e:package-config! dtrt-indent
+  :defun (dtrt-indent-adapt)
+  :hook (prog-mode-hook . setup-dtrt-indent)
+  :defer-config
+  (defun setup-dtrt-indent ()
+    (dtrt-indent-mode 1)
+    (dtrt-indent-adapt)))
+#+end_src
+** dumb-jump
+#+begin_src emacs-lisp :lexical no
+(e:package-config! dumb-jump
+  :config
+  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate))
+#+end_src
+** editorconfig
+#+begin_src emacs-lisp :lexical no
+(e:package-config! editorconfig
+  :config
+  (editorconfig-mode 1))
 #+end_src
 ** elisp-demos
 #+begin_src emacs-lisp
@@ -953,11 +1185,32 @@
 #+begin_src emacs-lisp
 (e:package-config! expand-region)
 #+end_src
-** gcmh
-#+begin_src emacs-lisp
-(e:package-config! gcmh
+** flycheck
+#+begin_src emacs-lisp :lexical no
+(e:package-config! flycheck
+  :commands (e:flycheck-copy-error-ids)
+  :defun (flycheck-error-id flycheck-overlay-errors-at)
+  :init
+  (global-flycheck-mode 1)
+  (defun e:flycheck-copy-error-ids ()
+    (interactive)
+    (let ((messages (->> (flycheck-overlay-errors-at (point))
+                         (-map #'flycheck-error-id)
+                         (-uniq)
+                         (-non-nil))))
+      (when messages
+        (kill-new (string-join messages ", "))
+        (message (string-join messages ", "))))))
+#+end_src
+** git-gutter
+#+begin_src emacs-lisp :lexical no
+(e:package-config! git-gutter
   :config
-  (gcmh-mode 1))
+  (global-git-gutter-mode 1))
+#+end_src
+** grugru
+#+begin_src emacs-lisp :lexical no
+(e:package-config! grugru)
 #+end_src
 ** helm
 #+begin_src emacs-lisp
@@ -971,25 +1224,52 @@
 ** highlight-indentation
 #+begin_src emacs-lisp
 (e:package-config! highlight-indentation
+  :commands (highlight-indentation-mode-on)
   :config
   (e:variable! highlight-indentation-offset 2)
   :defer-config
-  (set-face-attribute 'highlight-indentation-face nil :background "#202020" :inherit nil))
+  (set-face-attribute 'highlight-indentation-face nil :background "#202020" :inherit nil)
+  (e:define-minor-mode-switch highlight-indentation-mode))
+#+end_src
+** hl-todo
+#+begin_src emacs-lisp :lexical no
+(e:package-config! hl-todo
+  :config
+  (global-hl-todo-mode 1))
+#+end_src
+** jinx
+#+begin_src emacs-lisp :lexical no
+(e:package-config! jinx
+  :defvar (jinx-exclude-regexps)
+  :hook (prog-mode-hook . jinx-mode)
+  :config
+  (e:variable! jinx-languages "en_US")
+  ;; https://github.com/minad/jinx/issues/4#issuecomment-1484786256
+  (let ((re (alist-get t jinx-exclude-regexps)))
+    (add-to-list 're "\\cc")
+    (setf (alist-get t jinx-exclude-regexps) re)))
 #+end_src
 ** locale-eaw
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (e:package-config! (eaw :host github :repo "hamano/locale-eaw")
   :commands (eaw-fullwidth)
   :init
   (eaw-fullwidth))
 #+end_src
 ** macrostep
-#+begin_src emacs-lisp
-(e:package-config! macrostep)
+#+begin_src emacs-lisp :lexical no
+(e:package-config! macrostep
+  :config
+  (e:major-mode-key-def (emacs-lisp-mode lisp-interaction-mode)
+    "d" "debug"
+    "dm" 'macrostep-mode)
+  (hercules-def
+   :toggle-funs #'macrostep-mode
+   :keymap 'macrostep-keymap))
 #+end_src
 ** magit
 *** magit
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (e:package-config! magit
   :advice (:override magit-repos-alist magit-repos-alist@override)
   :defun (magit-add-section-hook magit-list-repos magit-list-repos-uniquify)
@@ -1016,7 +1296,7 @@
                       (--map (cons it 5))))))
 #+end_src
 *** magit-delta
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (e:package-config! magit-delta
   :advice (:around magit-delta-call-delta-and-convert-ansi-escape-sequences magit-delta-call-delta-and-convert-ansi-escape-sequences@auto-disable)
   :defvar (magit-delta-mode)
@@ -1034,14 +1314,37 @@
                          (<= (point-max) nth/magit-delta-point-max))
                 (magit-delta-mode +1)))))
 #+end_src
+** migemo
+#+begin_src emacs-lisp :lexical no
+(e:package-config! migemo
+  :config
+  (require 'migemo)
+  (e:variable! migemo-user-dictionary nil)
+  (e:variable! migemo-regex-dictionary nil)
+  (e:variable! migemo-dictionary "/usr/share/cmigemo/utf-8/migemo-dict")
+  (e:if! (eq system-type 'darwin)
+    (e:variable! migemo-dictionary "/usr/local/share/migemo/utf-8/migemo-dict"))
+  (e:if! (eq system-type 'gnu/linux)
+    (e:variable! migemo-dictionary "/usr/share/cmigemo/utf-8/migemo-dict")))
+#+end_src
 ** minions
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (e:package-config! minions
   :config
   (minions-mode 1))
 #+end_src
+** open-junk-file
+#+begin_src emacs-lisp :lexical no
+(e:package-config! open-junk-file
+  :config
+  (e:variable! open-junk-file-format (f-expand "junk/%Y/%Y%m%d%H%M%S." no-littering-var-directory)))
+#+end_src
+** pdf-tools
+#+begin_src emacs-lisp :lexical no
+(e:package-config! pdf-tools)
+#+end_src
 ** persistent-scratch
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (e:package-config! persistent-scratch
   :priority :high
   :config
@@ -1049,23 +1352,18 @@
 #+end_src
 ** prodigy
 *** prodigy
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (e:package-config! prodigy
-  :commands (e:prodigy-start-service)
   :defun (prodigy-find-service prodigy-start-service)
   :defer-config
   (e:variable! prodigy-view-buffer-maximum-size 2048)
   (e:variable! prodigy-view-truncate-by-default t)
   (prodigy-define-tag
     :name 'rails
-    :ready-message "Use Ctrl-C to stop")
-  (defun e:prodigy-start-service (name)
-    (let ((service (prodigy-find-service name)))
-      (when service
-        (prodigy-start-service service)))))
+    :ready-message "Use Ctrl-C to stop"))
 #+end_src
 *** prodigy-with-vterm
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (e:deffered-config! prodigy-with-vterm
   :advice (:around prodigy-start-service ad:prodigy-start-service@with-vterm)
   :after (prodigy)
@@ -1089,25 +1387,8 @@
     (prog1 (apply func args)
       (advice-remove 'start-process #'ad:start-process@with-vterm))))
 #+end_src
-*** yaskkserv2
-#+begin_src emacs-lisp
-(e:deffered-config! yaskkserv2
-  :defvar (skk-server-prog yaskkserv2-dictionary)
-  :config
-  (defun e:prodigy-yaskkserv2 ()
-    (interactive)
-    (let ((service "yaskkserv2"))
-      (unless (prodigy-find-service service)
-        (prodigy-define-service
-          :name service
-          :command skk-server-prog
-          :args `("--no-daemonize" "--google-suggest" ,yaskkserv2-dictionary)
-          :tags '(general)
-          :stop-signal 'int))
-      (e:prodigy-start-service service))))
-#+end_src
 ** projectile
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (e:package-config! projectile
   :commands (e:setup-projectile-known-projects)
   :defun (projectile-project-vcs)
@@ -1124,9 +1405,25 @@
                 (-distinct)))))
   (e:setup-projectile-known-projects))
 #+end_src
+** rainbow-mode
+#+begin_src emacs-lisp :lexical no
+(e:package-config! rainbow-mode)
+#+end_src
+** separedit
+#+begin_src emacs-lisp :lexical no
+(e:package-config! separedit
+  :config
+  (general-def prog-mode-map
+    "C-c '" 'separedit)
+  :defer-config
+  (e:variable! separedit-preserve-string-indentation t))
+#+end_src
 ** shackle
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (e:package-config! shackle
+  :advice ((:after shackle-display-buffer-action ad:shackle-display-buffer-action@save-windows)
+           (:before keyboard-quit ad:keyboard-quit@shackle-auto-close))
+  :defvar (shackle-last-window)
   :config
   (e:variable! shackle-rules
                '(;;
@@ -1134,15 +1431,26 @@
                  ("*Flycheck errors*" :align bottom :ratio 0.3 :select t)
                  ("*Help*"            :align bottom :ratio 0.3 :select t)
                  ;;
-                 ("*Async Shell Command*" :align bottom :ratio 0.3)
-                 ("*General Keybindings*" :align bottom :ratio 0.3)
-                 ("*Warnings*"            :align bottom :ratio 0.3)
-                 ("*rspec-compilation*"   :align bottom :ratio 0.3)
+                 ("*Async Shell Command*"          :align bottom :ratio 0.3)
+                 ("*Bundler*"                      :align bottom :ratio 0.3)
+                 ("*General Keybindings*"          :align bottom :ratio 0.3)
+                 ("*Warnings*"                     :align bottom :ratio 0.3)
+                 ("*projectile-rails-compilation*" :align bottom :ratio 0.3)
+                 ("*rspec-compilation*"            :align bottom :ratio 0.3)
+                 ("*trace-output*"                 :align bottom :ratio 0.3)
                  ))
-  (shackle-mode 1))
+  (shackle-mode 1)
+  :defer-config
+  (defvar e:shackle-auto-close-windows nil)
+  (defun ad:shackle-display-buffer-action@save-windows (&rest _)
+    (setq e:shackle-auto-close-windows (-filter #'window-live-p e:shackle-auto-close-windows))
+    (add-to-list 'e:shackle-auto-close-windows shackle-last-window))
+  (defun ad:keyboard-quit@shackle-auto-close (&rest _)
+    (-each e:shackle-auto-close-windows 'delete-window)
+    (setq e:shackle-auto-close-windows nil)))
 #+end_src
 ** shell-pop
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (e:package-config! shell-pop
   :advice (:around shell-pop ad:shell-pop@auto-session-name)
   :defvar (shell-pop-shell-type)
@@ -1161,7 +1469,7 @@
       (apply func args))))
 #+end_src
 ** smartparens
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (e:package-config! smartparens
   :defun (sp-local-pair)
   :config
@@ -1176,39 +1484,48 @@
   (sp-local-pair 'lisp-interaction-mode "'" nil :actions nil))
 #+end_src
 ** symbol-overlay
-#+begin_src emacs-lisp
-(e:package-config! symbol-overlay)
+#+begin_src emacs-lisp :lexical no
+(e:package-config! symbol-overlay
+  :defvar (symbol-overlay-map)
+  :defer-config
+  (setq symbol-overlay-map (make-sparse-keymap)))
 #+end_src
 ** transient
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (e:package-config! transient
   :defer-config
   (e:variable! transient-default-level 7)
   (e:var! transient-values-file "transient-values.el"))
 #+end_src
 ** undo-fu
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (e:package-config! undo-fu
   :config
   (e:variable! evil-undo-system 'undo-fu))
 #+end_src
+** visual-regexp
+#+begin_src emacs-lisp :lexical no
+(e:package-config! visual-regexp
+  :bind ([remap query-replace] . vr/query-replace))
+#+end_src
 ** vlf
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (e:package-config! vlf)
 #+end_src
 ** vterm
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (e:package-config! vterm
+  :hook (vterm-mode-hook . hl-line-mode-off)
   :defer-config
   (general-def vterm-mode-map
+    "<wheel-down>" 'ignore
+    "<wheel-up>" 'ignore
     "C-c C-g" 'keyboard-quit
     "C-g" 'vterm--self-insert
-    "C-j" 'e:vterm-input-something
-    "<wheel-up>" 'ignore
-    "<wheel-down>" 'ignore)
-  ;; TODO: escape で normal に戻したくない
-  (general-def vterm-mode-map 'insert
-    "<escape>" 'vterm-send-escape)
+    "C-j" 'e:vterm-input-something)
+  (general-def 'insert vterm-mode-map
+    "<escape>" 'vterm-send-escape
+    "C-z" 'vterm--self-insert)
   (e:variable! vterm-max-scrollback 20000)
   (e:variable! vterm-shell "tmux new -A -s emacs-default")
   (defun e:vterm-input-something ()
@@ -1217,7 +1534,7 @@
       (with-no-warnings (vterm-send-string input)))))
 #+end_src
 ** wakatime-mode
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (e:package-config! wakatime-mode
   :defvar (wakatime-api-key wakatime-cli-path)
   :preface
@@ -1228,12 +1545,12 @@
   (global-wakatime-mode 1))
 #+end_src
 ** wgrep
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (e:package-config! wgrep)
 #+end_src
 ** which-key
-#+begin_src emacs-lisp
-(e:package-config! which-key
+#+begin_src emacs-lisp :lexical no
+(e:deffered-config! which-key
   :config
   (e:variable! which-key-idle-delay 0.4)
   (e:variable! which-key-idle-secondary-delay 0.01)
@@ -1243,20 +1560,23 @@
   (which-key-mode 1))
 #+end_src
 ** winum
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (e:package-config! winum
   :config
   (winum-mode 1))
 #+end_src
-* Config: Programming
+* Config: Languages
 ** Tools
 *** lsp-mode
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (e:package-config! lsp-mode
   :defer-config
+  (e:variable! lsp-auto-execute-action nil)
+  (e:variable! lsp-completion-provider :none)
   (e:variable! lsp-enable-file-watchers nil)
   (e:variable! lsp-enable-snippet nil)
   (e:variable! lsp-file-watch-threshold 100000)
+  (e:variable! lsp-imenu-sort-methods '(position))
   (e:variable! lsp-modeline-code-actions-enable nil)
   (e:minor-mode-key-def lsp-mode
     "=" "format"
@@ -1274,15 +1594,17 @@
     "rr" 'lsp-rename))
 #+end_src
 *** lsp-ui
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (e:package-config! lsp-ui
   :defer-config
   (e:variable! lsp-ui-doc-delay 2.0)
+  (e:variable! lsp-ui-doc-include-signature t)
   (e:variable! lsp-ui-doc-position 'at-point)
-  (e:variable! lsp-ui-doc-show-with-cursor t))
+  (e:variable! lsp-ui-doc-show-with-cursor t)
+  (e:variable! lsp-ui-sideline-enable nil))
 #+end_src
 *** lsp-rubocop
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (e:deffered-config! lsp-rubocop
   :defun (e:bundle-exists)
   :advice (:before lsp-rubocop--build-command ad:lsp-rubocop--build-command@auto-detect)
@@ -1294,7 +1616,7 @@
     (setq-local lsp-rubocop-use-bundler (e:bundle-exists "rubocop"))))
 #+end_src
 *** lsp-solargraph
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (e:deffered-config! lsp-solargraph
   :defun (e:bundle-exists)
   :advice (:before lsp-solargraph--build-command ad:lsp-solargraph--build-command@auto-detect)
@@ -1304,42 +1626,48 @@
     (setq-local lsp-solargraph-use-bundler (e:bundle-exists "solargraph"))))
 #+end_src
 *** dap-mode
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (e:package-config! dap-mode)
 #+end_src
-*** flycheck
-#+begin_src emacs-lisp
-(e:package-config! flycheck
-  :commands (e:flycheck-copy-error-ids)
-  :defun (flycheck-error-id flycheck-overlay-errors-at)
-  :init
-  (global-flycheck-mode 1)
-  (defun e:flycheck-copy-error-ids ()
-    (interactive)
-    (let ((messages (->> (flycheck-overlay-errors-at (point))
-                         (-map #'flycheck-error-id)
-                         (-uniq)
-                         (-non-nil))))
-      (when messages
-        (kill-new (string-join messages ", "))
-        (message (string-join messages ", "))))))
-#+end_src
 *** tree-sitter
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (e:package-config! treesit-auto
-  :commands (global-treesit-auto-mode)
+  :commands (treesit-auto-add-to-auto-mode-alist global-treesit-auto-mode)
   :init
   (e:variable! treesit-auto-install t)
   (e:variable! treesit-language-source-alist
                '((vue "https://github.com/ikatyang/tree-sitter-vue")))
+  (treesit-auto-add-to-auto-mode-alist)
   (global-treesit-auto-mode 1))
 #+end_src
 ** Ruby
 *** ruby-ts-mode
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (e:deffered-config! ruby-ts-mode
   :hook (ruby-ts-mode-hook . lsp-deferred)
+  :mode "\\.csb\\'"
   :defer-config
+  (e:major-mode-key-def ruby-ts-mode
+    "b" "bundle"
+    "bc" 'bundle-check
+    "bi" 'bundle-install
+    "bo" 'bundle-open
+    "bu" 'bundle-update
+    "bx" 'bundle-exec
+    "r" "refactor"
+    "r\"" 'ruby-toggle-string-quotes
+    "r'" 'ruby-toggle-string-quotes
+    "r{" 'ruby-toggle-block
+    "r}" 'ruby-toggle-block)
+  (grugru-define-multiple
+    (ruby-ts-mode
+     (symbol "have_button" "have_no_button")
+     (symbol "have_content" "have_no_content")
+     (symbol "have_link" "have_no_link")
+     (symbol "if" "unless")
+     (symbol "let" "let!")
+     (symbol "to" "not_to")
+     (symbol "true" "false")))
   (defvar e:bundle-exists-cache (ht-create 'equal))
   (defun e:clear-bundle-exists-cache ()
     (interactive)
@@ -1351,15 +1679,26 @@
       (zerop (ht-get e:bundle-exists-cache key)))))
 #+end_src
 *** haml-mode
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (e:package-config! haml-mode
-  :hook (haml-mode-hook . highlight-indentation-mode))
+  :hook (haml-mode-hook . highlight-indentation-mode-on))
+#+end_src
+*** bundler
+#+begin_src emacs-lisp :lexical no
+(e:package-config! bundler)
 #+end_src
 *** projectile-rails
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (e:package-config! projectile-rails
   :config
   (e:var! rake-cache-file "rake.cache")
+  (let ((exts '("html" "erb" "haml" "slim"
+                "js" "coffee" "ts"
+                "css" "scss" "sass" "less"
+                "json" "builder" "jbuilder" "rabl"
+                "csb" "axlsx")))
+    (e:variable! projectile-rails-views-re (concat "\\." (regexp-opt exts))))
+  (e:variable! rake-completion-system 'completing-read-default)
   (projectile-rails-global-mode 1)
   (e:minor-mode-key-def projectile-rails-mode
     "f" "rails"
@@ -1408,13 +1747,13 @@
     "fgz" '("helper" . projectile-rails-goto-spec-helper)))
 #+end_src
 *** rails-routes
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (e:package-config! rails-routes
   :defer-config
   (e:var! rails-routes-cache-path "rails-routes"))
 #+end_src
 *** rspec-mode
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (e:package-config! rspec-mode
   :defer-config
   (e:minor-mode-key-def rspec-mode
@@ -1448,19 +1787,46 @@
   :hook (vue-ts-mode-hook . lsp-deferred)
   :mode "\\.vue\\'")
 #+end_src
+*** yarn
+#+begin_src emacs-lisp :lexical no
+(e:package-config! (yarn :host github :repo "jmfirth/yarn.el")
+  :commands (yarn-install
+             yarn-self-udpate
+             yarn-update
+             yarn-upgrade))
+#+end_src
 ** HTML/CSS
+*** web-mode
+#+begin_src emacs-lisp :lexical no
+(e:package-config! web-mode
+  :mode "\\.erb\\'")
+#+end_src
 *** sass-mode
-#+begin_src emacs-lisp
-(e:package-config! sass-mode)
+#+begin_src emacs-lisp :lexical no
+(e:package-config! sass-mode
+  :hook (sass-mode-hook . rainbow-mode))
 #+end_src
 *** scss-mode
-#+begin_src emacs-lisp
-(e:package-config! scss-mode)
+#+begin_src emacs-lisp :lexical no
+(e:package-config! scss-mode
+  :hook (scss-mode-hook . rainbow-mode))
+#+end_src
+** Text
+*** yaml-ts-mode
+#+begin_src emacs-lisp :lexical no
+(e:package-config! yaml-mode
+  :commands (yaml-indent-line))
+(e:deffered-config! yaml-ts-mode
+  :hook ((yaml-ts-mode-hook . lsp-deferred)
+         (yaml-ts-mode-hook . highlight-indentation-mode-on))
+  :defer-config
+  (general-def yaml-ts-mode-map
+    "TAB" 'yaml-indent-line))
 #+end_src
 * Config: Keybinds
 ** Space
 *** support
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (defsubst e:key-def-prefix (&optional key)
   (s-trim-right (format "SPC %s" (or key ""))))
 (defsubst e:key-def-non-normal-prefix (&optional key)
@@ -1473,7 +1839,7 @@
   "M-m" (general-simulate-key "SPC"))
 #+end_src
 *** root
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (defun e:switch-to-last-buffer ()
   (interactive)
   (if-let ((buffer (caar (window-prev-buffers))))
@@ -1509,7 +1875,7 @@
   "v" 'er/expand-region)
 #+end_src
 *** [F] frame
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (e:key-def
   :prefix (e:key-def-prefix "F")
   :non-normal-prefix (e:key-def-non-normal-prefix "F")
@@ -1522,7 +1888,7 @@
   "o" 'other-frame)
 #+end_src
 *** [a] application...
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (e:key-def
   :prefix (e:key-def-prefix "a")
   :non-normal-prefix (e:key-def-non-normal-prefix "a")
@@ -1534,7 +1900,7 @@
   "tp" 'prodigy)
 #+end_src
 *** [b] buffer
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (defun e:switch-to-messages-buffer ()
   (interactive)
   (switch-to-buffer (messages-buffer)))
@@ -1552,7 +1918,7 @@
   "w" 'read-only-mode)
 #+end_src
 *** [e] error
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (e:key-def
   :prefix (e:key-def-prefix "e")
   :non-normal-prefix (e:key-def-non-normal-prefix "e")
@@ -1564,6 +1930,7 @@
   "b" 'flycheck-buffer
   "c" 'flycheck-clear
   "d" 'flycheck-disable-checker
+  "e" 'consult-flycheck
   "h" 'flycheck-describe-checker
   "l" 'flycheck-list-errors
   "n" 'flycheck-next-error
@@ -1574,7 +1941,7 @@
   "y" 'flycheck-copy-errors-as-kill)
 #+end_src
 *** [f] file
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (defun e:file/find-user-init-file ()
   (interactive)
   (find-file-existing user-init-file))
@@ -1609,19 +1976,30 @@
   "z" 'affe-find)
 #+end_src
 *** [g] git/vc
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (e:key-def
   :prefix (e:key-def-prefix "g")
   :non-normal-prefix (e:key-def-non-normal-prefix "g")
   :prefix-command 'e:git-command
   :prefix-map 'e:git-command-map
   "" '(:ignore t :wk "git")
+  "L" 'magit-list-repositories
+  "S" 'magit-stage-file
+  "U" 'magit-unstage-file
+  "f" '(:ignore t :wk "file")
+  "fc" 'magit-file-checkout
+  "fd" 'magit-diff
+  "ff" 'magit-find-file
+  "fl" 'magit-log-buffer-file
+  "fm" 'magit-file-dispatch
+  "m" 'magit-dispatch
+  "o" 'browse-at-remote
   "s" 'magit-status
   "v" '(:ignore t :wk "vc")
   "vh" 'vc-region-history)
 #+end_src
 *** [h] help
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (e:key-def
   :prefix (e:key-def-prefix "h")
   :non-normal-prefix (e:key-def-non-normal-prefix "h")
@@ -1629,8 +2007,19 @@
   :prefix-map 'e:help-command-map
   "" '(:ignore t :wk "help")
   "d" '(:ignore t :wk "describe")
+  "dF" 'consult-faces
+  "dK" 'describe-keymap
   "da" 'helm-apropos
+  "dd" '(:ignore t :wk "devdocs")
+  "ddd" 'devdocs-lookup
+  "ddi" 'devdocs-install
+  "ddl" 'devdocs-lookup
+  "ddp" 'devdocs-peruse
+  "ddq" 'devdocs-lookup
+  "dds" 'devdocs-search
+  "ddu" 'devdocs-update-all
   "df" 'describe-function
+  "dK" 'find-function-on-key
   "dk" 'describe-key
   "dv" 'describe-variable
   "h" '(:ignore t :wk "helpful")
@@ -1644,7 +2033,7 @@
   "hv" 'helpful-variable)
 #+end_src
 *** [j] jump/join⇔split
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (e:key-def
   :prefix (e:key-def-prefix "j")
   :non-normal-prefix (e:key-def-non-normal-prefix "j")
@@ -1652,10 +2041,11 @@
   :prefix-map 'e:jump-command-map
   "" '(:ignore t :wk "jump")
   "d" 'dired-jump
-  "i" 'consult-imenu)
+  "i" 'consult-imenu
+  "o" 'consult-outline)
 #+end_src
 *** [l] layout
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (e:key-def
   :prefix (e:key-def-prefix "l")
   :non-normal-prefix (e:key-def-non-normal-prefix "l")
@@ -1680,8 +2070,8 @@
   "p" 'tab-previous
   "r" 'tab-rename)
 #+end_src
-*** [r] project
-#+begin_src emacs-lisp
+*** [p] project
+#+begin_src emacs-lisp :lexical no
 (e:key-def
   :prefix (e:key-def-prefix "p")
   :non-normal-prefix (e:key-def-non-normal-prefix "p")
@@ -1710,7 +2100,7 @@
   "v" 'projectile-vc)
 #+end_src
 *** [q] quit
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (e:key-def
   :prefix (format "SPC %s" "q")
   :non-normal-prefix (e:key-def-non-normal-prefix "q")
@@ -1721,7 +2111,7 @@
   "r" 'restart-emacs)
 #+end_src
 *** [s] search/symbol
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (e:key-def
   :prefix (e:key-def-prefix "s")
   :non-normal-prefix (e:key-def-non-normal-prefix "s")
@@ -1729,12 +2119,15 @@
   :prefix-map 'e:search-command-map
   "" '(:ignore t :wk "search")
   "D" 'consult-ripgrep-cwd-dwim
+  "O" 'symbol-overlay-remove-all
   "S" 'consult-line-dwim
   "d" 'consult-ripgrep-cwd
-  "s" 'consult-line)
+  "o" 'symbol-overlay-put
+  "s" 'consult-line
+  "t" 'consult-todo)
 #+end_src
 *** [w] window
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (e:key-def
   :prefix (e:key-def-prefix "w")
   :non-normal-prefix (e:key-def-non-normal-prefix "w")
@@ -1762,44 +2155,56 @@
   "w" 'other-window)
 #+end_src
 *** [x] text
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (e:key-def
  :prefix (e:key-def-prefix "x")
  :non-normal-prefix (e:key-def-non-normal-prefix "x")
  :prefix-command 'e:text-command
  :prefix-map 'e:text-command-map
  "" '(:ignore t :wk "text")
+ "c" 'count-words-region
+ "d" '(:ignore t :wk "delete")
+ "d SPC" 'cycle-spacing
+ "dl" 'delete-blank-lines
+ "dw" 'delete-trailing-whitespace
+ "g" '(:ignore t :wk "google/grugru")
+ "gg" 'grugru
  "l" '(:ignore t :wk "lines")
  "ls" 'sort-lines)
 #+end_src
 ** global-map
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (general-def global-map
   [remap undo] 'undo-fu-only-undo
   [remap undo-redo] 'undo-fu-only-redo
   "C-*" 'org-support/popup-note
   "C-:" 'org-support/popup-tasks
   "C-;" 'shell-pop
+  "C-<" 'evil-jump-backward
+  "C->" 'evil-jump-forward
   "C-^" 'ace-window)
 #+end_src
 ** ctl-x-map
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (general-def ctl-x-map
   "C-c" 'execute-extended-command)
 #+end_src
-** mode-specific-map
-#+begin_src emacs-lisp
-(general-def mode-specific-map
-  "C-e" 'embark-export)
-#+end_src
 * 設定完了
+** 完了処理
+#+begin_src emacs-lisp :lexical no
+(e:variable! e:deffered-config-loaded t)
+(e:deffered-config! scratch
+  :config
+  (scratch-buffer)
+  (lisp-interaction-mode))
+#+end_src
 ** パッケージのインストール待ち
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (eval-when-compile (eval '(elpaca-wait)))
 (add-hook 'after-init-hook #'elpaca-wait)
 #+end_src
 ** 優先度高めの設定
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (defvar e:high-priority-config-queue-timer nil)
 (defun e:process-high-priority-config-queue ()
   (setq e:high-priority-config-queue-timer
@@ -1813,7 +2218,7 @@
 (add-hook 'emacs-startup-hook #'e:process-high-priority-config-queue)
 #+end_src
 ** 優先度低めの設定
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :lexical no
 (defvar e:low-priority-config-queue-timer nil)
 (defun e:process-low-priority-config-queue ()
   (setq e:low-priority-config-queue-timer
@@ -1825,4 +2230,12 @@
                  (funcall (pop e:low-priority-config-queue)))
              (cancel-timer e:low-priority-config-queue-timer))))))
 (add-hook 'emacs-startup-hook #'e:process-low-priority-config-queue)
+#+end_src
+
+** 起動時間の計測
+#+begin_src emacs-lisp :lexical no
+(when init-file-debug
+  (eval-when-compile (require 'profiler))
+  (profiler-report)
+  (profiler-stop))
 #+end_src
