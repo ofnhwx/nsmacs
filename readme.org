@@ -115,7 +115,7 @@
   (declare (indent defun))
   (let ((package (or (car-safe orders) orders)))
     `(progn
-       (eval '(elpaca ,orders))
+       (elpaca ,orders)
        (e:deffered-config! ,package ,@body))))
 #+end_src
 *** e:mode-key-def
@@ -263,19 +263,18 @@
 #+end_src
 *** others
 #+begin_src emacs-lisp
-(e:eval!
-  (elpaca (komunan-lisp-library :host github :repo "ofnhwx/komunan-lisp-library")
-    (require 'komunan-lisp-library))
-  (elpaca f (require 'f))
-  (elpaca s (require 's))
-  (elpaca ht (require 'ht))
-  (elpaca dash (require 'dash))
-  (elpaca leaf (require 'leaf))
-  (elpaca general (require 'general))
-  (elpaca bind-map (require 'bind-map))
-  (elpaca hercules (require 'hercules))
-  (elpaca no-littering (require 'no-littering))
-  (elpaca-wait))
+(elpaca (komunan-lisp-library :host github :repo "ofnhwx/komunan-lisp-library")
+  (require 'komunan-lisp-library))
+(elpaca f (require 'f))
+(elpaca s (require 's))
+(elpaca ht (require 'ht))
+(elpaca dash (require 'dash))
+(elpaca leaf (require 'leaf))
+(elpaca general (require 'general))
+(elpaca bind-map (require 'bind-map))
+(elpaca hercules (require 'hercules))
+(elpaca no-littering (require 'no-littering))
+(elpaca-wait)
 #+end_src
 * Config: Emacs
 ** startup
@@ -2200,7 +2199,7 @@
 #+end_src
 ** パッケージのインストール待ち
 #+begin_src emacs-lisp :lexical no
-(eval-when-compile (eval '(elpaca-wait)))
+(eval-when-compile (elpaca-wait))
 (add-hook 'after-init-hook #'elpaca-wait)
 #+end_src
 ** 優先度高めの設定
