@@ -677,6 +677,15 @@
   (general-def 'visual evil-surround-mode-map "s" 'evil-surround-region)
   (global-evil-surround-mode))
 #+end_src
+** evil-textobj-tree-sitter
+#+begin_src emacs-lisp :lexical no
+(e:package-config! evil-textobj-tree-sitter
+  :config
+  (general-def evil-inner-text-objects-map
+    "f" (evil-textobj-tree-sitter-get-textobj "function.inner"))
+  (general-def evil-outer-text-objects-map
+    "f" (evil-textobj-tree-sitter-get-textobj "function.outer")))
+#+end_src
 * Config: SKK
 ** skk
 #+begin_src emacs-lisp
