@@ -1810,6 +1810,14 @@
 (e:package-config! scss-mode
   :hook (scss-mode-hook . rainbow-mode))
 #+end_src
+*** emmet-mode
+#+begin_src emacs-lisp :lexical no
+(e:package-config! emmet-mode
+  :hook ((haml-mode-hook . emmet-mode)
+         (tsx-ts-mode-hook . emmet-mode)
+         (vue-ts-mode-hook . emmet-mode)
+         (web-mode-hook . emmet-mode)))
+#+end_src
 ** Text
 *** yaml-ts-mode
 #+begin_src emacs-lisp :lexical no
