@@ -644,6 +644,8 @@
   :defvar (evilem-map)
   :config
   (evilem-default-keybindings "s")
+  (general-def evilem-map
+    "s" 'evil-avy-goto-char-timer)
   (general-def 'normal "s" evilem-map)
   (general-def 'visual "x" evilem-map))
 #+end_src
@@ -1116,8 +1118,8 @@
       "gk" 'evil-avy-goto-line-above))
   :defer-config
   (e:variable! avy-keys (number-sequence ?a ?z))
-  (e:variable! avy-all-windows nil)
-  (e:variable! avy-all-windows-alt t))
+  (e:variable! avy-all-windows t)
+  (e:variable! avy-all-windows-alt nil))
 #+end_src
 ** browse-at-remote
 #+begin_src emacs-lisp
