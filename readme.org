@@ -173,7 +173,7 @@
 #+end_src
 *** Font
 #+begin_src emacs-lisp
-(let ((font "Cica"))
+(let ((font "UDEV Gothic NF"))
   (set-frame-font (font-spec :name font :size 12.0) nil t)
   (set-face-attribute 'fixed-pitch       nil :family font)
   (set-face-attribute 'fixed-pitch-serif nil :family font)
@@ -310,6 +310,7 @@
 (e:variable! undo-limit 67108864)         ;; => 64mb.
 (e:variable! undo-strong-limit 100663296) ;; => 96mb.
 (e:variable! undo-outer-limit 1006632960) ;; => 960mb.
+(e:variable! use-dialog-box nil)
 (e:variable! use-short-answers t)
 (e:variable! window-resize-pixelwise t)
 #+end_src
@@ -794,7 +795,7 @@
   :defer-config
   (defun e:capf-function (name &rest capfs)
     (let ((fun (intern (format "e:cape-%s" name)))
-          (capfs (-concat capfs '(cape-tabnine cape-dabbrev))))
+          (capfs (-concat capfs '(cape-dabbrev))))
       (defalias fun
         (cape-interactive-capf
          (cape-capf-nonexclusive
@@ -1134,6 +1135,12 @@
 #+begin_src emacs-lisp
 (e:package-config! browse-at-remote)
 #+end_src
+** chezmoi
+#+begin_src emacs-lisp :lexical no
+(e:package-config! chezmoi
+  :config
+  (require 'chezmoi))
+#+end_src
 ** consult-flycheck
 #+begin_src emacs-lisp :lexical no
 (e:package-config! consult-flycheck)
@@ -1467,6 +1474,7 @@
   :config
   (e:variable! shell-pop-shell-type '("vterm" "*vterm-default*" #'vterm))
   :defer-config
+  (e:variable! shell-pop-autocd-to-working-dir nil)
   (e:variable! shell-pop-full-span t)
   (e:variable! shell-pop-window-size 50)
   (defun ad:shell-pop@auto-session-name (func &rest args)
