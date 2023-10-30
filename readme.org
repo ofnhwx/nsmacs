@@ -1817,7 +1817,9 @@
 *** web-mode
 #+begin_src emacs-lisp :lexical no
 (e:package-config! web-mode
-  :mode "\\.erb\\'")
+  :mode "\\.erb\\'"
+  :config
+  (e:variable! web-mode-enable-auto-indentation nil))
 #+end_src
 *** sass-mode
 #+begin_src emacs-lisp :lexical no
@@ -1835,7 +1837,12 @@
   :hook ((haml-mode-hook . emmet-mode)
          (tsx-ts-mode-hook . emmet-mode)
          (vue-ts-mode-hook . emmet-mode)
-         (web-mode-hook . emmet-mode)))
+         (web-mode-hook . emmet-mode))
+  :defer-config
+  (general-def emmet-mode-keymap
+    "<C-return>" nil
+    "C-c C-j" 'emmet-expand-line
+    "C-j" nil))
 #+end_src
 ** Text
 *** yaml-ts-mode
