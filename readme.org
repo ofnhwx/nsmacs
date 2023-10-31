@@ -1928,6 +1928,13 @@
   :prefix-command 'e:application-command
   :prefix-map 'e:application-command-map
   "" '(:ignore t :wk "application")
+  "c" '(:ignore t :wk "chezmoi")
+  "cd" 'chezmoi-diff
+  "cf" 'chezmoi-find
+  "co" 'chezmoi-open-other
+  "cs" 'chezmoi-sync-files
+  "ct" 'chezmoi-template-buffer-display
+  "cw" 'chezmoi-write
   "t" '(:ignore t :wk "tools")
   "te" 'elpaca-manager
   "tp" 'prodigy)
