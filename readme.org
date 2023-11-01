@@ -199,12 +199,12 @@
 #+begin_src emacs-lisp
 (e:if! (eq system-type 'darwin)
   ;; タイトルバーの見た目を変更
-  (--each '((ns-transparent-titlebar . t)
-            (ns-appearance . dark))
-    (assq-delete-all (car it) initial-frame-alist)
-    (assq-delete-all (car it) default-frame-alist)
-    (add-to-list 'initial-frame-alist it)
-    (add-to-list 'default-frame-alist it))
+  ;; (--each '((ns-transparent-titlebar . t)
+  ;;           (ns-appearance . dark))
+  ;;   (assq-delete-all (car it) initial-frame-alist)
+  ;;   (assq-delete-all (car it) default-frame-alist)
+  ;;   (add-to-list 'initial-frame-alist it)
+  ;;   (add-to-list 'default-frame-alist it))
   ;; 特殊キーの設定
   (e:variable! ns-command-modifier 'meta)
   (e:variable! ns-right-command-modifier 'super)
@@ -1463,7 +1463,8 @@
     (setq e:shackle-auto-close-windows (-filter #'window-live-p e:shackle-auto-close-windows))
     (add-to-list 'e:shackle-auto-close-windows shackle-last-window))
   (defun ad:keyboard-quit@shackle-auto-close (&rest _)
-    (-each e:shackle-auto-close-windows 'delete-window)
+    (ignore-errors
+      (-each e:shackle-auto-close-windows 'delete-window))
     (setq e:shackle-auto-close-windows nil)))
 #+end_src
 ** shell-pop
@@ -1935,8 +1936,12 @@
   "cs" 'chezmoi-sync-files
   "ct" 'chezmoi-template-buffer-display
   "cw" 'chezmoi-write
+  "e" '(:ignore t :wk "elpaca")
+  "eU" 'elpaca-update-all
+  "em" 'elpaca-manager
+  "et" 'elpaca-try
+  "eu" 'elpaca-update
   "t" '(:ignore t :wk "tools")
-  "te" 'elpaca-manager
   "tp" 'prodigy)
 #+end_src
 *** [b] buffer
@@ -2162,9 +2167,21 @@
   "O" 'symbol-overlay-remove-all
   "S" 'consult-line-dwim
   "d" 'consult-ripgrep-cwd
+  "f" 'consult-fd
   "o" 'symbol-overlay-put
   "s" 'consult-line
   "t" 'consult-todo)
+#+end_src
+*** [t] toggle
+#+begin_src emacs-lisp :lexical no
+(e:key-def
+  :prefix (e:key-def-prefix "t")
+  :non-normal-prefix (e:key-def-non-normal-prefix "t")
+  :prefix-command 'e:toggle-command
+  :prefix-map 'e:toggle-command-map
+  "" '(:ignore t :wk "toggle")
+  "l" 'toggle-truncate-lines
+  "t" 'consult-minor-mode-menu)
 #+end_src
 *** [w] window
 #+begin_src emacs-lisp :lexical no
