@@ -173,8 +173,9 @@
 #+end_src
 *** Font
 #+begin_src emacs-lisp
-(let ((font "UDEV Gothic NF"))
-  (set-frame-font (font-spec :name font :size 12.0) nil t)
+(let ((font "UDEV Gothic NF")
+      (size (if (eq system-type 'darwin) 16.0 12.0)))
+  (set-frame-font (font-spec :name font :size size) nil t)
   (set-face-attribute 'fixed-pitch       nil :family font)
   (set-face-attribute 'fixed-pitch-serif nil :family font)
   (set-face-attribute 'variable-pitch    nil :family font))
@@ -768,7 +769,7 @@
 (e:package-config! (codeium :host github :repo "Exafunction/codeium.el")
   :commands (cape-codeium)
   :defer-config
-  (defalias 'cape-codeium (cape-interactive-capf #'codeium-completion-at-point)))
+  (defalias 'cape-codeium (cape-capf-interactive #'codeium-completion-at-point)))
 #+end_src
 *** company-org-block
 #+begin_src emacs-lisp
@@ -776,14 +777,14 @@
   :commands (cape-org-block)
   :defer-config
   (e:variable! company-org-block-edit-style 'inline)
-  (defalias 'cape-org-block (cape-interactive-capf (cape-company-to-capf #'company-org-block))))
+  (defalias 'cape-org-block (cape-capf-interactive (cape-company-to-capf #'company-org-block))))
 #+end_src
 *** company-tabnine
 #+begin_src emacs-lisp
 (e:package-config! company-tabnine
   :commands (cape-tabnine)
   :defer-config
-  (defalias 'cape-tabnine (cape-interactive-capf (cape-company-to-capf #'company-tabnine))))
+  (defalias 'cape-tabnine (cape-capf-interactive (cape-company-to-capf #'company-tabnine))))
 #+end_src
 *** cape
 #+begin_src emacs-lisp
@@ -797,7 +798,7 @@
     (let ((fun (intern (format "e:cape-%s" name)))
           (capfs (-concat capfs '(cape-dabbrev))))
       (defalias fun
-        (cape-interactive-capf
+        (cape-capf-interactive
          (cape-capf-nonexclusive
           (cape-capf-buster
            (apply #'cape-capf-super capfs)))))
@@ -1338,7 +1339,6 @@
   (require 'migemo)
   (e:variable! migemo-user-dictionary nil)
   (e:variable! migemo-regex-dictionary nil)
-  (e:variable! migemo-dictionary "/usr/share/cmigemo/utf-8/migemo-dict")
   (e:if! (eq system-type 'darwin)
     (e:variable! migemo-dictionary "/usr/local/share/migemo/utf-8/migemo-dict"))
   (e:if! (eq system-type 'gnu/linux)
