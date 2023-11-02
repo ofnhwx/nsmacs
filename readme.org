@@ -390,9 +390,7 @@
 #+begin_src emacs-lisp
 (e:deffered-config! display-line-numbers
   :hook ((find-file-hook . display-line-numbers-mode-on)
-         (prog-mode-hook . display-line-numbers-mode-on)
-         (html-mode-hook . display-line-numbers-mode-on)
-         (org-mode-hook  . display-line-numbers-mode-on))
+         (prog-mode-hook . display-line-numbers-mode-on))
   :defer-config
   (e:default! display-line-numbers-width 4)
   (e:define-minor-mode-switch display-line-numbers-mode))
@@ -448,9 +446,10 @@
 ** hl-line
 #+begin_src emacs-lisp
 (e:deffered-config! hl-line
+  :hook ((find-file-hook . hl-line-mode-on)
+         (prog-mode-hook . hl-line-mode-on))
   :config
-  (e:define-minor-mode-switch hl-line-mode)
-  (global-hl-line-mode 1))
+  (e:define-minor-mode-switch hl-line-mode))
 #+end_src
 ** indent
 #+begin_src emacs-lisp
@@ -1146,6 +1145,10 @@
 #+begin_src emacs-lisp :lexical no
 (e:package-config! consult-flycheck)
 #+end_src
+** consult-projectile
+#+begin_src emacs-lisp :lexical no
+(e:package-config! consult-projectile)
+#+end_src
 ** consult-todo
 #+begin_src emacs-lisp :lexical no
 (e:package-config! (consult-todo :host github :repo "liuyinz/consult-todo"))
@@ -1534,7 +1537,6 @@
 ** vterm
 #+begin_src emacs-lisp :lexical no
 (e:package-config! vterm
-  :hook (vterm-mode-hook . hl-line-mode-off)
   :defer-config
   (general-def vterm-mode-map
     "<wheel-down>" 'ignore
@@ -2130,18 +2132,19 @@
   "F" 'projectile-find-file-dwim
   "G" 'projectile-regenerate-tags
   "I" 'projectile-invalidate-cache
+  "P" 'consult-projectile-switch-project
   "R" 'projectile-replace
   "T" 'projectile-test-project
   "a" 'projectile-toggle-between-implementation-and-test
-  "b" 'projectile-switch-to-buffer
+  "b" 'consult-projectile-switch-to-buffer
   "c" 'projectile-compile-project
-  "d" 'projectile-find-dir
+  "d" 'consult-projectile-find-dir
   "e" 'projectile-edit-dir-locals
-  "f" 'projectile-find-file
+  "f" 'consult-projectile-find-file
   "g" 'projectile-find-tag
   "k" 'projectile-kill-buffers
-  "p" 'projectile-switch-project
-  "r" 'projectile-recentf
+  "p" 'consult-projectile
+  "r" 'consult-projectile-recentf
   "v" 'projectile-vc)
 #+end_src
 *** [q] quit
