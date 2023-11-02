@@ -395,6 +395,13 @@
   (e:default! display-line-numbers-width 4)
   (e:define-minor-mode-switch display-line-numbers-mode))
 #+end_src
+** ediff
+#+begin_src emacs-lisp :lexical no
+(e:deffered-config! ediff
+  :commands (ediff-setup-windows-plain)
+  :defer-config
+  (e:variable! ediff-window-setup-function #'ediff-setup-windows-plain))
+#+end_src
 ** emacs-lock
 #+begin_src emacs-lisp
 (e:deffered-config! emacs-lock
