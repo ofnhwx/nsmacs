@@ -1709,7 +1709,20 @@
 *** haml-mode
 #+begin_src emacs-lisp :lexical no
 (e:package-config! haml-mode
-  :hook (haml-mode-hook . highlight-indentation-mode-on))
+  :hook (haml-mode-hook . highlight-indentation-mode-on)
+  :defer-config
+  (flycheck-def-config-file-var flycheck-haml-lintrc haml-lint ".haml-lint.yml" :safe #'stringp)
+  (flycheck-define-checker haml-lint
+    "A haml-lint syntax checker"
+    :command ("bundle" "exec" "haml-lint"
+              (config-file "--config" flycheck-haml-lintrc)
+              source-inplace)
+    :error-patterns
+    ((error   line-start (file-name) ":" line " [E] " (message) line-end)
+     (warning line-start (file-name) ":" line " [W] " (message) line-end))
+    :modes (haml-mode))
+  (add-to-list 'flycheck-checkers 'haml-lint)
+  (flycheck-add-next-checker 'haml 'haml-lint))
 #+end_src
 *** bundler
 #+begin_src emacs-lisp :lexical no
