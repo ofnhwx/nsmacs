@@ -368,6 +368,11 @@
   (e:variable! dired-recursive-copies 'always)
   (e:variable! dired-recursive-deletes 'always))
 #+end_src
+*** dired-filter
+#+begin_src emacs-lisp :lexical no
+(e:package-config! dired-filter
+  :hook (dired-mode-hook . dired-filter-mode))
+#+end_src
 *** treemacs-icons-dired
 #+begin_src emacs-lisp
 (e:package-config! treemacs-icons-dired
