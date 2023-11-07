@@ -1742,6 +1742,14 @@
 *** projectile-rails
 #+begin_src emacs-lisp :lexical no
 (e:package-config! projectile-rails
+  :defun (projectile-rails-find-resource)
+  :init
+  (let ((exts '("html" "erb" "haml" "slim"
+                "js" "coffee" "ts"
+                "css" "scss" "sass" "less"
+                "json" "builder" "jbuilder" "rabl"
+                "csb" "axlsx")))
+    (e:variable! projectile-rails-views-re (concat "\\." (regexp-opt exts))))
   :config
   (e:var! rake-cache-file "rake.cache")
   (let ((exts '("html" "erb" "haml" "slim"
@@ -1760,11 +1768,13 @@
     "fcd" '("destroy" . projectile-rails-destroy)
     "ff" "find"
     "ff@" '("mailer" . projectile-rails-find-mailer)
+    "ffV" '("view component" . projectile-rails-find-view-components)
     "ffa" '("locale" . projectile-rails-find-locale)
     "ffb" '("job" . projectile-rails-find-job)
     "ffc" '("controller" . projectile-rails-find-controller)
     "ffe" '("environment" . projectile-rails-find-environment)
     "fff" '("feature" . projectile-rails-find-feature)
+    "ffg" '("graphql" . projectile-rails-find-graphql)
     "ffh" '("helper" . projectile-rails-find-helper)
     "ffi" '("initializer" . projectile-rails-find-initializer)
     "ffj" '("javascript" . projectile-rails-find-javascript)
@@ -1796,7 +1806,23 @@
     "fgt" '("test" . projectile-rails-find-current-test)
     "fgu" '("fixture" . projectile-rails-find-current-fixture)
     "fgv" '("view" . projectile-rails-find-current-view)
-    "fgz" '("helper" . projectile-rails-goto-spec-helper)))
+    "fgz" '("helper" . projectile-rails-goto-spec-helper))
+  :defer-config
+  (defun projectile-rails-find-view-components ()
+    "Find a View component."
+    (interactive)
+    (projectile-rails-find-resource
+     "components: "
+     `(("app/components/" "\\(.+\\)\\.rb$")
+       ("app/components/" ,(concat "\\(.+\\)" projectile-rails-views-re)))
+     "app/components/${filename}"))
+  (defun projectile-rails-find-graphql ()
+    "Find a GraphQL."
+    (interactive)
+    (projectile-rails-find-resource
+     "graphql: "
+     '(("app/graphql/" "\\(.+\\)\\.rb$"))
+     "app/graphql/${filename}")))
 #+end_src
 *** rails-routes
 #+begin_src emacs-lisp :lexical no
