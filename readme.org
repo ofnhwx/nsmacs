@@ -1119,6 +1119,7 @@
 #+begin_src emacs-lisp :lexical no
 (e:package-config! apheleia
   :defvar (apheleia-formatters apheleia-mode-alist)
+  :hook (ruby-ts-mode-hook . apheleia-mode)
   :defer-config
   ;; formatters
   (setf (alist-get 'rubocop apheleia-formatters)
@@ -1127,7 +1128,7 @@
             "rubocop")
           file "--autocorrect" "--stderr" "--format" "quiet" "--fail-level" "fatal"))
   ;; mode-alist
-  (setf (alist-get 'ruby-mode apheleia-mode-alist) '(rubocop)))
+  (setf (alist-get 'ruby-ts-mode apheleia-mode-alist) '(rubocop)))
 #+end_src
 ** avy
 #+begin_src emacs-lisp
@@ -2076,6 +2077,13 @@
   "g" 'affe-grep
   "r" 'consult-recent-file
   "s" 'save-buffer
+  "y" '(:ignore t :wk "yank")
+  "yD" 'kllib:copy-project-directory-path
+  "yY" 'kllib:copy-project-file-path
+  "yb" 'kllib:copy-buffer-name
+  "yd" 'kllib:copy-directory-path
+  "yn" 'kllib:copy-file-name
+  "yy" 'kllib:copy-file-path
   "z" 'affe-find)
 #+end_src
 *** [g] git/vc
