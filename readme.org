@@ -472,7 +472,7 @@
 ** novice
 #+begin_src emacs-lisp
 (e:deffered-config! novice
-  :defer-config
+  :config
   (e:variable! disabled-command-function nil))
 #+end_src
 ** recentf
@@ -810,9 +810,8 @@
           (capfs (-concat capfs '(cape-dabbrev))))
       (defalias fun
         (cape-capf-interactive
-         (cape-capf-nonexclusive
-          (cape-capf-buster
-           (apply #'cape-capf-super capfs)))))
+         (cape-capf-buster
+          (apply #'cape-capf-super capfs))))
       (list #'cape-file fun)))
   (defun e:setup-capf/default ()
     (interactive)
@@ -834,6 +833,7 @@
   :commands (consult-faces consult-line-dwim consult-ripgrep-dwim consult-ripgrep-cwd consult-ripgrep-cwd-dwim)
   :defun (consult-ripgrep consult--read)
   :defer-config
+  (e:variable! consult-line-start-from-top t)
   (defun ad:consult-line@with-orderless (fn &rest args)
     (let ((completion-styles '(orderless)))
       (apply fn args)))
@@ -2131,7 +2131,9 @@
   "ddu" 'devdocs-update-all
   "df" 'describe-function
   "dK" 'find-function-on-key
+  "db" 'describe-bindings
   "dk" 'describe-key
+  "dm" 'describe-keymap
   "dv" 'describe-variable
   "h" '(:ignore t :wk "helpful")
   "hc" 'helpful-callable
@@ -2314,14 +2316,19 @@
 (general-def ctl-x-map
   "C-c" 'execute-extended-command)
 #+end_src
+** mode-specific-map
+#+begin_src emacs-lisp :lexical no
+(general-def mode-specific-map
+  "TAB" 'cape-codeium)
+#+end_src
 * 設定完了
 ** 完了処理
 #+begin_src emacs-lisp :lexical no
-(e:variable! e:deffered-config-loaded t)
 (e:deffered-config! scratch
   :config
   (scratch-buffer)
   (lisp-interaction-mode))
+(e:variable! e:deffered-config-loaded t)
 #+end_src
 ** パッケージのインストール待ち
 #+begin_src emacs-lisp :lexical no
@@ -2356,7 +2363,6 @@
              (cancel-timer e:low-priority-config-queue-timer))))))
 (add-hook 'emacs-startup-hook #'e:process-low-priority-config-queue)
 #+end_src
-
 ** 起動時間の計測
 #+begin_src emacs-lisp :lexical no
 (when init-file-debug
