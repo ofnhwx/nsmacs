@@ -693,6 +693,8 @@
 ** evil-textobj-tree-sitter
 #+begin_src emacs-lisp :lexical no
 (e:package-config! evil-textobj-tree-sitter
+  :defun (evil-textobj-tree-sitter-function--function.inner
+          evil-textobj-tree-sitter-function--function.outer)
   :config
   (general-def evil-inner-text-objects-map
     "f" (evil-textobj-tree-sitter-get-textobj "function.inner"))
@@ -1743,6 +1745,8 @@
 *** projectile-rails
 #+begin_src emacs-lisp :lexical no
 (e:package-config! projectile-rails
+  :commands (projectile-rails-find-resource)
+  :defvar (projectile-rails-views-re)
   :init
   (let ((exts '("html" "erb" "haml" "slim"
                 "js" "coffee" "ts"
@@ -1920,13 +1924,14 @@
 ** Space
 *** support
 #+begin_src emacs-lisp :lexical no
-(defsubst e:key-def-prefix (&optional key)
-  (s-trim-right (format "SPC %s" (or key ""))))
-(defsubst e:key-def-non-normal-prefix (&optional key)
-  (s-trim-right (format "M-m %s" (or key ""))))
-(general-create-definer e:key-def
-  :states '(motion normal visual insert emacs)
-  :keymaps 'override)
+(defmacro e:key-def (name prefix &rest body)
+  (declare (indent defun))
+  `(general-def '(motion normal visual insert emacs) 'override
+     :prefix ,(s-trim-right (format "SPC %s" (or prefix "")))
+     :non-normal-prefix ,(s-trim-right (format "M-m %s" (or prefix "")))
+     :prefix-command ',(intern (format "e:%s-command" name))
+     :prefix-map ',(intern (format "e:%s-command-map" name))
+     ,@body))
 
 (general-def '(motion normal visual)
   "M-m" (general-simulate-key "SPC"))
@@ -1938,12 +1943,7 @@
   (if-let ((buffer (caar (window-prev-buffers))))
       (switch-to-buffer buffer)))
 
-(e:key-def
-  :keymaps 'override
-  :prefix (e:key-def-prefix)
-  :non-normal-prefix (e:key-def-non-normal-prefix)
-  :prefix-command 'e:root-command
-  :prefix-map 'e:root-command-map
+(e:key-def root nil
   "SPC" '(execute-extended-command :wk "M-x")
   "TAB" '(e:switch-to-last-buffer :wk "Last buffer")
   "!" 'shell-command
@@ -1969,11 +1969,7 @@
 #+end_src
 *** [F] frame
 #+begin_src emacs-lisp :lexical no
-(e:key-def
-  :prefix (e:key-def-prefix "F")
-  :non-normal-prefix (e:key-def-non-normal-prefix "F")
-  :prefix-command 'e:frame-command
-  :prefix-map 'e:frame-command-map
+(e:key-def frame F
   "" '(:ignore t :wk "frame")
   "D" 'delete-other-frames
   "d" 'delete-frame
@@ -1982,11 +1978,7 @@
 #+end_src
 *** [a] application...
 #+begin_src emacs-lisp :lexical no
-(e:key-def
-  :prefix (e:key-def-prefix "a")
-  :non-normal-prefix (e:key-def-non-normal-prefix "a")
-  :prefix-command 'e:application-command
-  :prefix-map 'e:application-command-map
+(e:key-def application a
   "" '(:ignore t :wk "application")
   "c" '(:ignore t :wk "chezmoi")
   "cd" 'chezmoi-diff
@@ -1996,7 +1988,7 @@
   "ct" 'chezmoi-template-buffer-display
   "cw" 'chezmoi-write
   "e" '(:ignore t :wk "elpaca")
-  "eU" 'elpaca-update-all
+  "eU" 'elpaca-merge-all
   "em" 'elpaca-manager
   "et" 'elpaca-try
   "eu" 'elpaca-update
@@ -2009,11 +2001,7 @@
   (interactive)
   (switch-to-buffer (messages-buffer)))
 
-(e:key-def
-  :prefix (e:key-def-prefix "b")
-  :non-normal-prefix (e:key-def-non-normal-prefix "b")
-  :prefix-command 'e:buffer-command
-  :prefix-map 'e:buffer-command-map
+(e:key-def buffer b
   "" '(:ignore t :wk "buffer")
   "b" 'consult-buffer
   "d" 'kill-buffer
@@ -2023,11 +2011,7 @@
 #+end_src
 *** [e] error
 #+begin_src emacs-lisp :lexical no
-(e:key-def
-  :prefix (e:key-def-prefix "e")
-  :non-normal-prefix (e:key-def-non-normal-prefix "e")
-  :prefix-command 'e:error-command
-  :prefix-map 'e:error-command-map
+(e:key-def error e
   "" '(:ignore t :wk "error")
   "S" 'flycheck-set-checker-executable
   "Y" 'e:flycheck-copy-error-ids
@@ -2060,11 +2044,7 @@
   (let ((default-directory user-emacs-directory))
     (async-shell-command "make")))
 
-(e:key-def
-  :prefix (e:key-def-prefix "f")
-  :non-normal-prefix (e:key-def-non-normal-prefix "f")
-  :prefix-command 'e:file-command
-  :prefix-map 'e:file-command-map
+(e:key-def file f
   "" '(:ignore t :wk "file")
   "S" 'evil-write-all
   "a" 'find-alternate-file
@@ -2088,11 +2068,7 @@
 #+end_src
 *** [g] git/vc
 #+begin_src emacs-lisp :lexical no
-(e:key-def
-  :prefix (e:key-def-prefix "g")
-  :non-normal-prefix (e:key-def-non-normal-prefix "g")
-  :prefix-command 'e:git-command
-  :prefix-map 'e:git-command-map
+(e:key-def git g
   "" '(:ignore t :wk "git")
   "L" 'magit-list-repositories
   "S" 'magit-stage-file
@@ -2111,11 +2087,7 @@
 #+end_src
 *** [h] help
 #+begin_src emacs-lisp :lexical no
-(e:key-def
-  :prefix (e:key-def-prefix "h")
-  :non-normal-prefix (e:key-def-non-normal-prefix "h")
-  :prefix-command 'e:help-command
-  :prefix-map 'e:help-command-map
+(e:key-def help h
   "" '(:ignore t :wk "help")
   "d" '(:ignore t :wk "describe")
   "dF" 'consult-faces
@@ -2147,11 +2119,7 @@
 #+end_src
 *** [j] jump/join⇔split
 #+begin_src emacs-lisp :lexical no
-(e:key-def
-  :prefix (e:key-def-prefix "j")
-  :non-normal-prefix (e:key-def-non-normal-prefix "j")
-  :prefix-command 'e:jump-command
-  :prefix-map 'e:jump-command-map
+(e:key-def jump j
   "" '(:ignore t :wk "jump")
   "d" 'dired-jump
   "i" 'consult-imenu
@@ -2159,11 +2127,7 @@
 #+end_src
 *** [l] layout
 #+begin_src emacs-lisp :lexical no
-(e:key-def
-  :prefix (e:key-def-prefix "l")
-  :non-normal-prefix (e:key-def-non-normal-prefix "l")
-  :prefix-command 'e:layout-command
-  :prefix-map 'e:layout-command-map
+(e:key-def layout l
   "" '(:ignore t :wk "layout")
   "1" '(tab-bar-select-tab-1 :wk "tab 1")
   "2" '(tab-bar-select-tab-2 :wk "tab 2")
@@ -2185,11 +2149,7 @@
 #+end_src
 *** [p] project
 #+begin_src emacs-lisp :lexical no
-(e:key-def
-  :prefix (e:key-def-prefix "p")
-  :non-normal-prefix (e:key-def-non-normal-prefix "p")
-  :prefix-command 'e:project-command
-  :prefix-map 'e:project-command-map
+(e:key-def project p
   "" '(:ignore t :wk "project")
   "!" 'projectile-run-shell-command-in-root
   "%" 'projectile-replace-regexp
@@ -2215,22 +2175,14 @@
 #+end_src
 *** [q] quit
 #+begin_src emacs-lisp :lexical no
-(e:key-def
-  :prefix (format "SPC %s" "q")
-  :non-normal-prefix (e:key-def-non-normal-prefix "q")
-  :prefix-command 'e:quit-command
-  :prefix-map 'e:quit-command-map
+(e:key-def quit q
   "" '(:ignore t :wk "quit")
   "q" 'exit
   "r" 'restart-emacs)
 #+end_src
 *** [s] search/symbol
 #+begin_src emacs-lisp :lexical no
-(e:key-def
-  :prefix (e:key-def-prefix "s")
-  :non-normal-prefix (e:key-def-non-normal-prefix "s")
-  :prefix-command 'e:search-command
-  :prefix-map 'e:search-command-map
+(e:key-def search s
   "" '(:ignore t :wk "search")
   "D" 'consult-ripgrep-cwd-dwim
   "O" 'symbol-overlay-remove-all
@@ -2243,22 +2195,14 @@
 #+end_src
 *** [t] toggle
 #+begin_src emacs-lisp :lexical no
-(e:key-def
-  :prefix (e:key-def-prefix "t")
-  :non-normal-prefix (e:key-def-non-normal-prefix "t")
-  :prefix-command 'e:toggle-command
-  :prefix-map 'e:toggle-command-map
+(e:key-def toggle t
   "" '(:ignore t :wk "toggle")
   "l" 'toggle-truncate-lines
   "t" 'consult-minor-mode-menu)
 #+end_src
 *** [w] window
 #+begin_src emacs-lisp :lexical no
-(e:key-def
-  :prefix (e:key-def-prefix "w")
-  :non-normal-prefix (e:key-def-non-normal-prefix "w")
-  :prefix-command 'e:window-command
-  :prefix-map 'e:window-command-map
+(e:key-def window w
   "" '(:ignore t :wk "window")
   "-" 'split-window-below
   "/" 'split-window-right
@@ -2282,21 +2226,17 @@
 #+end_src
 *** [x] text
 #+begin_src emacs-lisp :lexical no
-(e:key-def
- :prefix (e:key-def-prefix "x")
- :non-normal-prefix (e:key-def-non-normal-prefix "x")
- :prefix-command 'e:text-command
- :prefix-map 'e:text-command-map
- "" '(:ignore t :wk "text")
- "c" 'count-words-region
- "d" '(:ignore t :wk "delete")
- "d SPC" 'cycle-spacing
- "dl" 'delete-blank-lines
- "dw" 'delete-trailing-whitespace
- "g" '(:ignore t :wk "google/grugru")
- "gg" 'grugru
- "l" '(:ignore t :wk "lines")
- "ls" 'sort-lines)
+(e:key-def text x
+  "" '(:ignore t :wk "text")
+  "c" 'count-words-region
+  "d" '(:ignore t :wk "delete")
+  "d SPC" 'cycle-spacing
+  "dl" 'delete-blank-lines
+  "dw" 'delete-trailing-whitespace
+  "g" '(:ignore t :wk "google/grugru")
+  "gg" 'grugru
+  "l" '(:ignore t :wk "lines")
+  "ls" 'sort-lines)
 #+end_src
 ** global-map
 #+begin_src emacs-lisp :lexical no
