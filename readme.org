@@ -1748,22 +1748,16 @@
   :commands (projectile-rails-find-resource)
   :defvar (projectile-rails-views-re)
   :init
-  (let ((exts '("html" "erb" "haml" "slim"
-                "js" "coffee" "ts"
-                "css" "scss" "sass" "less"
-                "json" "builder" "jbuilder" "rabl"
-                "csb" "axlsx")))
-    (e:variable! projectile-rails-views-re (concat "\\." (regexp-opt exts))))
-  :config
-  (e:var! rake-cache-file "rake.cache")
-  (let ((exts '("html" "erb" "haml" "slim"
-                "js" "coffee" "ts"
-                "css" "scss" "sass" "less"
-                "json" "builder" "jbuilder" "rabl"
-                "csb" "axlsx")))
-    (e:variable! projectile-rails-views-re (concat "\\." (regexp-opt exts))))
-  (e:variable! rake-completion-system 'completing-read-default)
   (projectile-rails-global-mode 1)
+  :config
+  (let ((exts '("html" "erb" "haml" "slim"
+                "js" "coffee" "ts"
+                "css" "scss" "sass" "less"
+                "json" "builder" "jbuilder" "rabl"
+                "csb" "axlsx")))
+    (e:variable! projectile-rails-views-re (concat "\\." (regexp-opt exts))))
+  (e:var! rake-cache-file "rake.cache")
+  (e:variable! rake-completion-system 'completing-read-default)
   (e:minor-mode-key-def projectile-rails-mode
     "f" "rails"
     "f:" '("rake" . projectile-rails-rake)
