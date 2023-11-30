@@ -1285,6 +1285,10 @@
     (add-to-list 're "\\cc")
     (setf (alist-get t jinx-exclude-regexps) re)))
 #+end_src
+** link-hint
+#+begin_src emacs-lisp :lexical no
+(e:package-config! link-hint)
+#+end_src
 ** locale-eaw
 #+begin_src emacs-lisp :lexical no
 (e:package-config! (eaw :host github :repo "hamano/locale-eaw")
@@ -2222,15 +2226,19 @@
 #+begin_src emacs-lisp :lexical no
 (e:key-def text x
   "" '(:ignore t :wk "text")
+  "A" 'link-hint-open-all-links
+  "O" 'link-hint-open-link
   "c" 'count-words-region
-  "d" '(:ignore t :wk "delete")
   "d SPC" 'cycle-spacing
+  "d" '(:ignore t :wk "delete")
   "dl" 'delete-blank-lines
   "dw" 'delete-trailing-whitespace
   "g" '(:ignore t :wk "google/grugru")
   "gg" 'grugru
   "l" '(:ignore t :wk "lines")
-  "ls" 'sort-lines)
+  "ls" 'sort-lines
+  "m" 'link-hint-open-multiple-links
+  "o" 'link-hint-open-link-at-point)
 #+end_src
 ** global-map
 #+begin_src emacs-lisp :lexical no
