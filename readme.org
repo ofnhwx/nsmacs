@@ -1018,13 +1018,14 @@
 #+begin_src emacs-lisp
 (e:deffered-config! org
   :defer-config
-  (e:variable! org-directory (f-expand "~/org/"))
-  (e:variable! org-default-notes-file (org-support/note-file))
-  (e:variable! org-startup-folded nil)
-  (e:variable! org-startup-indented t)
-  (e:variable! org-tags-column 0)
-  (e:variable! org-todo-keywords '((sequence "TODO(t)" "STARTED(s)" "|" "DONE(d)")
-                                   (sequence "WAITING(w)" "HOLD(h)" "|" "CANCELLED(c)")))
+  (setopt org-directory (f-expand "~/org/"))
+  (setopt org-default-notes-file (org-support/note-file))
+  (setopt org-log-done 'time)
+  (setopt org-startup-folded nil)
+  (setopt org-startup-indented t)
+  (setopt org-tags-column 0)
+  (setopt org-todo-keywords '((sequence "TODO(t)" "STARTED(s)" "|" "DONE(d)")
+                              (sequence "WAITING(w)" "HOLD(h)" "|" "CANCELLED(c)")))
   (e:major-mode-key-def org-mode
     "," 'org-ctrl-c-ctrl-c))
 #+end_src
@@ -1749,7 +1750,6 @@
 *** projectile-rails
 #+begin_src emacs-lisp :lexical no
 (e:package-config! projectile-rails
-  :commands (projectile-rails-find-resource)
   :defvar (projectile-rails-views-re)
   :init
   (projectile-rails-global-mode 1)
@@ -1810,6 +1810,7 @@
     "fgv" '("view" . projectile-rails-find-current-view)
     "fgz" '("helper" . projectile-rails-goto-spec-helper))
   :defer-config
+  (require 'projectile-rails)
   (defun projectile-rails-find-view-components ()
     "Find a View component."
     (interactive)
