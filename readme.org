@@ -604,26 +604,38 @@
   :defun (evil-get-auxiliary-keymap
           evil-half-cursor
           evil-make-overriding-map
+          evil-normal-state
           evil-normalize-keymaps
-          evil-set-command-property)
+          evil-set-command-property
+          evil-visual-restore)
   :init
-  (e:variable! evil-cross-lines t)
-  (e:variable! evil-disable-insert-state-bindings t)
-  (e:variable! evil-move-beyond-eol t)
-  (e:variable! evil-move-cursor-back nil)
-  (e:variable! evil-shift-width 2)
-  (e:variable! evil-want-Y-yank-to-eol t)
-  (e:variable! evil-want-keybinding nil)
+  (setopt evil-cross-lines t)
+  (setopt evil-disable-insert-state-bindings t)
+  (setopt evil-move-beyond-eol t)
+  (setopt evil-move-cursor-back nil)
+  (setopt evil-shift-width 2)
+  (setopt evil-want-Y-yank-to-eol t)
+  (setopt evil-want-keybinding nil)
   ;; cursor colors
-  (e:variable! evil-motion-state-cursor  '("plum3" box))
-  (e:variable! evil-normal-state-cursor  '("DarkGoldenrod2" box))
-  (e:variable! evil-visual-state-cursor  '("gray" (hbar . 2)))
-  (e:variable! evil-insert-state-cursor  '("chartreuse3" (bar . 2)))
-  (e:variable! evil-replace-state-cursor '("chocolate" (hbar . 2)))
-  (e:variable! evil-emacs-state-cursor   '("SkyBlue2" box))
-  (e:variable! evil-operator-state-cursor #'evil-half-cursor)
+  (setopt evil-motion-state-cursor  '("plum3" box))
+  (setopt evil-normal-state-cursor  '("DarkGoldenrod2" box))
+  (setopt evil-visual-state-cursor  '("gray" (hbar . 2)))
+  (setopt evil-insert-state-cursor  '("chartreuse3" (bar . 2)))
+  (setopt evil-replace-state-cursor '("chocolate" (hbar . 2)))
+  (setopt evil-emacs-state-cursor   '("SkyBlue2" box))
+  (setopt evil-operator-state-cursor #'evil-half-cursor)
   (evil-mode 1)
   :config
+  (defun evil-shift-right-visual ()
+    (interactive)
+    (call-interactively 'evil-shift-right)
+    (evil-normal-state)
+    (evil-visual-restore))
+  (defun evil-shift-left-visual ()
+    (interactive)
+    (call-interactively 'evil-shift-left)
+    (evil-normal-state)
+    (evil-visual-restore))
   (general-def 'motion
     "TAB" nil
     "C-\\" 'ignore
@@ -633,6 +645,9 @@
     "<up>"   'evil-previous-visual-line
     "j" 'evil-next-visual-line
     "k" 'evil-previous-visual-line)
+  (general-def 'visual
+    "<" 'evil-shift-left-visual
+    ">" 'evil-shift-right-visual)
   (general-def 'insert
     "C-z" nil))
 #+end_src
