@@ -1627,13 +1627,14 @@
 #+begin_src emacs-lisp :lexical no
 (e:package-config! lsp-mode
   :defer-config
-  (e:variable! lsp-auto-execute-action nil)
-  (e:variable! lsp-completion-provider :none)
-  (e:variable! lsp-enable-file-watchers nil)
-  (e:variable! lsp-enable-snippet nil)
-  (e:variable! lsp-file-watch-threshold 100000)
-  (e:variable! lsp-imenu-sort-methods '(position))
-  (e:variable! lsp-modeline-code-actions-enable nil)
+  (setopt lsp-auto-execute-action nil)
+  (setopt lsp-completion-provider :none)
+  (setopt lsp-enable-file-watchers nil)
+  (setopt lsp-enable-snippet nil)
+  (setopt lsp-file-watch-threshold 100000)
+  (setopt lsp-imenu-sort-methods '(position))
+  (setopt lsp-modeline-code-actions-enable nil)
+  (setopt lsp-restart 'ignore)
   (e:minor-mode-key-def lsp-mode
     "=" "format"
     "=b" 'lsp-format-buffer
