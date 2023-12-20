@@ -1247,7 +1247,10 @@
                          (-non-nil))))
       (when messages
         (kill-new (string-join messages ", "))
-        (message (string-join messages ", "))))))
+        (message (string-join messages ", ")))))
+  :config
+  (setopt flycheck-check-syntax-automatically '(save idle-change))
+  (setopt flycheck-idle-change-delay 5.0))
 #+end_src
 ** git-gutter
 #+begin_src emacs-lisp :lexical no
