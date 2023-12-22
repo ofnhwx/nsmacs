@@ -1132,8 +1132,27 @@
 #+begin_src emacs-lisp :lexical no
 (e:package-config! apheleia
   :defvar (apheleia-formatters apheleia-mode-alist)
-  :hook (ruby-ts-mode-hook . apheleia-mode)
+  :config
+  (apheleia-global-mode 1)
   :defer-config
+  (defun apheleia-inhibit-unnecesary-major-mode ()
+    (--none? (derived-mode-p it)
+             '(
+               ruby-base-mode
+               )))
+  (defun apheleia-inhibit-rubocop-excludes ()
+    (--any? (s-ends-with? it buffer-file-name)
+            '(
+              "/config/application.rb"
+              "/config/environments/development.rb"
+              "/config/environments/production.rb"
+              "/config/environments/staging.rb"
+              "/config/environments/test.rb"
+              "/db/schema.rb"
+              )))
+  (setopt apheleia-inhibit-functions
+          '(apheleia-inhibit-unnecesary-major-mode
+            apheleia-inhibit-rubocop-excludes))
   ;; formatters
   (setf (alist-get 'rubocop apheleia-formatters)
         '((if (e:bundle-exists "rubocop")
