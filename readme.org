@@ -1536,7 +1536,8 @@
   (smartparens-global-mode 1)
   (show-smartparens-global-mode 1)
   (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
-  (sp-local-pair 'lisp-interaction-mode "'" nil :actions nil))
+  (sp-local-pair 'lisp-interaction-mode "'" nil :actions nil)
+  (require 'smartparens-config))
 #+end_src
 ** symbol-overlay
 #+begin_src emacs-lisp :lexical no
