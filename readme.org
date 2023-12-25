@@ -1506,6 +1506,7 @@
             ("*Async Shell Command*"          :align bottom :ratio 0.3)
             ("*Bundler*"                      :align bottom :ratio 0.3)
             ("*General Keybindings*"          :align bottom :ratio 0.3)
+            ("*Make*"                         :align bottom :ratio 0.3)
             ("*Warnings*"                     :align bottom :ratio 0.3)
             ("*projectile-rails-compilation*" :align bottom :ratio 0.3)
             ("*rspec-compilation*"            :align bottom :ratio 0.3)
@@ -2074,8 +2075,15 @@
   (find-file-existing (f-expand "readme.org" user-emacs-directory)))
 (defun e:make-config ()
   (interactive)
-  (let ((default-directory user-emacs-directory))
-    (async-shell-command "make")))
+  (let ((default-directory user-emacs-directory)
+        (buffer (get-buffer-create "*Make*")))
+    (display-buffer buffer)
+    (set-process-sentinel
+     (start-process-shell-command "e:make-config" buffer "make")
+     (lambda (process event)
+       (let* ((message (s-trim-right (format "%s %s" process event)))
+              (command (format "notify-send '%s'" message)))
+         (call-process-shell-command command))))))
 
 (e:key-def file f
   "" '(:ignore t :wk "file")
