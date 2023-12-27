@@ -2023,9 +2023,16 @@
   "cw" 'chezmoi-write
   "e" '(:ignore t :wk "elpaca")
   "eU" 'elpaca-merge-all
+  "eb" 'elpaca-browse
+  "ed" 'elpaca-delete
+  "ei" 'elpaca-info
+  "el" 'elpaca-log
   "em" 'elpaca-manager
+  "er" 'elpaca-rebuild
+  "es" 'elpaca-status
   "et" 'elpaca-try
-  "eu" 'elpaca-update
+  "eu" 'elpaca-merge
+  "ev" 'elpaca-visit
   "t" '(:ignore t :wk "tools")
   "tp" 'prodigy)
 #+end_src
