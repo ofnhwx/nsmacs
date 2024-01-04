@@ -909,10 +909,6 @@
     "<escape>" 'corfu-quit
     "C-q" 'corfu-quick-complete
     "C-z" 'cape-codeium)
-  (with-eval-after-load 'evil
-    (evil-make-overriding-map corfu-map)
-    (advice-add 'corfu--setup :after 'evil-normalize-keymaps)
-    (advice-add 'corfu--teardown :after 'evil-normalize-keymaps))
   ;; https://github.com/minad/corfu?tab=readme-ov-file#completing-in-the-minibuffer
   (defun corfu-enable-always-in-minibuffer ()
     "Enable Corfu in the minibuffer if Vertico/Mct are not active."
