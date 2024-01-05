@@ -1555,6 +1555,10 @@
   (sp-local-pair 'lisp-interaction-mode "'" nil :actions nil)
   (require 'smartparens-config))
 #+end_src
+** sudo-edit
+#+begin_src emacs-lisp :lexical no
+(e:package-config! sudo-edit)
+#+end_src
 ** symbol-overlay
 #+begin_src emacs-lisp :lexical no
 (e:package-config! symbol-overlay
