@@ -819,7 +819,7 @@
   :defer-config
   (defun e:capf-function (name &rest capfs)
     (let ((fun (intern (format "e:cape-%s" name)))
-          (capfs (-concat capfs '(cape-dabbrev))))
+          (capfs (-concat capfs '(cape-dabbrev codeium-completion-at-point))))
       (defalias fun
         (cape-capf-interactive
          (cape-capf-buster
@@ -1102,6 +1102,10 @@
   (setopt org-src-window-setup 'split-window-below))
 #+end_src
 * Config: Packages
+** temp: jsonrpc
+#+begin_src emacs-lisp
+(e:package-config! jsonrpc)
+#+end_src
 ** ace-window
 #+begin_src emacs-lisp
 (e:package-config! ace-window
