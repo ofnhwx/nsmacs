@@ -878,6 +878,7 @@
   :hook ((prog-mode-hook . copilot-mode)
          (org-mode-hook . copilot-mode))
   :defer-config
+  (setopt copilot-indent-offset-warning-disable t)
   (general-def copilot-mode-map
    "<backtab>" 'copilot-complete
    "C-z" 'copilot-complete)
@@ -1529,7 +1530,7 @@
   :advice (:around shell-pop ad:shell-pop@auto-session-name)
   :defvar (shell-pop-shell-type)
   :config
-  (setopt shell-pop-shell-type '("vterm" "*vterm-default*" #'vterm))
+  (setopt shell-pop-shell-type '("vterm" "*vterm-default*" (lambda () (vterm))))
   :defer-config
   (setopt shell-pop-autocd-to-working-dir nil)
   (setopt shell-pop-full-span t)
@@ -2322,8 +2323,9 @@
 #+begin_src emacs-lisp :lexical no
 (e:deffered-config! scratch
   :config
-  (scratch-buffer)
-  (lisp-interaction-mode))
+  (save-window-excursion
+   (scratch-buffer)
+   (lisp-interaction-mode)))
 (setopt e:deffered-config-loaded t)
 #+end_src
 ** パッケージのインストール待ち
