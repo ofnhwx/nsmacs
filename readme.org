@@ -1201,7 +1201,11 @@
 #+end_src
 ** devdocs
 #+begin_src emacs-lisp :lexical no
-(e:package-config! devdocs)
+(e:package-config! devdocs
+  :config
+  (add-hook 'ruby-base-mode-hook
+            (defun e:devdocs-ruby ()
+              (setq-local devdocs-current-docs '("rails~7.1" "ruby~3")))))
 #+end_src
 ** difftastic
 #+begin_src emacs-lisp :lexical no
