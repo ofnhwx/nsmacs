@@ -732,6 +732,7 @@
   (setopt skk-share-private-jisyo t)
   (setopt skk-show-annotation t)
   (setopt skk-sticky-key ";")
+  ;; (setopt skk-use-azik t)
   (setopt skk-use-jisx0201-input-method t)
   (ccc-setup)
   :defer-config
@@ -877,6 +878,8 @@
           copilot-clear-overlay)
   :hook ((prog-mode-hook . copilot-mode)
          (org-mode-hook . copilot-mode))
+  :init
+  (e:var! copilot-install-dir "copilot")
   :defer-config
   (setopt copilot-indent-offset-warning-disable t)
   (general-def copilot-mode-map
@@ -1053,12 +1056,6 @@
                                  "      "
                                  "────────────────")))
 #+end_src
-** org-bullets
-#+begin_src emacs-lisp
-(e:package-config! org-bullets
-  :after (org)
-  :hook (org-mode-hook . org-bullets-mode))
-#+end_src
 ** org-clock
 #+begin_src emacs-lisp
 (e:deffered-config! org-clock
@@ -1101,6 +1098,12 @@
   :config
   (setopt org-edit-src-content-indentation 0)
   (setopt org-src-window-setup 'split-window-below))
+#+end_src
+** org-superstar
+#+begin_src emacs-lisp
+(e:package-config! org-superstar
+  :after (org)
+  :hook (org-mode-hook . org-superstar-mode))
 #+end_src
 * Config: Packages
 ** temp: jsonrpc
