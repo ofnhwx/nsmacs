@@ -976,8 +976,10 @@
 #+begin_src emacs-lisp
 (e:package-config! orderless
   :commands (orderless-migemo)
+  :defvar (orderless-matching-styles)
   :init
-  (setopt orderless-matching-styles '(orderless-literal orderless-regexp orderless-migemo))
+  ;; setopt は警告が出るので setq を使用
+  (setq orderless-matching-styles '(orderless-literal orderless-regexp orderless-migemo))
   :defer-config
   (defun orderless-migemo (component)
     (when (fboundp 'migemo-get-pattern)
@@ -1857,19 +1859,20 @@
     "fgv" '("view" . projectile-rails-find-current-view)
     "fgz" '("helper" . projectile-rails-goto-spec-helper))
   :defer-config
-  (require 'projectile-rails)
+  (defun e:projectile-rails-find-resource (prompt dirs &optional newfile-template)
+    (eval '(projectile-rails-find-resource prompt dirs newfile-template)))
   (defun projectile-rails-find-view-components ()
     "Find a View component."
     (interactive)
-    (projectile-rails-find-resource
-     "components: "
-     `(("app/components/" "\\(.+\\)\\.rb$")
-       ("app/components/" ,(concat "\\(.+\\)" projectile-rails-views-re)))
-     "app/components/${filename}"))
+    (e:projectile-rails-find-resource
+      "components: "
+      `(("app/components/" "\\(.+\\)\\.rb$")
+        ("app/components/" ,(concat "\\(.+\\)" projectile-rails-views-re)))
+      "app/components/${filename}"))
   (defun projectile-rails-find-graphql ()
     "Find a GraphQL."
     (interactive)
-    (projectile-rails-find-resource
+    (e:projectile-rails-find-resource
      "graphql: "
      '(("app/graphql/" "\\(.+\\)\\.rb$"))
      "app/graphql/${filename}")))
