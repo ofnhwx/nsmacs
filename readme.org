@@ -310,6 +310,12 @@
 (setopt use-short-answers t)
 (setopt window-resize-pixelwise t)
 #+end_src
+** auth-source
+#+begin_src emacs-lisp
+(e:deffered-config! auto-source
+  :config
+  (setopt auth-sources '("~/.authinfo.json.gpg" "~/.netrc.gpg")))
+#+end_src
 ** auto-revert
 #+begin_src emacs-lisp
 (e:deffered-config! auto-revert
@@ -1396,6 +1402,10 @@
               (when (and (not magit-delta-mode)
                          (<= (point-max) nth/magit-delta-point-max))
                 (magit-delta-mode +1)))))
+#+end_src
+*** forge
+#+begin_src emacs-lisp :lexical no
+(e:package-config! forge)
 #+end_src
 ** migemo
 #+begin_src emacs-lisp :lexical no
