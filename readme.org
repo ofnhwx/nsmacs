@@ -376,6 +376,10 @@
 (e:package-config! dired-filter
   :hook (dired-mode-hook . dired-filter-mode))
 #+end_src
+*** dired-toggle-sudo
+#+begin_src emacs-lisp :lexical no
+(e:package-config! dired-toggle-sudo)
+#+end_src
 *** treemacs-icons-dired
 #+begin_src emacs-lisp
 (e:package-config! treemacs-icons-dired
@@ -2347,7 +2351,8 @@
   :config
   (save-window-excursion
    (scratch-buffer)
-   (lisp-interaction-mode)))
+   (org-mode)
+   (display-line-numbers-mode-on)))
 (setopt e:deffered-config-loaded t)
 #+end_src
 ** パッケージのインストール待ち
