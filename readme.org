@@ -1921,12 +1921,8 @@
 *** typescript-ts-mode
 #+begin_src emacs-lisp :lexical no
 (e:deffered-config! typescript-ts-mode
-  :hook (typescript-ts-mode-hook . lsp-deferred))
-#+end_src
-*** tsx-ts-mode
-#+begin_src emacs-lisp :lexical no
-(e:deffered-config! tsx-ts-mode
-  :hook (tsx-ts-mode-hook . lsp-deferred))
+  :hook ((typescript-ts-mode-hook . lsp-deferred)
+         (tsx-ts-mode-hook . lsp-deferred)))
 #+end_src
 *** vue-ts-mode
 #+begin_src emacs-lisp :lexical no
@@ -1974,6 +1970,10 @@
     "C-j" nil))
 #+end_src
 ** Text
+*** csv-mode
+#+begin_src emacs-lisp :lexical no
+(e:package-config! csv-mode)
+#+end_src
 *** yaml-ts-mode
 #+begin_src emacs-lisp :lexical no
 (e:package-config! yaml-mode
