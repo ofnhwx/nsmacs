@@ -2276,6 +2276,7 @@
 #+begin_src emacs-lisp :lexical no
 (e:key-def toggle t
   "" '(:ignore t :wk "toggle")
+  "d" 'toggle-debug-on-error
   "l" 'toggle-truncate-lines
   "t" 'consult-minor-mode-menu)
 #+end_src
