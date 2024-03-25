@@ -1201,8 +1201,17 @@
 ** chezmoi
 #+begin_src emacs-lisp :lexical no
 (e:package-config! chezmoi
+  :defun (chezmoi-find chezmoi-target-file)
+  :defvar (chezmoi-mode)
   :config
-  (require 'chezmoi))
+  (require 'chezmoi)
+  (add-hook 'find-file-hook
+            (defun reopen-in-chezmoi-mode ()
+              (let* ((source (buffer-file-name))
+                     (target (chezmoi-target-file (or source ""))))
+                (when (and target
+                           (not chezmoi-mode))
+                  (chezmoi-find target))))))
 #+end_src
 ** consult-flycheck
 #+begin_src emacs-lisp :lexical no
