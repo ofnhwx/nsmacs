@@ -658,19 +658,19 @@
   (general-def 'insert
     "C-z" nil))
 #+end_src
-** evil-args
-#+begin_src emacs-lisp
-(e:package-config! evil-args
-  :config
-  (general-def evil-inner-text-objects-map "a" 'evil-inner-arg)
-  (general-def evil-outer-text-objects-map "a" 'evil-outer-arg))
-#+end_src
 ** evil-collection
 #+begin_src emacs-lisp
 (e:package-config! evil-collection
   :after (evil)
   :config
   (evil-collection-init))
+#+end_src
+** evil-args
+#+begin_src emacs-lisp
+(e:package-config! evil-args
+  :config
+  (general-def evil-inner-text-objects-map "a" 'evil-inner-arg)
+  (general-def evil-outer-text-objects-map "a" 'evil-outer-arg))
 #+end_src
 ** evil-easymotion
 #+begin_src emacs-lisp
@@ -698,6 +698,13 @@
   :config
   (evil-lion-mode 1))
 #+end_src
+** evil-mc
+#+begin_src emacs-lisp :lexical no
+(e:package-config! evil-mc
+  :after (evil)
+  :config
+  (global-evil-mc-mode 1))
+#+end_src
 ** evil-nerd-commenter
 #+begin_src emacs-lisp
 (e:package-config! evil-nerd-commenter
@@ -710,7 +717,7 @@
   :after (evil)
   :config
   (general-def 'visual evil-surround-mode-map "s" 'evil-surround-region)
-  (global-evil-surround-mode))
+  (global-evil-surround-mode 1))
 #+end_src
 ** evil-textobj-tree-sitter
 #+begin_src emacs-lisp :lexical no
@@ -919,7 +926,7 @@
   (setopt corfu-auto t)
   (setopt corfu-auto-prefix 1)
   (setopt corfu-cycle t)
-  (global-corfu-mode)
+  (global-corfu-mode 1)
   :defer-config
   (general-def corfu-map
     "<escape>" 'corfu-quit
@@ -1246,7 +1253,7 @@
 #+begin_src emacs-lisp
 (e:package-config! doom-modeline
   :config
-  (setopt doom-modeline-buffer-file-name-style 'buffer-name)
+  (setopt doom-modeline-buffer-file-name-style 'relative-from-project)
   (setopt doom-modeline-minor-modes t)
   (doom-modeline-mode 1))
 #+end_src
