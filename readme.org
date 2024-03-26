@@ -1286,7 +1286,11 @@
 #+begin_src emacs-lisp :lexical no
 (e:package-config! flycheck
   :commands (e:flycheck-copy-error-ids)
-  :defun (flycheck-error-id flycheck-overlay-errors-at)
+  :defun (flycheck-error-id
+          flycheck-overlay-errors-at
+          flycheck-add-next-checker
+          flycheck-select-checker
+          flycheck-may-enable-checker)
   :init
   (global-flycheck-mode 1)
   (defun e:flycheck-copy-error-ids ()
@@ -1299,7 +1303,7 @@
         (kill-new (string-join messages ", "))
         (message (string-join messages ", ")))))
   :config
-  (setopt flycheck-check-syntax-automatically '(save idle-change))
+  (setopt flycheck-check-syntax-automatically '(save idle-change mode-enabled))
   (setopt flycheck-idle-change-delay 5.0))
 #+end_src
 ** git-gutter
@@ -1803,18 +1807,15 @@
 #+begin_src emacs-lisp :lexical no
 (e:package-config! haml-mode
   :hook (haml-mode-hook . highlight-indentation-mode-on)
+  :config
+  (add-hook 'haml-mode-hook
+            (defun e:haml-mode-setup ()
+              (when (flycheck-may-enable-checker 'haml-lint)
+                (flycheck-select-checker 'haml-lint)
+                (setq-local flycheck-command-wrapper-function
+                            (lambda (command)
+                              (append '("bundle" "exec") command))))))
   :defer-config
-  (flycheck-def-config-file-var flycheck-haml-lintrc haml-lint ".haml-lint.yml" :safe #'stringp)
-  (flycheck-define-checker haml-lint
-    "A haml-lint syntax checker"
-    :command ("bundle" "exec" "haml-lint"
-              (config-file "--config" flycheck-haml-lintrc)
-              source-inplace)
-    :error-patterns
-    ((error   line-start (file-name) ":" line " [E] " (message) line-end)
-     (warning line-start (file-name) ":" line " [W] " (message) line-end))
-    :modes (haml-mode))
-  (add-to-list 'flycheck-checkers 'haml-lint)
   (flycheck-add-next-checker 'haml 'haml-lint))
 #+end_src
 *** bundler
