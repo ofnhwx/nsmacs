@@ -1353,10 +1353,17 @@
 ** jinx
 #+begin_src emacs-lisp :lexical no
 (e:package-config! jinx
-  :defvar (jinx-exclude-regexps)
+  :defvar (jinx-exclude-regexps jinx-include-faces)
   :hook (prog-mode-hook . jinx-mode)
   :config
   (setopt jinx-languages "en_US")
+  (setf (alist-get 'prog-mode jinx-include-faces)
+        '(font-lock-comment-face
+          font-lock-constant-face
+          font-lock-doc-face
+          font-lock-function-name-face
+          font-lock-string-face
+          font-lock-type-face))
   ;; https://github.com/minad/jinx/issues/4#issuecomment-1484786256
   (let ((re (alist-get t jinx-exclude-regexps)))
     (add-to-list 're "\\cc")
