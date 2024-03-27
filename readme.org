@@ -460,7 +460,7 @@
 ** google-translate
 #+begin_src emacs-lisp :lexical no
 (e:package-config! google-translate
-  :defer-config
+  :config
   (setopt google-translate-default-source-language "en")
   (setopt google-translate-default-target-language "ja"))
 #+end_src
@@ -1547,9 +1547,10 @@
   :config
   (setopt shackle-rules
           '(;;
-            ("*Backtrace*"       :align bottom :ratio 0.3 :select t)
-            ("*Flycheck errors*" :align bottom :ratio 0.3 :select t)
-            ("*Help*"            :align bottom :ratio 0.3 :select t)
+            ("*Backtrace*"        :align bottom :ratio 0.3 :select t)
+            ("*Flycheck errors*"  :align bottom :ratio 0.3 :select t)
+            ("*Google Translate*" :align bottom :ratio 0.3 :select t)
+            ("*Help*"             :align bottom :ratio 0.3 :select t)
             ;;
             ("*Async Shell Command*"          :align bottom :ratio 0.3)
             ("*Bundler*"                      :align bottom :ratio 0.3)
@@ -2335,7 +2336,11 @@
   "dl" 'delete-blank-lines
   "dw" 'delete-trailing-whitespace
   "g" '(:ignore t :wk "google/grugru")
+  "gQ" 'google-translate-query-translate-reverse
+  "gT" 'google-translate-at-point-reverse
   "gg" 'grugru
+  "gq" 'google-translate-query-translate
+  "gt" 'google-translate-at-point
   "l" '(:ignore t :wk "lines")
   "ls" 'sort-lines
   "m" 'link-hint-open-multiple-links
