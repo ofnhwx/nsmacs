@@ -52,8 +52,8 @@
 ** 各種ディレクトリ
 #+begin_src emacs-lisp
 (setq user-emacs-directory (file-name-directory (or load-file-name buffer-file-name)))
-(setq no-littering-etc-directory (expand-file-name "etc/" user-emacs-directory))
-(setq no-littering-var-directory (expand-file-name "var/" user-emacs-directory))
+(defvar no-littering-etc-directory (expand-file-name "etc/" user-emacs-directory))
+(defvar no-littering-var-directory (expand-file-name "var/" user-emacs-directory))
 (add-to-list 'load-path (expand-file-name "lisp/" user-emacs-directory))
 #+end_src
 ** マクロ定義
@@ -261,6 +261,8 @@
 #+end_src
 *** others
 #+begin_src emacs-lisp
+(eval-when-compile
+  (require 'elpaca))
 (elpaca (komunan-lisp-library :host github :repo "ofnhwx/komunan-lisp-library")
   (require 'komunan-lisp-library))
 (elpaca f (require 'f))
@@ -314,7 +316,7 @@
 #+end_src
 ** auth-source
 #+begin_src emacs-lisp
-(e:deffered-config! auto-source
+(e:deffered-config! auth-source
   :config
   (setopt auth-sources '("~/.authinfo.json.gpg" "~/.netrc.gpg")))
 #+end_src
