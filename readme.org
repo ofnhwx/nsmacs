@@ -1470,13 +1470,6 @@
 #+begin_src emacs-lisp :lexical no
 (e:package-config! pdf-tools)
 #+end_src
-** persistent-scratch
-#+begin_src emacs-lisp :lexical no
-(e:package-config! persistent-scratch
-  :priority :high
-  :config
-  (persistent-scratch-setup-default))
-#+end_src
 ** prodigy
 *** prodigy
 #+begin_src emacs-lisp :lexical no
@@ -1535,6 +1528,27 @@
 ** rainbow-mode
 #+begin_src emacs-lisp :lexical no
 (e:package-config! rainbow-mode)
+#+end_src
+** scratch
+*** scratch
+#+begin_src emacs-lisp :lexical no
+(e:package-config! scratch
+  :config
+  (setopt persistent-scratch-scratch-buffer-p-function
+          (defun scratch-buffer-p ()
+            (or (eq (current-buffer) (get-scratch-buffer-create))
+                (bound-and-true-p scratch-buffer))))
+  (save-window-excursion
+    (scratch-buffer)
+    (funcall initial-major-mode)
+    (display-line-numbers-mode-on)))
+#+end_src
+*** persistent-scratch
+#+begin_src emacs-lisp :lexical no
+(e:package-config! persistent-scratch
+  :priority :high
+  :config
+  (persistent-scratch-setup-default))
 #+end_src
 ** separedit
 #+begin_src emacs-lisp :lexical no
@@ -2087,9 +2101,8 @@
   "el" 'elpaca-log
   "em" 'elpaca-manager
   "er" 'elpaca-rebuild
-  "es" 'elpaca-status
   "et" 'elpaca-try
-  "eu" 'elpaca-merge
+  "eu" 'elpaca-update
   "ev" 'elpaca-visit
   "t" '(:ignore t :wk "tools")
   "tp" 'prodigy)
@@ -2102,6 +2115,7 @@
 
 (e:key-def buffer b
   "" '(:ignore t :wk "buffer")
+  "S" 'scratch
   "b" 'consult-buffer
   "d" 'kill-buffer
   "m" '(e:switch-to-messages-buffer :wk "Messages buffer")
@@ -2379,12 +2393,6 @@
 * 設定完了
 ** 完了処理
 #+begin_src emacs-lisp :lexical no
-(e:deffered-config! scratch
-  :config
-  (save-window-excursion
-   (scratch-buffer)
-   (org-mode)
-   (display-line-numbers-mode-on)))
 (setopt e:deffered-config-loaded t)
 #+end_src
 ** パッケージのインストール待ち
