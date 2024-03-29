@@ -2094,7 +2094,7 @@
   "ct" 'chezmoi-template-buffer-display
   "cw" 'chezmoi-write
   "e" '(:ignore t :wk "elpaca")
-  "eU" 'elpaca-merge-all
+  "eU" 'elpaca-pull-all
   "eb" 'elpaca-browse
   "ed" 'elpaca-delete
   "ei" 'elpaca-info
@@ -2102,7 +2102,7 @@
   "em" 'elpaca-manager
   "er" 'elpaca-rebuild
   "et" 'elpaca-try
-  "eu" 'elpaca-update
+  "eu" 'elpaca-pull
   "ev" 'elpaca-visit
   "t" '(:ignore t :wk "tools")
   "tp" 'prodigy)
