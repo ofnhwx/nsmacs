@@ -1009,6 +1009,11 @@
             (progn (string-match-p pattern "") pattern)
           (invalid-regexp nil))))))
 #+end_src
+** origami
+#+begin_src emacs-lisp :lexical no
+(e:package-config! origami
+  :hook (prog-mode-hook . origami-mode))
+#+end_src
 ** vertico
 #+begin_src emacs-lisp
 (e:package-config! vertico
@@ -1017,7 +1022,10 @@
   (setopt vertico-count 20)
   (setopt vertico-cycle t)
   (general-def vertico-map
-    "C-l" 'vertico-directory-up)
+    "C-l" 'vertico-directory-up
+    "M-N" 'vertico-repeat-next
+    "M-P" 'vertico-repeat-previous)
+  (add-hook 'minibuffer-setup-hook #'vertico-repeat-save)
   (vertico-mode 1))
 #+end_src
 * Config: Org
@@ -2237,7 +2245,7 @@
   "hs" 'helpful-symbol
   "hv" 'helpful-variable)
 #+end_src
-*** [j] jump/join⇔split
+*** [j] jump/join ⇔ split
 #+begin_src emacs-lisp :lexical no
 (e:key-def jump j
   "" '(:ignore t :wk "jump")
@@ -2299,6 +2307,12 @@
   "" '(:ignore t :wk "quit")
   "q" 'exit
   "r" 'restart-emacs)
+#+end_src
+*** [r] register/rings/resume
+#+begin_src emacs-lisp :lexical no
+(e:key-def register r
+  "" '(:ignore t :wk "register")
+  "l" 'vertico-repeat)
 #+end_src
 *** [s] search/symbol
 #+begin_src emacs-lisp :lexical no
