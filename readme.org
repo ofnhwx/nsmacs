@@ -1303,11 +1303,13 @@
 #+begin_src emacs-lisp :lexical no
 (e:package-config! flycheck
   :commands (e:flycheck-copy-error-ids)
-  :defun (flycheck-error-id
+  :defun (flycheck-add-next-checker
+          flycheck-checker-get
+          flycheck-def-config-file-var
+          flycheck-error-id
+          flycheck-may-enable-checker
           flycheck-overlay-errors-at
-          flycheck-add-next-checker
-          flycheck-select-checker
-          flycheck-may-enable-checker)
+          flycheck-select-checker)
   :init
   (global-flycheck-mode 1)
   (defun e:flycheck-copy-error-ids ()
@@ -1321,7 +1323,14 @@
         (message (string-join messages ", ")))))
   :config
   (setopt flycheck-check-syntax-automatically '(save idle-change mode-enabled))
-  (setopt flycheck-idle-change-delay 5.0))
+  (setopt flycheck-idle-change-delay 5.0)
+  :defer-config
+  (flycheck-def-config-file-var flycheck-haml-lintrc haml-lint ".haml-lint.yml" :safe #'stringp)
+  (e:eval!
+    (setf (flycheck-checker-get 'haml-lint 'command)
+          '("haml-lint" "--no-color" "--no-summary"
+            (config-file "--config" flycheck-haml-lintrc)
+            source-inplace))))
 #+end_src
 ** git-gutter
 #+begin_src emacs-lisp :lexical no
