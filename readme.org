@@ -1045,12 +1045,12 @@
     (f-expand (format-time-string "archives/%Y.org") org-directory))
   (defun org-support/tasks-file ()
     (require 'org)
-    (f-expand "tasks.org" org-directory))
+    (f-expand "denote/20000101T000000--タスク__task.org" org-directory))
   (defun org-support/popup-tasks ()
     (interactive)
     (display-buffer (find-file-noselect (org-support/tasks-file))))
   (defun org-support/note-file ()
-    (f-expand "note.org" org-directory))
+    (f-expand "denote/20000101T000001--メモ__memo.org" org-directory))
   (defun org-support/popup-note ()
     (interactive)
     (display-buffer (find-file-noselect (org-support/note-file)))))
@@ -1241,6 +1241,19 @@
 ** consult-todo
 #+begin_src emacs-lisp :lexical no
 (e:package-config! (consult-todo :host github :repo "liuyinz/consult-todo"))
+#+end_src
+** denote
+*** denote
+#+begin_src emacs-lisp :lexical no
+(e:package-config! denote
+  :defer-config
+  (eval-and-compile (require 'org))
+  (setopt denote-directory (expand-file-name "denote" org-directory))
+  (setopt denote-known-keywords '("memo" "task")))
+#+end_src
+*** denote-menu
+#+begin_src emacs-lisp :lexical no
+(e:package-config! denote-menu)
 #+end_src
 ** devdocs
 #+begin_src emacs-lisp :lexical no
