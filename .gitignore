@@ -1,7 +1,10 @@
-*.elc
 /codeium/
 /eln-cache/
 /elpaca/
+/epkgs/
 /tree-sitter/
+
 /early-init.el
 /init.el
+
+*.elc
