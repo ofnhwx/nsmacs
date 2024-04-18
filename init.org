@@ -613,7 +613,7 @@
 * Config: Evil
 ** evil
 #+begin_src emacs-lisp
-(e:package-config! evil
+(e:deffered-config! evil
   :priority :high
   :defun (evil-get-auxiliary-keymap
           evil-half-cursor
@@ -667,21 +667,21 @@
 #+end_src
 ** evil-collection
 #+begin_src emacs-lisp
-(e:package-config! evil-collection
+(e:deffered-config! evil-collection
   :after (evil)
   :config
   (evil-collection-init))
 #+end_src
 ** evil-args
 #+begin_src emacs-lisp
-(e:package-config! evil-args
+(e:deffered-config! evil-args
   :config
   (general-def evil-inner-text-objects-map "a" 'evil-inner-arg)
   (general-def evil-outer-text-objects-map "a" 'evil-outer-arg))
 #+end_src
 ** evil-easymotion
 #+begin_src emacs-lisp
-(e:package-config! evil-easymotion
+(e:deffered-config! evil-easymotion
   :after (evil)
   :defvar (evilem-map)
   :config
@@ -693,34 +693,34 @@
 #+end_src
 ** evil-goggles
 #+begin_src emacs-lisp
-(e:package-config! evil-goggles
+(e:deffered-config! evil-goggles
   :after (evil)
   :config
   (evil-goggles-mode 1))
 #+end_src
 ** evil-lion
 #+begin_src emacs-lisp
-(e:package-config! evil-lion
+(e:deffered-config! evil-lion
   :after (evil)
   :config
   (evil-lion-mode 1))
 #+end_src
 ** evil-mc
 #+begin_src emacs-lisp
-(e:package-config! evil-mc
+(e:deffered-config! evil-mc
   :after (evil)
   :config
   (global-evil-mc-mode 1))
 #+end_src
 ** evil-nerd-commenter
 #+begin_src emacs-lisp
-(e:package-config! evil-nerd-commenter
+(e:deffered-config! evil-nerd-commenter
   :after (evil)
   :require t)
 #+end_src
 ** evil-surround
 #+begin_src emacs-lisp
-(e:package-config! evil-surround
+(e:deffered-config! evil-surround
   :after (evil)
   :config
   (general-def 'visual evil-surround-mode-map "s" 'evil-surround-region)
@@ -728,7 +728,7 @@
 #+end_src
 ** evil-textobj-tree-sitter
 #+begin_src emacs-lisp
-(e:package-config! evil-textobj-tree-sitter
+(e:deffered-config! evil-textobj-tree-sitter
   :defun (evil-textobj-tree-sitter-function--function.inner
           evil-textobj-tree-sitter-function--function.outer)
   :config
@@ -740,7 +740,7 @@
 * Config: SKK
 ** skk
 #+begin_src emacs-lisp
-(e:package-config! ddskk
+(e:deffered-config! ddskk
   :advice (:around evil-refresh-cursor ad:evil-refresh-cursor@with-skk)
   :defun (skk-latin-mode-on)
   :defvar (skk-mode-hook)
@@ -807,7 +807,7 @@
 #+end_src
 ** ddskk-posframe
 #+begin_src emacs-lisp
-(e:package-config! ddskk-posframe
+(e:deffered-config! ddskk-posframe
   :after (skk)
   :config
   (ddskk-posframe-mode 1))
@@ -816,29 +816,22 @@
 ** cape
 *** codeium
 #+begin_src emacs-lisp
-(e:package-config! (codeium :host github :repo "Exafunction/codeium.el")
+(e:deffered-config! codeium
   :commands (cape-codeium)
   :defer-config
   (defalias 'cape-codeium (cape-capf-interactive #'codeium-completion-at-point)))
 #+end_src
 *** company-org-block
 #+begin_src emacs-lisp
-(e:package-config! company-org-block
+(e:deffered-config! company-org-block
   :commands (cape-org-block)
   :defer-config
   (setopt company-org-block-edit-style 'inline)
   (defalias 'cape-org-block (cape-capf-interactive (cape-company-to-capf #'company-org-block))))
 #+end_src
-*** company-tabnine
-#+begin_src emacs-lisp
-(e:package-config! company-tabnine
-  :commands (cape-tabnine)
-  :defer-config
-  (defalias 'cape-tabnine (cape-capf-interactive (cape-company-to-capf #'company-tabnine))))
-#+end_src
 *** cape
 #+begin_src emacs-lisp
-(e:package-config! cape
+(e:deffered-config! cape
   :defun (e:capf-function)
   :hook ((prog-mode-hook . e:setup-capf/default)
          (org-mode-hook . e:setup-capf/org)
@@ -867,7 +860,7 @@
 #+end_src
 ** consult
 #+begin_src emacs-lisp
-(e:package-config! consult
+(e:deffered-config! consult
   :advice (:around consult-line ad:consult-line@with-orderless)
   :commands (consult-faces consult-line-dwim consult-ripgrep-dwim consult-ripgrep-cwd consult-ripgrep-cwd-dwim)
   :defun (consult-ripgrep consult--read)
@@ -924,7 +917,7 @@
 #+end_src
 ** corfu
 #+begin_src emacs-lisp
-(e:package-config! corfu
+(e:deffered-config! corfu
   :defvar (corfu-map)
   :hook ((corfu-mode-hook . corfu-echo-mode)
          (corfu-mode-hook . corfu-popupinfo-mode)
@@ -952,7 +945,7 @@
 #+end_src
 ** embark
 #+begin_src emacs-lisp
-(e:package-config! embark
+(e:deffered-config! embark
   :config
   (general-def minibuffer-mode-map
     :prefix "C-c"
@@ -961,13 +954,9 @@
     "C-d" 'embark-dwim
     "C-e" 'embark-export))
 #+end_src
-** embark-consult
-#+begin_src emacs-lisp
-(e:package-config! embark-consult)
-#+end_src
 ** fussy
 #+begin_src emacs-lisp
-(e:package-config! fussy
+(e:deffered-config! fussy
   :init
   (setq completion-styles '(fussy orderless))
   (setq completion-category-defaults nil)
@@ -985,7 +974,7 @@
 #+end_src
 ** kind-icon
 #+begin_src emacs-lisp
-(e:package-config! kind-icon
+(e:deffered-config! kind-icon
   :after (corfu)
   :defvar (corfu-margin-formatters)
   :config
@@ -994,13 +983,13 @@
 #+end_src
 ** marginalia
 #+begin_src emacs-lisp
-(e:package-config! marginalia
+(e:deffered-config! marginalia
   :config
   (marginalia-mode 1))
 #+end_src
 ** orderless
 #+begin_src emacs-lisp
-(e:package-config! orderless
+(e:deffered-config! orderless
   :commands (orderless-migemo)
   :defvar (orderless-matching-styles)
   :init
@@ -1016,12 +1005,12 @@
 #+end_src
 ** origami
 #+begin_src emacs-lisp
-(e:package-config! origami
+(e:deffered-config! origami
   :hook (prog-mode-hook . origami-mode))
 #+end_src
 ** vertico
 #+begin_src emacs-lisp
-(e:package-config! vertico
+(e:deffered-config! vertico
   :priority :high
   :config
   (setopt vertico-count 20)
@@ -1036,7 +1025,7 @@
 * Config: Org
 ** evil-org
 #+begin_src emacs-lisp
-(e:package-config! evil-org
+(e:deffered-config! evil-org
   :hook (org-mode-hook . evil-org-mode))
 #+end_src
 ** org-support
@@ -1137,7 +1126,7 @@
 #+end_src
 ** org-superstar
 #+begin_src emacs-lisp
-(e:package-config! org-superstar
+(e:deffered-config! org-superstar
   :after (org)
   :hook (org-mode-hook . org-superstar-mode))
 #+end_src

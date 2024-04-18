@@ -7,6 +7,9 @@
 [submodule "ag"]
 	path = lib/ag
 	url = https://github.com/Wilfred/ag.el
+[submodule "annalist"]
+	path = lib/annalist
+	url = https://github.com/noctuid/annalist.el
 [submodule "apheleia"]
 	path = lib/apheleia
 	url = https://github.com/radian-software/apheleia
@@ -34,12 +37,24 @@
 [submodule "bundler"]
 	path = lib/bundler
 	url = https://github.com/endofunky/bundler.el
+[submodule "cape"]
+	path = lib/cape
+	url = https://github.com/minad/cape
 [submodule "chezmoi"]
 	path = lib/chezmoi
 	url = https://github.com/tuh8888/chezmoi.el
 [submodule "closql"]
 	path = lib/closql
 	url = git@github.com:emacscollective/closql.git
+[submodule "codeium"]
+	path = lib/codeium
+	url = git@github.com:Exafunction/codeium.el
+[submodule "company"]
+	path = lib/company
+	url = https://github.com/company-mode/company-mode
+[submodule "company-org-block"]
+	path = lib/company-org-block
+	url = https://github.com/xenodium/company-org-block
 [submodule "compat"]
 	path = lib/compat
 	url = git@github.com:emacs-compat/compat.git
@@ -55,6 +70,9 @@
 [submodule "consult-todo"]
 	path = lib/consult-todo
 	url = git@github.com:liuyinz/consult-todo
+[submodule "corfu"]
+	path = lib/corfu
+	url = https://github.com/minad/corfu
 [submodule "csv-mode"]
 	path = lib/csv-mode
 	url = git@github.com:emacsmirror/csv-mode.git
@@ -64,6 +82,12 @@
 [submodule "dash"]
 	path = lib/dash
 	url = https://github.com/magnars/dash.el
+[submodule "ddskk"]
+	path = lib/ddskk
+	url = https://github.com/skk-dev/ddskk
+[submodule "ddskk-posframe"]
+	path = lib/ddskk-posframe
+	url = https://github.com/conao3/ddskk-posframe.el
 [submodule "denote"]
 	path = lib/denote
 	url = https://git.sr.ht/~protesilaos/denote
@@ -113,12 +137,48 @@
 	path = lib/emacsql
 	url = git@github.com:skeeto/emacsql.git
 	no-byte-compile = emacsql-pg.el
+[submodule "embark"]
+	path = lib/embark
+	url = https://github.com/oantolin/embark
 [submodule "emmet-mode"]
 	path = lib/emmet-mode
 	url = https://github.com/smihica/emmet-mode
 [submodule "epkg"]
 	path = lib/epkg
 	url = git@github.com:emacscollective/epkg.git
+[submodule "evil"]
+	path = lib/evil
+	url = https://github.com/emacs-evil/evil
+[submodule "evil-args"]
+	path = lib/evil-args
+	url = https://github.com/wcsmith/evil-args
+[submodule "evil-collection"]
+	path = lib/evil-collection
+	url = https://github.com/emacs-evil/evil-collection
+[submodule "evil-easymotion"]
+	path = lib/evil-easymotion
+	url = https://github.com/PythonNut/evil-easymotion
+[submodule "evil-goggles"]
+	path = lib/evil-goggles
+	url = https://github.com/edkolev/evil-goggles
+[submodule "evil-lion"]
+	path = lib/evil-lion
+	url = https://github.com/edkolev/evil-lion
+[submodule "evil-mc"]
+	path = lib/evil-mc
+	url = https://github.com/gabesoft/evil-mc
+[submodule "evil-nerd-commenter"]
+	path = lib/evil-nerd-commenter
+	url = https://github.com/redguardtoo/evil-nerd-commenter
+[submodule "evil-org"]
+	path = lib/evil-org
+	url = https://github.com/Somelauw/evil-org-mode
+[submodule "evil-surround"]
+	path = lib/evil-surround
+	url = https://github.com/emacs-evil/evil-surround
+[submodule "evil-textobj-tree-sitter"]
+	path = lib/evil-textobj-tree-sitter
+	url = https://github.com/meain/evil-textobj-tree-sitter
 [submodule "expand-region"]
 	path = lib/expand-region
 	url = https://github.com/magnars/expand-region.el
@@ -128,12 +188,18 @@
 [submodule "findr"]
 	path = lib/findr
 	url = https://github.com/emacsorphanage/findr
+[submodule "flx"]
+	path = lib/flx
+	url = https://github.com/lewang/flx
 [submodule "flycheck"]
 	path = lib/flycheck
 	url = https://github.com/flycheck/flycheck
 [submodule "forge"]
 	path = lib/forge
 	url = https://github.com/magit/forge
+[submodule "fussy"]
+	path = lib/fussy
+	url = https://github.com/jojojames/fussy
 [submodule "general"]
 	path = lib/general
 	url = https://github.com/noctuid/general.el
@@ -182,6 +248,9 @@
 [submodule "jump"]
 	path = lib/jump
 	url = https://github.com/eschulte/jump.el
+[submodule "kind-icon"]
+	path = lib/kind-icon
+	url = https://github.com/jdtsmith/kind-icon
 [submodule "komunan-lisp-library"]
 	path = lib/komunan-lisp-library
 	url = git@github.com:ofnhwx/komunan-lisp-library.git
@@ -221,6 +290,9 @@
 [submodule "magit-delta"]
 	path = lib/magit-delta
 	url = https://github.com/dandavison/magit-delta
+[submodule "marginalia"]
+	path = lib/marginalia
+	url = https://github.com/minad/marginalia
 [submodule "markdown-mode"]
 	path = lib/markdown-mode
 	url = https://github.com/jrblevin/markdown-mode
@@ -242,6 +314,15 @@
 [submodule "open-junk-file"]
 	path = lib/open-junk-file
 	url = https://github.com/rubikitch/open-junk-file
+[submodule "orderless"]
+	path = lib/orderless
+	url = https://github.com/oantolin/orderless
+[submodule "org-superstar"]
+	path = lib/org-superstar
+	url = https://github.com/integral-dw/org-superstar-mode
+[submodule "origami"]
+	path = lib/origami
+	url = https://github.com/gregsexton/origami.el
 [submodule "pdf-tools"]
 	path = lib/pdf-tools
 	url = https://github.com/vedang/pdf-tools
@@ -332,6 +413,9 @@
 [submodule "undo-fu"]
 	path = lib/undo-fu
 	url = https://codeberg.org/ideasman42/emacs-undo-fu
+[submodule "vertico"]
+	path = lib/vertico
+	url = https://github.com/minad/vertico
 [submodule "visual-regexp"]
 	path = lib/visual-regexp
 	url = https://github.com/benma/visual-regexp.el
