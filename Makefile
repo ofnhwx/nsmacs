@@ -1,8 +1,8 @@
-EMACS ?= emacs
+DRONES_DIR = $(shell git config "borg.drones-directory" || echo "lib")
 
-init.el: readme.org
-	$(EMACS) -Q -q --batch --eval \
-		"(progn \
-		   (require 'ob-tangle) \
-		   (org-babel-tangle-file \"readme.org\" \"init.el\" \"emacs-lisp\"))"
-	$(EMACS) -q -l init.el --batch --eval "(byte-compile-file \"init.el\")"
+-include $(DRONES_DIR)/borg/borg.mk
+
+bootstrap-borg:
+	@git submodule--helper clone --name borg --path $(DRONES_DIR)/borg --url git@github.com:emacscollective/borg.git
+	@cd $(DRONES_DIR)/borg; git symbolic-ref HEAD refs/heads/main
+	@cd $(DRONES_DIR)/borg; git reset --hard HEAD
