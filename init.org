@@ -464,7 +464,7 @@
 #+end_src
 ** google-translate
 #+begin_src emacs-lisp
-(e:package-config! google-translate
+(e:deffered-config! google-translate
   :config
   (setopt google-translate-default-source-language "en")
   (setopt google-translate-default-target-language "ja"))
@@ -1142,10 +1142,6 @@
   :hook (org-mode-hook . org-superstar-mode))
 #+end_src
 * Config: Packages
-** temp: jsonrpc
-#+begin_src emacs-lisp
-(e:package-config! jsonrpc)
-#+end_src
 ** ace-window
 #+begin_src emacs-lisp
 (e:package-config! ace-window
@@ -1749,7 +1745,7 @@
 ** Tools
 *** lsp-mode
 #+begin_src emacs-lisp
-(e:package-config! lsp-mode
+(e:deffered-config! lsp-mode
   :defer-config
   (setopt lsp-auto-execute-action nil)
   (setopt lsp-completion-provider :none)
@@ -1776,7 +1772,7 @@
 #+end_src
 *** lsp-ui
 #+begin_src emacs-lisp
-(e:package-config! lsp-ui
+(e:deffered-config! lsp-ui
   :defer-config
   (setopt lsp-ui-doc-delay 2.0)
   (setopt lsp-ui-doc-include-signature t)
@@ -1814,11 +1810,11 @@
 #+end_src
 *** dap-mode
 #+begin_src emacs-lisp
-(e:package-config! dap-mode)
+(e:deffered-config! dap-mode)
 #+end_src
 *** tree-sitter
 #+begin_src emacs-lisp
-(e:package-config! treesit-auto
+(e:deffered-config! treesit-auto
   :commands (treesit-auto-add-to-auto-mode-alist global-treesit-auto-mode)
   :init
   (setopt treesit-auto-install t)
@@ -1867,7 +1863,7 @@
 #+end_src
 *** haml-mode
 #+begin_src emacs-lisp
-(e:package-config! haml-mode
+(e:deffered-config! haml-mode
   :hook (haml-mode-hook . highlight-indentation-mode-on)
   :config
   (add-hook 'haml-mode-hook
@@ -1882,11 +1878,11 @@
 #+end_src
 *** bundler
 #+begin_src emacs-lisp
-(e:package-config! bundler)
+(e:deffered-config! bundler)
 #+end_src
 *** projectile-rails
 #+begin_src emacs-lisp
-(e:package-config! projectile-rails
+(e:deffered-config! projectile-rails
   :defvar (projectile-rails-views-re)
   :init
   (projectile-rails-global-mode 1)
@@ -1967,13 +1963,13 @@
 #+end_src
 *** rails-routes
 #+begin_src emacs-lisp
-(e:package-config! rails-routes
+(e:deffered-config! rails-routes
   :defer-config
   (e:var! rails-routes-cache-path "rails-routes"))
 #+end_src
 *** rspec-mode
 #+begin_src emacs-lisp
-(e:package-config! rspec-mode
+(e:deffered-config! rspec-mode
   :defer-config
   (e:minor-mode-key-def rspec-mode
     "t" "test"
@@ -1998,13 +1994,13 @@
 #+end_src
 *** vue-ts-mode
 #+begin_src emacs-lisp
-(e:package-config! (vue-ts-mode :host github :repo "8uff3r/vue-ts-mode")
+(e:deffered-config! vue-ts-mode
   :hook (vue-ts-mode-hook . lsp-deferred)
   :mode "\\.vue\\'")
 #+end_src
 *** yarn
 #+begin_src emacs-lisp
-(e:package-config! (yarn :host github :repo "jmfirth/yarn.el")
+(e:deffered-config! yarn
   :commands (yarn-install
              yarn-self-udpate
              yarn-update
@@ -2013,24 +2009,24 @@
 ** HTML/CSS
 *** web-mode
 #+begin_src emacs-lisp
-(e:package-config! web-mode
+(e:deffered-config! web-mode
   :mode "\\.erb\\'"
   :config
   (setopt web-mode-enable-auto-indentation nil))
 #+end_src
 *** sass-mode
 #+begin_src emacs-lisp
-(e:package-config! sass-mode
+(e:deffered-config! sass-mode
   :hook (sass-mode-hook . rainbow-mode))
 #+end_src
 *** scss-mode
 #+begin_src emacs-lisp
-(e:package-config! scss-mode
+(e:deffered-config! scss-mode
   :hook (scss-mode-hook . rainbow-mode))
 #+end_src
 *** emmet-mode
 #+begin_src emacs-lisp
-(e:package-config! emmet-mode
+(e:deffered-config! emmet-mode
   :hook ((haml-mode-hook . emmet-mode)
          (tsx-ts-mode-hook . emmet-mode)
          (vue-ts-mode-hook . emmet-mode)
@@ -2042,13 +2038,9 @@
     "C-j" nil))
 #+end_src
 ** Text
-*** csv-mode
-#+begin_src emacs-lisp
-(e:package-config! csv-mode)
-#+end_src
 *** yaml-ts-mode
 #+begin_src emacs-lisp
-(e:package-config! yaml-mode
+(e:deffered-config! yaml-mode
   :commands (yaml-indent-line))
 (e:deffered-config! yaml-ts-mode
   :hook ((yaml-ts-mode-hook . lsp-deferred)
@@ -2189,7 +2181,7 @@
         (buffer (get-buffer-create "*Make*")))
     (display-buffer buffer)
     (set-process-sentinel
-     (start-process-shell-command "e:make-config" buffer "make")
+     (start-process-shell-command "e:make-config" buffer "make init-tangle")
      (lambda (process event)
        (let* ((message (s-trim-right (format "%s %s" process event)))
               (command (format "notify-send '%s'" message)))
