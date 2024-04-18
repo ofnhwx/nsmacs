@@ -600,7 +600,7 @@
 #+begin_src emacs-lisp
 (add-hook 'emacs-startup-hook
           (defun e:load-private-config ()
-            (let ((private-config (f-expand "config" e:private-directory)))
+            (let ((private-config (f-expand "private/config" user-emacs-directory)))
               (condition-case err
                   (load private-config)
                 (display-warning :warning err)))))
@@ -1377,7 +1377,7 @@
 #+end_src
 ** hl-todo
 #+begin_src emacs-lisp :lexical no
-(e:package-config! hl-todo
+(e:package-config! (hl-todo :depth nil)
   :config
   (global-hl-todo-mode 1))
 #+end_src
