@@ -923,11 +923,14 @@
          (corfu-mode-hook . corfu-popupinfo-mode)
          (minibuffer-setpu-hook . corfu-enable-always-in-minibuffer))
   :init
+  (eval-and-compile
+    (add-to-list 'load-path (f-expand "corfu/extensions" borg-drones-directory))
+    (require 'corfu-echo)
+    (require 'corfu-popupinfo)
+    (require 'corfu-quick))
   (setopt corfu-auto t)
   (setopt corfu-auto-prefix 1)
   (setopt corfu-cycle t)
-  (global-corfu-mode 1)
-  :defer-config
   (general-def corfu-map
     "<escape>" 'corfu-quit
     "C-q" 'corfu-quick-complete
@@ -941,7 +944,8 @@
       ;; (setq-local corfu-auto nil) ;; Enable/disable auto completion
       (setq-local corfu-echo-delay nil ;; Disable automatic echo and popup
                   corfu-popupinfo-delay nil)
-      (corfu-mode 1))))
+      (corfu-mode 1)))
+  (global-corfu-mode 1))
 #+end_src
 ** embark
 #+begin_src emacs-lisp
@@ -1013,6 +1017,9 @@
 (e:deffered-config! vertico
   :priority :high
   :config
+  (eval-and-compile
+    (add-to-list 'load-path (f-expand "vertico/extensions" borg-drones-directory))
+    (require 'vertico-repeat))
   (setopt vertico-count 20)
   (setopt vertico-cycle t)
   (general-def vertico-map
