@@ -275,7 +275,6 @@
 (elpaca f (require 'f))
 (elpaca s (require 's))
 (elpaca ht (require 'ht))
-(elpaca dash (require 'dash))
 (elpaca leaf (require 'leaf))
 (elpaca general (require 'general))
 (elpaca bind-map (require 'bind-map))
@@ -1431,7 +1430,7 @@
 ** magit
 *** magit
 #+begin_src emacs-lisp
-(e:package-config! magit
+(e:deffered-config! magit
   :advice (:override magit-repos-alist magit-repos-alist@override)
   :defun (magit-add-section-hook magit-list-repos magit-list-repos-uniquify)
   :defer-config
@@ -1458,7 +1457,7 @@
 #+end_src
 *** magit-delta
 #+begin_src emacs-lisp
-(e:package-config! magit-delta
+(e:deffered-config! magit-delta
   :advice (:around magit-delta-call-delta-and-convert-ansi-escape-sequences magit-delta-call-delta-and-convert-ansi-escape-sequences@auto-disable)
   :defvar (magit-delta-mode)
   :hook (magit-mode-hook . magit-delta-mode)
@@ -1474,10 +1473,6 @@
               (when (and (not magit-delta-mode)
                          (<= (point-max) nth/magit-delta-point-max))
                 (magit-delta-mode +1)))))
-#+end_src
-*** forge
-#+begin_src emacs-lisp
-(e:package-config! forge)
 #+end_src
 ** migemo
 #+begin_src emacs-lisp

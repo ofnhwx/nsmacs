@@ -7,6 +7,9 @@
 [submodule "compat"]
 	path = lib/compat
 	url = git@github.com:emacs-compat/compat.git
+[submodule "dash"]
+	path = lib/dash
+	url = https://github.com/magnars/dash.el
 [submodule "emacsql"]
 	path = lib/emacsql
 	url = git@github.com:skeeto/emacsql.git
@@ -14,6 +17,36 @@
 [submodule "epkg"]
 	path = lib/epkg
 	url = git@github.com:emacscollective/epkg.git
+[submodule "forge"]
+	path = lib/forge
+	url = https://github.com/magit/forge
+[submodule "ghub"]
+	path = lib/ghub
+	url = https://github.com/magit/ghub
+[submodule "libgit"]
+	path = lib/libgit
+	url = https://github.com/magit/libegit2
 [submodule "llama"]
 	path = lib/llama
 	url = https://git.sr.ht/~tarsius/llama
+[submodule "magit"]
+	path = lib/magit
+	url = https://github.com/magit/magit
+[submodule "magit-delta"]
+	path = lib/magit-delta
+	url = https://github.com/dandavison/magit-delta
+[submodule "markdown-mode"]
+	path = lib/markdown-mode
+	url = https://github.com/jrblevin/markdown-mode
+[submodule "treepy"]
+	path = lib/treepy
+	url = https://github.com/volrath/treepy.el
+[submodule "with-editor"]
+	path = lib/with-editor
+	url = https://github.com/magit/with-editor
+[submodule "xterm-color"]
+	path = lib/xterm-color
+	url = https://github.com/atomontage/xterm-color
+[submodule "yaml"]
+	path = lib/yaml
+	url = https://github.com/zkry/yaml.el
