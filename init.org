@@ -270,16 +270,15 @@
 #+begin_src emacs-lisp
 (eval-when-compile
   (require 'elpaca))
-(elpaca (komunan-lisp-library :host github :repo "ofnhwx/komunan-lisp-library")
-  (require 'komunan-lisp-library))
-(elpaca f (require 'f))
-(elpaca s (require 's))
-(elpaca ht (require 'ht))
-(elpaca leaf (require 'leaf))
-(elpaca general (require 'general))
-(elpaca bind-map (require 'bind-map))
-(elpaca hercules (require 'hercules))
-(elpaca no-littering (require 'no-littering))
+(require 'komunan-lisp-library)
+(require 'f)
+(require 's)
+(require 'ht)
+(require 'leaf)
+(require 'general)
+(require 'bind-map)
+(require 'hercules)
+(require 'no-littering)
 (elpaca-wait)
 #+end_src
 * Config: Emacs

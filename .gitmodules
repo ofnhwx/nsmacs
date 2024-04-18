@@ -1,3 +1,6 @@
+[submodule "bind-map"]
+	path = lib/bind-map
+	url = https://github.com/justbur/emacs-bind-map
 [submodule "borg"]
 	path = lib/borg
 	url = git@github.com:emacscollective/borg.git
@@ -29,12 +32,33 @@
 [submodule "f"]
 	path = lib/f
 	url = https://github.com/rejeep/f.el
+[submodule "findr"]
+	path = lib/findr
+	url = https://github.com/emacsorphanage/findr
 [submodule "forge"]
 	path = lib/forge
 	url = https://github.com/magit/forge
+[submodule "general"]
+	path = lib/general
+	url = https://github.com/noctuid/general.el
 [submodule "ghub"]
 	path = lib/ghub
 	url = https://github.com/magit/ghub
+[submodule "hercules"]
+	path = lib/hercules
+	url = https://github.com/cyruseuros/hercules
+[submodule "ht"]
+	path = lib/ht
+	url = https://github.com/Wilfred/ht.el
+[submodule "jump"]
+	path = lib/jump
+	url = https://github.com/eschulte/jump.el
+[submodule "komunan-lisp-library"]
+	path = lib/komunan-lisp-library
+	url = git@github.com:ofnhwx/komunan-lisp-library.git
+[submodule "leaf"]
+	path = lib/leaf
+	url = https://github.com/conao3/leaf.el
 [submodule "libgit"]
 	path = lib/libgit
 	url = https://github.com/magit/libegit2
@@ -59,12 +83,21 @@
 [submodule "nerd-icons-dired"]
 	path = lib/nerd-icons-dired
 	url = https://github.com/rainstormstudio/nerd-icons-dired
+[submodule "no-littering"]
+	path = lib/no-littering
+	url = https://github.com/emacscollective/no-littering
 [submodule "s"]
 	path = lib/s
 	url = https://github.com/magnars/s.el
+[submodule "string-inflection"]
+	path = lib/string-inflection
+	url = https://github.com/akicho8/string-inflection
 [submodule "treepy"]
 	path = lib/treepy
 	url = https://github.com/volrath/treepy.el
+[submodule "which-key"]
+	path = lib/which-key
+	url = https://github.com/justbur/emacs-which-key
 [submodule "with-editor"]
 	path = lib/with-editor
 	url = https://github.com/magit/with-editor
