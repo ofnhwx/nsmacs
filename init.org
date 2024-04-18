@@ -733,9 +733,9 @@
           evil-textobj-tree-sitter-function--function.outer)
   :config
   (general-def evil-inner-text-objects-map
-    "f" (evil-textobj-tree-sitter-get-textobj "function.inner"))
+    "f" (e:eval! (evil-textobj-tree-sitter-get-textobj "function.inner")))
   (general-def evil-outer-text-objects-map
-    "f" (evil-textobj-tree-sitter-get-textobj "function.outer")))
+    "f" (e:eval! (evil-textobj-tree-sitter-get-textobj "function.outer"))))
 #+end_src
 * Config: SKK
 ** skk
@@ -1316,8 +1316,8 @@
   (setopt flycheck-check-syntax-automatically '(save idle-change mode-enabled))
   (setopt flycheck-idle-change-delay 5.0)
   :defer-config
-  (flycheck-def-config-file-var flycheck-haml-lintrc haml-lint ".haml-lint.yml" :safe #'stringp)
   (e:eval!
+    (flycheck-def-config-file-var flycheck-haml-lintrc haml-lint ".haml-lint.yml" :safe #'stringp)
     (setf (flycheck-checker-get 'haml-lint 'command)
           '("haml-lint" "--no-color" "--no-summary"
             (config-file "--config" flycheck-haml-lintrc)
