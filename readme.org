@@ -790,6 +790,7 @@
   (defun e:prodigy-yaskkserv2 ()
     (interactive)
     (let ((service "yaskkserv2"))
+      (require 'prodigy)
       (unless (prodigy-find-service service)
         (prodigy-define-service
           :name service
@@ -1521,20 +1522,19 @@
   :defun (ad:start-process@with-vterm vterm--internal)
   :config
   (defun ad:start-process@with-vterm (name buffer program &rest args)
-    (let* ((command (s-join " " (cons program args)))
-           (vterm-buffer-name (format "*vterm-%s*" name))
-           (vterm-shell (format "zsh -c '%s'" command)))
-      (let* ((cwd (plist-get (prodigy-find-service name) :cwd))
-             (sock-file (f-expand ".overmind.sock" cwd)))
-        (when (f-exists? sock-file)
-          (message "delete: %s" sock-file)
-          (delete-file sock-file)))
-      (with-current-buffer (vterm--internal #'ignore)
+    (let* ((cwd (plist-get (prodigy-find-service name) :cwd))
+           (sock-file (f-expand ".overmind.sock" cwd)))
+      (when (f-exists? sock-file)
+        (message "delete: %s" sock-file)
+        (delete-file sock-file)))
+    (save-window-excursion
+      (with-current-buffer
+          (apply #'e:vterm-exec name program args)
         vterm--process)))
   (defun ad:prodigy-start-service@with-vterm (func &rest args)
     (when (require 'vterm nil t)
       (advice-add 'start-process :override #'ad:start-process@with-vterm))
-    (prog1 (apply func args)
+    (prog1 (ignore-errors (apply func args))
       (advice-remove 'start-process #'ad:start-process@with-vterm))))
 #+end_src
 ** projectile
@@ -1695,22 +1695,22 @@
 ** vterm
 #+begin_src emacs-lisp :lexical no
 (e:package-config! vterm
+  :commands (e:vterm-exec)
   :defer-config
   (general-def vterm-mode-map
     "<wheel-down>" 'ignore
     "<wheel-up>" 'ignore
     "C-c C-g" 'keyboard-quit
-    "C-g" 'vterm--self-insert
-    "C-j" 'e:vterm-input-something)
+    "C-g" 'vterm--self-insert)
   (general-def 'insert vterm-mode-map
     "<escape>" 'vterm-send-escape
     "C-z" 'vterm--self-insert)
   (setopt vterm-max-scrollback 20000)
   (setopt vterm-shell "tmux new -A -s emacs-default")
-  (defun e:vterm-input-something ()
-    (interactive)
-    (let ((input (read-string "input: ")))
-      (with-no-warnings (vterm-send-string input)))))
+  (defun e:vterm-exec (name program &rest args)
+    (let ((vterm-buffer-name (format "*vterm %s*" name))
+          (vterm-shell (format "zsh -c '%s'" (s-join " " (cons program args)))))
+      (vterm))))
 #+end_src
 ** wakatime-mode
 #+begin_src emacs-lisp :lexical no
@@ -1993,7 +1993,8 @@
 #+begin_src emacs-lisp :lexical no
 (e:deffered-config! typescript-ts-mode
   :hook ((typescript-ts-mode-hook . lsp-deferred)
-         (tsx-ts-mode-hook . lsp-deferred)))
+         (tsx-ts-mode-hook . lsp-deferred))
+  :mode "\\.mts\\'")
 #+end_src
 *** vue-ts-mode
 #+begin_src emacs-lisp :lexical no
