@@ -73,6 +73,9 @@
 [submodule "corfu"]
 	path = lib/corfu
 	url = https://github.com/minad/corfu
+[submodule "copilot"]
+	path = lib/copilot
+	url = git@github.com:copilot-emacs/copilot.el
 [submodule "csv-mode"]
 	path = lib/csv-mode
 	url = git@github.com:emacsmirror/csv-mode.git
@@ -200,6 +203,9 @@
 [submodule "fussy"]
 	path = lib/fussy
 	url = https://github.com/jojojames/fussy
+[submodule "fzf-native"]
+	path = lib/fzf-native
+	url = https://github.com/dangduc/fzf-native
 [submodule "general"]
 	path = lib/general
 	url = https://github.com/noctuid/general.el

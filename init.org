@@ -889,7 +889,7 @@
 #+end_src
 ** copilot
 #+begin_src emacs-lisp
-(e:package-config! (copilot :host github :repo "zerolfx/copilot.el" :files (:defaults "dist"))
+(e:deffered-config! copilot
   :advice ((:before-until corfu-complete ad:copilot-accept-completion-func)
            (:before-until indent-for-tab-command ad:copilot-accept-completion-func)
            (:before cape-codeium ad:copilot-cancel)
@@ -973,7 +973,7 @@
 #+end_src
 ** fzf-native
 #+begin_src emacs-lisp
-(e:package-config! (fzf-native :host github :repo "dangduc/fzf-native" :files (:defaults "bin"))
+(e:deffered-config! fzf-native
   :config
   (fzf-native-load-dyn))
 #+end_src
@@ -2126,7 +2126,7 @@
         (buffer (get-buffer-create "*Make*")))
     (display-buffer buffer)
     (set-process-sentinel
-     (start-process-shell-command "e:make-config" buffer "make init-tangle")
+     (start-process-shell-command "e:make-config" buffer "make init-tangle && make init-build")
      (lambda (process event)
        (let* ((message (s-trim-right (format "%s %s" process event)))
               (command (format "notify-send '%s'" message)))
