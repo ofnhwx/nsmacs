@@ -1144,14 +1144,14 @@
 * Config: Packages
 ** ace-window
 #+begin_src emacs-lisp
-(e:package-config! ace-window
+(e:deffered-config! ace-window
   :defer-config
   (setopt aw-keys (number-sequence ?1 ?9))
   (setopt aw-scope 'frame))
 #+end_src
 ** affe
 #+begin_src emacs-lisp
-(e:package-config! affe
+(e:deffered-config! affe
   :defvar (affe-find-command)
   :defer-config
   (setopt affe-find-command (or (executable-find "fd") affe-find-command))
@@ -1160,13 +1160,13 @@
 #+end_src
 ** atomic-chrome
 #+begin_src emacs-lisp
-(e:package-config! atomic-chrome
+(e:deffered-config! atomic-chrome
   :config
   (atomic-chrome-start-server))
 #+end_src
 ** apheleia
 #+begin_src emacs-lisp
-(e:package-config! apheleia
+(e:deffered-config! apheleia
   :defvar (apheleia-formatters apheleia-mode-alist)
   :config
   (apheleia-global-mode 1)
@@ -1200,7 +1200,7 @@
 #+end_src
 ** avy
 #+begin_src emacs-lisp
-(e:package-config! avy
+(e:deffered-config! avy
   :config
   (with-eval-after-load 'evil
     (general-def '(normal motion)
@@ -1212,13 +1212,9 @@
   (setopt avy-all-windows t)
   (setopt avy-all-windows-alt nil))
 #+end_src
-** browse-at-remote
-#+begin_src emacs-lisp
-(e:package-config! browse-at-remote)
-#+end_src
 ** chezmoi
 #+begin_src emacs-lisp
-(e:package-config! chezmoi
+(e:deffered-config! chezmoi
   :defun (chezmoi-find chezmoi-target-file)
   :defvar (chezmoi-mode)
   :config
@@ -1231,22 +1227,10 @@
                            (not chezmoi-mode))
                   (chezmoi-find target))))))
 #+end_src
-** consult-flycheck
-#+begin_src emacs-lisp
-(e:package-config! consult-flycheck)
-#+end_src
-** consult-projectile
-#+begin_src emacs-lisp
-(e:package-config! consult-projectile)
-#+end_src
-** consult-todo
-#+begin_src emacs-lisp
-(e:package-config! (consult-todo :host github :repo "liuyinz/consult-todo"))
-#+end_src
 ** denote
 *** denote
 #+begin_src emacs-lisp
-(e:package-config! denote
+(e:deffered-config! denote
   :defer-config
   (eval-and-compile (require 'org))
   (setopt denote-directory (expand-file-name "denote" org-directory))
@@ -1254,11 +1238,11 @@
 #+end_src
 *** denote-menu
 #+begin_src emacs-lisp
-(e:package-config! denote-menu)
+(e:deffered-config! denote-menu)
 #+end_src
 ** devdocs
 #+begin_src emacs-lisp
-(e:package-config! devdocs
+(e:deffered-config! devdocs
   :config
   (add-hook 'ruby-base-mode-hook
             (defun e:devdocs-ruby ()
@@ -1266,7 +1250,7 @@
 #+end_src
 ** difftastic
 #+begin_src emacs-lisp
-(e:package-config! difftastic
+(e:deffered-config! difftastic
   :config
   (with-eval-after-load 'magit-diff
     (transient-append-suffix 'magit-diff '(-1 -1)
@@ -1275,7 +1259,7 @@
 #+end_src
 ** doom-modeline
 #+begin_src emacs-lisp
-(e:package-config! doom-modeline
+(e:deffered-config! doom-modeline
   :config
   (setopt doom-modeline-buffer-file-name-style 'relative-from-project)
   (setopt doom-modeline-minor-modes t)
@@ -1283,7 +1267,7 @@
 #+end_src
 ** dtrt-indent
 #+begin_src emacs-lisp
-(e:package-config! dtrt-indent
+(e:deffered-config! dtrt-indent
   :defun (dtrt-indent-adapt)
   :hook (prog-mode-hook . setup-dtrt-indent)
   :defer-config
@@ -1293,29 +1277,25 @@
 #+end_src
 ** dumb-jump
 #+begin_src emacs-lisp
-(e:package-config! dumb-jump
+(e:deffered-config! dumb-jump
   :config
   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate))
 #+end_src
 ** editorconfig
 #+begin_src emacs-lisp
-(e:package-config! editorconfig
+(e:deffered-config! editorconfig
   :config
   (editorconfig-mode 1))
 #+end_src
 ** elisp-demos
 #+begin_src emacs-lisp
-(e:package-config! elisp-demos
+(e:deffered-config! elisp-demos
   :advice ((:after describe-function-1 elisp-demos-advice-describe-function-1)
            (:after helpful-update      elisp-demos-advice-helpful-update)))
 #+end_src
-** expand-region
-#+begin_src emacs-lisp
-(e:package-config! expand-region)
-#+end_src
 ** flycheck
 #+begin_src emacs-lisp
-(e:package-config! flycheck
+(e:deffered-config! flycheck
   :commands (e:flycheck-copy-error-ids)
   :defun (flycheck-add-next-checker
           flycheck-checker-get
@@ -1348,26 +1328,18 @@
 #+end_src
 ** git-gutter
 #+begin_src emacs-lisp
-(e:package-config! git-gutter
+(e:deffered-config! git-gutter
   :config
   (global-git-gutter-mode 1))
 #+end_src
-** grugru
-#+begin_src emacs-lisp
-(e:package-config! grugru)
-#+end_src
 ** helm
 #+begin_src emacs-lisp
-(e:package-config! helm
+(e:deffered-config! helm
   :bind (([remap eval-expression] . helm-eval-expression-with-eldoc)))
-#+end_src
-** helpful
-#+begin_src emacs-lisp
-(e:package-config! helpful)
 #+end_src
 ** highlight-indentation
 #+begin_src emacs-lisp
-(e:package-config! highlight-indentation
+(e:deffered-config! highlight-indentation
   :commands (highlight-indentation-mode-on)
   :config
   (setopt highlight-indentation-offset 2)
@@ -1377,13 +1349,13 @@
 #+end_src
 ** hl-todo
 #+begin_src emacs-lisp
-(e:package-config! (hl-todo :depth nil)
+(e:deffered-config! hl-todo
   :config
   (global-hl-todo-mode 1))
 #+end_src
 ** jinx
 #+begin_src emacs-lisp
-(e:package-config! jinx
+(e:deffered-config! jinx
   :defvar (jinx-exclude-regexps jinx-include-faces)
   :hook (prog-mode-hook . jinx-mode)
   :config
@@ -1400,20 +1372,16 @@
     (add-to-list 're "\\cc")
     (setf (alist-get t jinx-exclude-regexps) re)))
 #+end_src
-** link-hint
-#+begin_src emacs-lisp
-(e:package-config! link-hint)
-#+end_src
 ** locale-eaw
 #+begin_src emacs-lisp
-(e:package-config! (eaw :host github :repo "hamano/locale-eaw")
+(e:deffered-config! eaw
   :commands (eaw-fullwidth)
   :init
   (eaw-fullwidth))
 #+end_src
 ** macrostep
 #+begin_src emacs-lisp
-(e:package-config! macrostep
+(e:deffered-config! macrostep
   :config
   (e:major-mode-key-def (emacs-lisp-mode lisp-interaction-mode)
     "d" "debug"
@@ -1471,7 +1439,7 @@
 #+end_src
 ** migemo
 #+begin_src emacs-lisp
-(e:package-config! migemo
+(e:deffered-config! migemo
   :config
   (require 'migemo)
   (setopt migemo-user-dictionary nil)
@@ -1483,24 +1451,20 @@
 #+end_src
 ** minions
 #+begin_src emacs-lisp
-(e:package-config! minions
+(e:deffered-config! minions
   :config
   (minions-mode 1))
 #+end_src
 ** open-junk-file
 #+begin_src emacs-lisp
-(e:package-config! open-junk-file
+(e:deffered-config! open-junk-file
   :config
   (setopt open-junk-file-format (f-expand "junk/%Y/%Y%m%d%H%M%S." no-littering-var-directory)))
-#+end_src
-** pdf-tools
-#+begin_src emacs-lisp
-(e:package-config! pdf-tools)
 #+end_src
 ** prodigy
 *** prodigy
 #+begin_src emacs-lisp
-(e:package-config! prodigy
+(e:deffered-config! prodigy
   :defun (prodigy-find-service prodigy-start-service)
   :defer-config
   (setopt prodigy-view-buffer-maximum-size 2048)
@@ -1536,7 +1500,7 @@
 #+end_src
 ** projectile
 #+begin_src emacs-lisp
-(e:package-config! projectile
+(e:deffered-config! projectile
   :commands (e:setup-projectile-known-projects)
   :defun (projectile-project-vcs)
   :defvar (projectile-known-projects)
@@ -1552,14 +1516,10 @@
                 (-distinct)))))
   (e:setup-projectile-known-projects))
 #+end_src
-** rainbow-mode
-#+begin_src emacs-lisp
-(e:package-config! rainbow-mode)
-#+end_src
 ** scratch
 *** scratch
 #+begin_src emacs-lisp
-(e:package-config! scratch
+(e:deffered-config! scratch
   :config
   (setopt persistent-scratch-scratch-buffer-p-function
           (defun scratch-buffer-p ()
@@ -1572,14 +1532,14 @@
 #+end_src
 *** persistent-scratch
 #+begin_src emacs-lisp
-(e:package-config! persistent-scratch
+(e:deffered-config! persistent-scratch
   :priority :high
   :config
   (persistent-scratch-setup-default))
 #+end_src
 ** separedit
 #+begin_src emacs-lisp
-(e:package-config! separedit
+(e:deffered-config! separedit
   :config
   (general-def prog-mode-map
     "C-c '" 'separedit)
@@ -1588,7 +1548,7 @@
 #+end_src
 ** shackle
 #+begin_src emacs-lisp
-(e:package-config! shackle
+(e:deffered-config! shackle
   :advice ((:after shackle-display-buffer-action ad:shackle-display-buffer-action@save-windows)
            (:before keyboard-quit ad:keyboard-quit@shackle-auto-close))
   :defvar (shackle-last-window)
@@ -1622,7 +1582,7 @@
 #+end_src
 ** shell-pop
 #+begin_src emacs-lisp
-(e:package-config! shell-pop
+(e:deffered-config! shell-pop
   :advice (:around shell-pop ad:shell-pop@auto-session-name)
   :defvar (shell-pop-shell-type)
   :config
@@ -1642,7 +1602,7 @@
 #+end_src
 ** smartparens
 #+begin_src emacs-lisp
-(e:package-config! smartparens
+(e:deffered-config! smartparens
   :defun (sp-local-pair)
   :config
   (setopt sp-cancel-autoskip-on-backward-movement nil)
@@ -1656,42 +1616,34 @@
   (sp-local-pair 'lisp-interaction-mode "'" nil :actions nil)
   (require 'smartparens-config))
 #+end_src
-** sudo-edit
-#+begin_src emacs-lisp
-(e:package-config! sudo-edit)
-#+end_src
 ** symbol-overlay
 #+begin_src emacs-lisp
-(e:package-config! symbol-overlay
+(e:deffered-config! symbol-overlay
   :defvar (symbol-overlay-map)
   :defer-config
   (setq symbol-overlay-map (make-sparse-keymap)))
 #+end_src
 ** transient
 #+begin_src emacs-lisp
-(e:package-config! transient
+(e:deffered-config! transient
   :defer-config
   (setopt transient-default-level 7)
   (e:var! transient-values-file "transient-values.el"))
 #+end_src
 ** undo-fu
 #+begin_src emacs-lisp
-(e:package-config! undo-fu
+(e:deffered-config! undo-fu
   :config
   (setopt evil-undo-system 'undo-fu))
 #+end_src
 ** visual-regexp
 #+begin_src emacs-lisp
-(e:package-config! visual-regexp
+(e:deffered-config! visual-regexp
   :bind ([remap query-replace] . vr/query-replace))
-#+end_src
-** vlf
-#+begin_src emacs-lisp
-(e:package-config! vlf)
 #+end_src
 ** vterm
 #+begin_src emacs-lisp
-(e:package-config! vterm
+(e:deffered-config! vterm
   :defer-config
   (general-def vterm-mode-map
     "<wheel-down>" 'ignore
@@ -1711,7 +1663,7 @@
 #+end_src
 ** wakatime-mode
 #+begin_src emacs-lisp
-(e:package-config! wakatime-mode
+(e:deffered-config! wakatime-mode
   :defvar (wakatime-api-key wakatime-cli-path)
   :preface
   (setopt wakatime-cli-path (executable-find "wakatime-cli"))
@@ -1719,10 +1671,6 @@
            (bound-and-true-p wakatime-api-key))
   :config
   (global-wakatime-mode 1))
-#+end_src
-** wgrep
-#+begin_src emacs-lisp
-(e:package-config! wgrep)
 #+end_src
 ** which-key
 #+begin_src emacs-lisp
@@ -1737,7 +1685,7 @@
 #+end_src
 ** winum
 #+begin_src emacs-lisp
-(e:package-config! winum
+(e:deffered-config! winum
   :config
   (winum-mode 1))
 #+end_src

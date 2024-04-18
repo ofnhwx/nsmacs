@@ -1,21 +1,60 @@
+[submodule "ace-window"]
+	path = lib/ace-window
+	url = https://github.com/abo-abo/ace-window
+[submodule "affe"]
+	path = lib/affe
+	url = https://github.com/minad/affe
+[submodule "ag"]
+	path = lib/ag
+	url = https://github.com/Wilfred/ag.el
+[submodule "apheleia"]
+	path = lib/apheleia
+	url = https://github.com/radian-software/apheleia
+[submodule "async"]
+	path = lib/async
+	url = https://github.com/jwiegley/emacs-async
+[submodule "atomic-chrome"]
+	path = lib/atomic-chrome
+	url = https://github.com/alpha22jp/atomic-chrome
+[submodule "avy"]
+	path = lib/avy
+	url = https://github.com/abo-abo/avy
 [submodule "bind-map"]
 	path = lib/bind-map
 	url = https://github.com/justbur/emacs-bind-map
 [submodule "borg"]
 	path = lib/borg
 	url = git@github.com:emacscollective/borg.git
+[submodule "browse-at-remote"]
+	path = lib/browse-at-remote
+	url = https://github.com/rmuslimov/browse-at-remote
 [submodule "bui"]
 	path = lib/bui
 	url = https://github.com/alezost/bui.el
 [submodule "bundler"]
 	path = lib/bundler
 	url = https://github.com/endofunky/bundler.el
+[submodule "chezmoi"]
+	path = lib/chezmoi
+	url = https://github.com/tuh8888/chezmoi.el
 [submodule "closql"]
 	path = lib/closql
 	url = git@github.com:emacscollective/closql.git
 [submodule "compat"]
 	path = lib/compat
 	url = git@github.com:emacs-compat/compat.git
+[submodule "consult"]
+	path = lib/consult
+	url = https://github.com/minad/consult
+[submodule "consult-flycheck"]
+	path = lib/consult-flycheck
+	url = https://github.com/minad/consult-flycheck
+[submodule "consult-projectile"]
+	path = lib/consult-projectile
+	url = https://gitlab.com/OlMon/consult-projectile
+[submodule "consult-todo"]
+	path = lib/consult-todo
+	url = git@github.com:liuyinz/consult-todo
 [submodule "csv-mode"]
 	path = lib/csv-mode
 	url = git@github.com:emacsmirror/csv-mode.git
@@ -25,15 +64,51 @@
 [submodule "dash"]
 	path = lib/dash
 	url = https://github.com/magnars/dash.el
+[submodule "denote"]
+	path = lib/denote
+	url = https://git.sr.ht/~protesilaos/denote
+[submodule "denote-menu"]
+	path = lib/denote-menu
+	url = https://github.com/namilus/denote-menu
+[submodule "devdocs"]
+	path = lib/devdocs
+	url = https://github.com/astoff/devdocs.el
+[submodule "difftastic"]
+	path = lib/difftastic
+	url = https://github.com/pkryger/difftastic.el
 [submodule "dired-hacks"]
 	path = lib/dired-hacks
 	url = https://github.com/Fuco1/dired-hacks
 [submodule "dired-toggle-sudo"]
 	path = lib/dired-toggle-sudo
 	url = https://github.com/renard/dired-toggle-sudo
+[submodule "doom-modeline"]
+	path = lib/doom-modeline
+	url = https://github.com/seagle0128/doom-modeline
+[submodule "dtrt-indent"]
+	path = lib/dtrt-indent
+	url = https://github.com/jscheid/dtrt-indent
+[submodule "dumb-jump"]
+	path = lib/dumb-jump
+	url = https://github.com/jacktasia/dumb-jump
+[submodule "eaw"]
+	path = lib/eaw
+	url = git@github.com:hamano/locale-eaw
+[submodule "edit-indirect"]
+	path = lib/edit-indirect
+	url = https://github.com/Fanael/edit-indirect
+[submodule "editorconfig"]
+	path = lib/editorconfig
+	url = https://github.com/editorconfig/editorconfig-emacs
 [submodule "eimp"]
 	path = lib/eimp
 	url = https://github.com/nicferrier/eimp
+[submodule "elisp-demos"]
+	path = lib/elisp-demos
+	url = https://github.com/xuchunyang/elisp-demos
+[submodule "elisp-refs"]
+	path = lib/elisp-refs
+	url = https://github.com/Wilfred/elisp-refs
 [submodule "emacsql"]
 	path = lib/emacsql
 	url = git@github.com:skeeto/emacsql.git
@@ -44,12 +119,18 @@
 [submodule "epkg"]
 	path = lib/epkg
 	url = git@github.com:emacscollective/epkg.git
+[submodule "expand-region"]
+	path = lib/expand-region
+	url = https://github.com/magnars/expand-region.el
 [submodule "f"]
 	path = lib/f
 	url = https://github.com/rejeep/f.el
 [submodule "findr"]
 	path = lib/findr
 	url = https://github.com/emacsorphanage/findr
+[submodule "flycheck"]
+	path = lib/flycheck
+	url = https://github.com/flycheck/flycheck
 [submodule "forge"]
 	path = lib/forge
 	url = https://github.com/magit/forge
@@ -59,15 +140,33 @@
 [submodule "ghub"]
 	path = lib/ghub
 	url = https://github.com/magit/ghub
+[submodule "git-gutter"]
+	path = lib/git-gutter
+	url = https://github.com/emacsorphanage/git-gutter
 [submodule "google-translate"]
 	path = lib/google-translate
 	url = https://github.com/atykhonov/google-translate
+[submodule "grugru"]
+	path = lib/grugru
+	url = https://github.com/ROCKTAKEY/grugru
 [submodule "haml-mode"]
 	path = lib/haml-mode
 	url = https://github.com/nex3/haml-mode
+[submodule "helm"]
+	path = lib/helm
+	url = https://github.com/emacs-helm/helm
+[submodule "helpful"]
+	path = lib/helpful
+	url = https://github.com/Wilfred/helpful
 [submodule "hercules"]
 	path = lib/hercules
 	url = https://github.com/cyruseuros/hercules
+[submodule "highlight-indentation"]
+	path = lib/highlight-indentation
+	url = https://github.com/antonj/Highlight-Indentation-for-Emacs
+[submodule "hl-todo"]
+	path = lib/hl-todo
+	url = https://github.com/tarsius/hl-todo
 [submodule "ht"]
 	path = lib/ht
 	url = https://github.com/Wilfred/ht.el
@@ -77,6 +176,9 @@
 [submodule "inf-ruby"]
 	path = lib/inf-ruby
 	url = https://github.com/nonsequitur/inf-ruby
+[submodule "jinx"]
+	path = lib/jinx
+	url = https://github.com/minad/jinx
 [submodule "jump"]
 	path = lib/jump
 	url = https://github.com/eschulte/jump.el
@@ -89,6 +191,9 @@
 [submodule "libgit"]
 	path = lib/libgit
 	url = https://github.com/magit/libegit2
+[submodule "link-hint"]
+	path = lib/link-hint
+	url = https://github.com/noctuid/link-hint.el
 [submodule "llama"]
 	path = lib/llama
 	url = https://git.sr.ht/~tarsius/llama
@@ -107,6 +212,9 @@
 [submodule "lsp-ui"]
 	path = lib/lsp-ui
 	url = https://github.com/emacs-lsp/lsp-ui
+[submodule "macrostep"]
+	path = lib/macrostep
+	url = https://github.com/emacsorphanage/macrostep
 [submodule "magit"]
 	path = lib/magit
 	url = https://github.com/magit/magit
@@ -116,6 +224,12 @@
 [submodule "markdown-mode"]
 	path = lib/markdown-mode
 	url = https://github.com/jrblevin/markdown-mode
+[submodule "migemo"]
+	path = lib/migemo
+	url = https://github.com/emacs-jp/migemo
+[submodule "minions"]
+	path = lib/minions
+	url = https://github.com/tarsius/minions
 [submodule "nerd-icons"]
 	path = lib/nerd-icons
 	url = https://github.com/rainstormstudio/nerd-icons.el
@@ -125,12 +239,24 @@
 [submodule "no-littering"]
 	path = lib/no-littering
 	url = https://github.com/emacscollective/no-littering
+[submodule "open-junk-file"]
+	path = lib/open-junk-file
+	url = https://github.com/rubikitch/open-junk-file
+[submodule "pdf-tools"]
+	path = lib/pdf-tools
+	url = https://github.com/vedang/pdf-tools
+[submodule "persistent-scratch"]
+	path = lib/persistent-scratch
+	url = https://github.com/Fanael/persistent-scratch
 [submodule "popup"]
 	path = lib/popup
 	url = https://github.com/auto-complete/popup-el
 [submodule "posframe"]
 	path = lib/posframe
 	url = https://github.com/tumashu/posframe
+[submodule "prodigy"]
+	path = lib/prodigy
+	url = https://github.com/rejeep/prodigy.el
 [submodule "projectile"]
 	path = lib/projectile
 	url = https://github.com/bbatsov/projectile
@@ -140,6 +266,9 @@
 [submodule "rails-routes"]
 	path = lib/rails-routes
 	url = https://github.com/otavioschwanck/rails-routes.el
+[submodule "rainbow-mode"]
+	path = lib/rainbow-mode
+	url = git@github.com:emacsmirror/rainbow-mode.git
 [submodule "rake"]
 	path = lib/rake
 	url = https://github.com/asok/rake
@@ -152,15 +281,45 @@
 [submodule "sass-mode"]
 	path = lib/sass-mode
 	url = https://github.com/nex3/sass-mode
+[submodule "scratch"]
+	path = lib/scratch
+	url = https://codeberg.org/emacs-weirdware/scratch
 [submodule "scss-mode"]
 	path = lib/scss-mode
 	url = https://github.com/antonj/scss-mode
+[submodule "separedit"]
+	path = lib/separedit
+	url = https://github.com/twlz0ne/separedit.el
+[submodule "shackle"]
+	path = lib/shackle
+	url = https://depp.brause.cc/shackle.git
+[submodule "shell-pop"]
+	path = lib/shell-pop
+	url = https://github.com/kyagi/shell-pop-el
+[submodule "shrink-path"]
+	path = lib/shrink-path
+	url = https://gitlab.com/bennya/shrink-path.el
+[submodule "smartparens"]
+	path = lib/smartparens
+	url = https://github.com/Fuco1/smartparens
 [submodule "spinner"]
 	path = lib/spinner
 	url = https://github.com/Malabarba/spinner.el
 [submodule "string-inflection"]
 	path = lib/string-inflection
 	url = https://github.com/akicho8/string-inflection
+[submodule "sudo-edit"]
+	path = lib/sudo-edit
+	url = https://github.com/nflath/sudo-edit
+[submodule "symbol-overlay"]
+	path = lib/symbol-overlay
+	url = https://github.com/wolray/symbol-overlay
+[submodule "tablist"]
+	path = lib/tablist
+	url = https://github.com/emacsorphanage/tablist
+[submodule "transient"]
+	path = lib/transient
+	url = https://github.com/magit/transient
 [submodule "treemacs"]
 	path = lib/treemacs
 	url = https://github.com/Alexander-Miller/treemacs
@@ -170,15 +329,39 @@
 [submodule "treesit-auto"]
 	path = lib/treesit-auto
 	url = https://github.com/renzmann/treesit-auto
+[submodule "undo-fu"]
+	path = lib/undo-fu
+	url = https://codeberg.org/ideasman42/emacs-undo-fu
+[submodule "visual-regexp"]
+	path = lib/visual-regexp
+	url = https://github.com/benma/visual-regexp.el
+[submodule "vlf"]
+	path = lib/vlf
+	url = https://github.com/m00natic/vlfi
+[submodule "vterm"]
+	path = lib/vterm
+	url = https://github.com/akermu/emacs-libvterm
 [submodule "vue-ts-mode"]
 	path = lib/vue-ts-mode
 	url = git@github.com:8uff3r/vue-ts-mode
+[submodule "wakatime-mode"]
+	path = lib/wakatime-mode
+	url = https://github.com/wakatime/wakatime-mode
 [submodule "web-mode"]
 	path = lib/web-mode
 	url = https://github.com/fxbois/web-mode
+[submodule "websocket"]
+	path = lib/websocket
+	url = https://github.com/ahyatt/emacs-websocket
+[submodule "wgrep"]
+	path = lib/wgrep
+	url = https://github.com/mhayashi1120/Emacs-wgrep
 [submodule "which-key"]
 	path = lib/which-key
 	url = https://github.com/justbur/emacs-which-key
+[submodule "winum"]
+	path = lib/winum
+	url = https://github.com/deb0ch/emacs-winum
 [submodule "with-editor"]
 	path = lib/with-editor
 	url = https://github.com/magit/with-editor
