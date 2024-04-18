@@ -10,6 +10,15 @@
 [submodule "dash"]
 	path = lib/dash
 	url = https://github.com/magnars/dash.el
+[submodule "dired-hacks"]
+	path = lib/dired-hacks
+	url = https://github.com/Fuco1/dired-hacks
+[submodule "dired-toggle-sudo"]
+	path = lib/dired-toggle-sudo
+	url = https://github.com/renard/dired-toggle-sudo
+[submodule "eimp"]
+	path = lib/eimp
+	url = https://github.com/nicferrier/eimp
 [submodule "emacsql"]
 	path = lib/emacsql
 	url = git@github.com:skeeto/emacsql.git
@@ -17,6 +26,9 @@
 [submodule "epkg"]
 	path = lib/epkg
 	url = git@github.com:emacscollective/epkg.git
+[submodule "f"]
+	path = lib/f
+	url = https://github.com/rejeep/f.el
 [submodule "forge"]
 	path = lib/forge
 	url = https://github.com/magit/forge
@@ -29,6 +41,9 @@
 [submodule "llama"]
 	path = lib/llama
 	url = https://git.sr.ht/~tarsius/llama
+[submodule "ls-lisp-extension"]
+	path = lib/ls-lisp-extension
+	url = git@github.com:ofnhwx/ls-lisp-extension.git
 [submodule "magit"]
 	path = lib/magit
 	url = https://github.com/magit/magit
@@ -38,6 +53,15 @@
 [submodule "markdown-mode"]
 	path = lib/markdown-mode
 	url = https://github.com/jrblevin/markdown-mode
+[submodule "nerd-icons"]
+	path = lib/nerd-icons
+	url = https://github.com/rainstormstudio/nerd-icons.el
+[submodule "nerd-icons-dired"]
+	path = lib/nerd-icons-dired
+	url = https://github.com/rainstormstudio/nerd-icons-dired
+[submodule "s"]
+	path = lib/s
+	url = https://github.com/magnars/s.el
 [submodule "treepy"]
 	path = lib/treepy
 	url = https://github.com/volrath/treepy.el

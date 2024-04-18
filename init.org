@@ -381,21 +381,21 @@
 #+end_src
 *** dired-filter
 #+begin_src emacs-lisp
-(e:package-config! dired-filter
+(e:deffered-config! dired-filter
   :hook (dired-mode-hook . dired-filter-mode))
 #+end_src
 *** dired-toggle-sudo
 #+begin_src emacs-lisp
-(e:package-config! dired-toggle-sudo)
+(e:deffered-config! dired-toggle-sudo)
 #+end_src
-*** treemacs-icons-dired
+*** nerd-icons-dired
 #+begin_src emacs-lisp
-(e:package-config! treemacs-icons-dired
-  :hook (dired-mode-hook . treemacs-icons-dired-mode))
+(e:deffered-config! nerd-icons-dired
+  :hook (dired-mode-hook . nerd-icons-dired-mode))
 #+end_src
 *** ls-lisp-extension
 #+begin_src emacs-lisp
-(e:package-config! (ls-lisp-extension :host github :repo "ofnhwx/ls-lisp-extension")
+(e:deffered-config! ls-lisp-extension
   :after (dired)
   :config
   (setopt ls-lisp-dirs-first t)
