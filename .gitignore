@@ -1,7 +1,6 @@
 /codeium/
 /eln-cache/
-/elpaca/
-/epkgs/
+/elpa/
 /tree-sitter/
 
 /early-init.el
