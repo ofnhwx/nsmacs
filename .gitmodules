@@ -70,12 +70,12 @@
 [submodule "consult-todo"]
 	path = lib/consult-todo
 	url = git@github.com:liuyinz/consult-todo
-[submodule "corfu"]
-	path = lib/corfu
-	url = https://github.com/minad/corfu
 [submodule "copilot"]
 	path = lib/copilot
 	url = git@github.com:copilot-emacs/copilot.el
+[submodule "corfu"]
+	path = lib/corfu
+	url = https://github.com/minad/corfu
 [submodule "csv-mode"]
 	path = lib/csv-mode
 	url = git@github.com:emacsmirror/csv-mode.git
@@ -335,6 +335,9 @@
 [submodule "persistent-scratch"]
 	path = lib/persistent-scratch
 	url = https://github.com/Fanael/persistent-scratch
+[submodule "pfuture"]
+	path = lib/pfuture
+	url = https://github.com/Alexander-Miller/pfuture
 [submodule "popup"]
 	path = lib/popup
 	url = https://github.com/auto-complete/popup-el
@@ -410,6 +413,7 @@
 [submodule "treemacs"]
 	path = lib/treemacs
 	url = https://github.com/Alexander-Miller/treemacs
+	load-path = src/elisp
 [submodule "treepy"]
 	path = lib/treepy
 	url = https://github.com/volrath/treepy.el
