@@ -64,6 +64,9 @@
 [submodule "consult-flycheck"]
 	path = lib/consult-flycheck
 	url = https://github.com/minad/consult-flycheck
+[submodule "consult-lsp"]
+	path = lib/consult-lsp
+	url = https://github.com/gagbo/consult-lsp
 [submodule "consult-projectile"]
 	path = lib/consult-projectile
 	url = https://gitlab.com/OlMon/consult-projectile
