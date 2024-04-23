@@ -79,6 +79,8 @@
 [submodule "corfu"]
 	path = lib/corfu
 	url = https://github.com/minad/corfu
+	load-path = .
+	load-path = extensions
 [submodule "csv-mode"]
 	path = lib/csv-mode
 	url = git@github.com:emacsmirror/csv-mode.git
@@ -284,6 +286,8 @@
 [submodule "lsp-mode"]
 	path = lib/lsp-mode
 	url = https://github.com/emacs-lsp/lsp-mode
+	load-path = .
+	load-path = clients
 [submodule "lsp-treemacs"]
 	path = lib/lsp-treemacs
 	url = https://github.com/emacs-lsp/lsp-treemacs
@@ -432,6 +436,8 @@
 [submodule "vertico"]
 	path = lib/vertico
 	url = https://github.com/minad/vertico
+	load-path = .
+	load-path = extensions
 [submodule "visual-regexp"]
 	path = lib/visual-regexp
 	url = https://github.com/benma/visual-regexp.el
