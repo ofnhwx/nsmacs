@@ -89,18 +89,18 @@
   (declare (indent defun))
   `(eval '(progn ,@body)))
 #+end_src
-*** e:deffered-config!
+*** e:deferred-config!
 #+begin_src emacs-lisp
 (defvar e:high-priority-config-queue nil)
 (defvar e:low-priority-config-queue nil)
-(defvar e:deffered-config-loaded nil)
-(defmacro e:deffered-config! (package &rest body)
+(defvar e:deferred-config-loaded nil)
+(defmacro e:deferred-config! (package &rest body)
   (declare (indent defun))
   (let* ((priority (or (plist-get body :priority) :low))
          (queue (if (eq priority :high) 'e:high-priority-config-queue 'e:low-priority-config-queue))
          (fn-name (intern (format "e:package-config-%s!" package))))
     `(let ((fn (defun ,fn-name () (leaf ,package ,@body))))
-       (if e:deffered-config-loaded
+       (if e:deferred-config-loaded
            (funcall fn)
          (setq ,queue (append ,queue (list fn)))))))
 #+end_src
@@ -258,19 +258,19 @@
 #+end_src
 ** auth-source
 #+begin_src emacs-lisp
-(e:deffered-config! auth-source
+(e:deferred-config! auth-source
   :config
   (setopt auth-sources '("~/.authinfo.json.gpg" "~/.netrc.gpg")))
 #+end_src
 ** auto-revert
 #+begin_src emacs-lisp
-(e:deffered-config! auto-revert
+(e:deferred-config! auto-revert
   :config
   (global-auto-revert-mode 1))
 #+end_src
 ** browse-url
 #+begin_src emacs-lisp
-(e:deffered-config! browse-url
+(e:deferred-config! browse-url
   :commands (browse-url-by-choosen)
   :defun (browse-url-default-browser)
   :defvar (browse-url-generic-program)
@@ -285,26 +285,26 @@
 #+end_src
 ** comp
 #+begin_src emacs-lisp
-(e:deffered-config! comp
+(e:deferred-config! comp
   :defer-config
   (setopt native-comp-async-report-warnings-errors nil))
 #+end_src
 ** compile
 #+begin_src emacs-lisp
-(e:deffered-config! compile
+(e:deferred-config! compile
   :defer-config
   (setopt compilation-scroll-output t))
 #+end_src
 ** cus-edit
 #+begin_src emacs-lisp
-(e:deffered-config! cus-edit
+(e:deferred-config! cus-edit
   :defer-config
   (e:var! custom-file "custom.el"))
 #+end_src
 ** dired
 *** dired
 #+begin_src emacs-lisp
-(e:deffered-config! dired
+(e:deferred-config! dired
   :defer-config
   (setopt dired-auto-revert-buffer t)
   (setopt dired-dwim-target t)
@@ -317,21 +317,21 @@
 #+end_src
 *** dired-filter
 #+begin_src emacs-lisp
-(e:deffered-config! dired-filter
+(e:deferred-config! dired-filter
   :hook (dired-mode-hook . dired-filter-mode))
 #+end_src
 *** dired-toggle-sudo
 #+begin_src emacs-lisp
-(e:deffered-config! dired-toggle-sudo)
+(e:deferred-config! dired-toggle-sudo)
 #+end_src
 *** nerd-icons-dired
 #+begin_src emacs-lisp
-(e:deffered-config! nerd-icons-dired
+(e:deferred-config! nerd-icons-dired
   :hook (dired-mode-hook . nerd-icons-dired-mode))
 #+end_src
 *** ls-lisp-extension
 #+begin_src emacs-lisp
-(e:deffered-config! ls-lisp-extension
+(e:deferred-config! ls-lisp-extension
   :after (dired)
   :config
   (setopt ls-lisp-dirs-first t)
@@ -344,7 +344,7 @@
 #+end_src
 ** display-line-numbers
 #+begin_src emacs-lisp
-(e:deffered-config! display-line-numbers
+(e:deferred-config! display-line-numbers
   :hook ((find-file-hook . display-line-numbers-mode-on)
          (prog-mode-hook . display-line-numbers-mode-on))
   :defer-config
@@ -353,14 +353,14 @@
 #+end_src
 ** ediff
 #+begin_src emacs-lisp
-(e:deffered-config! ediff
+(e:deferred-config! ediff
   :commands (ediff-setup-windows-plain)
   :defer-config
   (setopt ediff-window-setup-function #'ediff-setup-windows-plain))
 #+end_src
 ** emacs-lock
 #+begin_src emacs-lisp
-(e:deffered-config! emacs-lock
+(e:deferred-config! emacs-lock
   :config
   (dolist (buffer '("*scratch*" "*Messages*"))
     (with-current-buffer buffer
@@ -368,13 +368,13 @@
 #+end_src
 ** epg-config
 #+begin_src emacs-lisp
-(e:deffered-config! epg-config
+(e:deferred-config! epg-config
   :defer-config
   (setopt epg-pinentry-mode 'loopback))
 #+end_src
 ** eww
 #+begin_src emacs-lisp
-(e:deffered-config! eww
+(e:deferred-config! eww
   :defun (eww-current-url)
   :defer-config
   (general-def eww-mode-map
@@ -386,7 +386,7 @@
 #+end_src
 ** files
 #+begin_src emacs-lisp
-(e:deffered-config! files
+(e:deferred-config! files
   :defer-config
   (setopt auto-save-default nil)
   (setopt make-backup-files nil)
@@ -395,20 +395,20 @@
 #+end_src
 ** frame
 #+begin_src emacs-lisp
-(e:deffered-config! frame
+(e:deferred-config! frame
   :defer-config
   (blink-cursor-mode 0))
 #+end_src
 ** google-translate
 #+begin_src emacs-lisp
-(e:deffered-config! google-translate
+(e:deferred-config! google-translate
   :config
   (setopt google-translate-default-source-language "en")
   (setopt google-translate-default-target-language "ja"))
 #+end_src
 ** hl-line
 #+begin_src emacs-lisp
-(e:deffered-config! hl-line
+(e:deferred-config! hl-line
   :hook ((find-file-hook . hl-line-mode-on)
          (prog-mode-hook . hl-line-mode-on))
   :config
@@ -416,19 +416,19 @@
 #+end_src
 ** indent
 #+begin_src emacs-lisp
-(e:deffered-config! indent
+(e:deferred-config! indent
   :defer-config
   (setopt standard-indent 2))
 #+end_src
 ** novice
 #+begin_src emacs-lisp
-(e:deffered-config! novice
+(e:deferred-config! novice
   :config
   (setopt disabled-command-function nil))
 #+end_src
 ** recentf
 #+begin_src emacs-lisp
-(e:deffered-config! recentf
+(e:deferred-config! recentf
   :advice (:before recentf-save-list ad:recentf-save-list@cleanup)
   :defun (recentf-include-p)
   :defvar (recentf-list)
@@ -448,19 +448,19 @@
 #+end_src
 ** savehist
 #+begin_src emacs-lisp
-(e:deffered-config! savehist
+(e:deferred-config! savehist
   :config
   (savehist-mode 1))
 #+end_src
 ** saveplace
 #+begin_src emacs-lisp
-(e:deffered-config! save-place
+(e:deferred-config! save-place
   :config
   (save-place-mode 1))
 #+end_src
 ** simple
 #+begin_src emacs-lisp
-(e:deffered-config! simple
+(e:deferred-config! simple
   :defer-config
   (e:default! indent-tabs-mode nil)
   (setopt set-mark-command-repeat-pop t)
@@ -468,13 +468,13 @@
 #+end_src
 ** so-long
 #+begin_src emacs-lisp
-(e:deffered-config! so-long
+(e:deferred-config! so-long
   :config
   (global-so-long-mode 1))
 #+end_src
 ** tab-bar-mode
 #+begin_src emacs-lisp
-(e:deffered-config! tab-bar
+(e:deferred-config! tab-bar
   :config
   (tab-bar-mode t)
   (defun tab-bar-select-tab-1 () (interactive) (tab-bar-select-tab 1))
@@ -494,7 +494,7 @@
 #+end_src
 ** timer
 #+begin_src emacs-lisp
-(e:deffered-config! timer
+(e:deferred-config! timer
   :advice (:around cancel-timer ad:cancel-timer@workaround)
   :defer-config
   (defun ad:cancel-timer@workaround (fn &rest args)
@@ -503,13 +503,13 @@
 #+end_src
 ** vc-hooks
 #+begin_src emacs-lisp
-(e:deffered-config! vc-hooks
+(e:deferred-config! vc-hooks
   :defer-config
   (setopt vc-follow-symlinks t))
 #+end_src
 ** whitespace
 #+begin_src emacs-lisp
-(e:deffered-config! whitespace
+(e:deferred-config! whitespace
   :hook ((find-file-hook . whitespace-mode-on)
          (prog-mode-hook . whitespace-mode-on))
   :defer-config
@@ -534,7 +534,7 @@
 #+end_src
 ** winner
 #+begin_src emacs-lisp
-(e:deffered-config! winner
+(e:deferred-config! winner
   :config
   (winner-mode 1))
 #+end_src
@@ -550,7 +550,7 @@
 * Config: Evil
 ** evil
 #+begin_src emacs-lisp
-(e:deffered-config! evil
+(e:deferred-config! evil
   :priority :high
   :defun (evil-get-auxiliary-keymap
           evil-half-cursor
@@ -604,21 +604,21 @@
 #+end_src
 ** evil-collection
 #+begin_src emacs-lisp
-(e:deffered-config! evil-collection
+(e:deferred-config! evil-collection
   :after (evil)
   :config
   (evil-collection-init))
 #+end_src
 ** evil-args
 #+begin_src emacs-lisp
-(e:deffered-config! evil-args
+(e:deferred-config! evil-args
   :config
   (general-def evil-inner-text-objects-map "a" 'evil-inner-arg)
   (general-def evil-outer-text-objects-map "a" 'evil-outer-arg))
 #+end_src
 ** evil-easymotion
 #+begin_src emacs-lisp
-(e:deffered-config! evil-easymotion
+(e:deferred-config! evil-easymotion
   :after (evil)
   :defvar (evilem-map)
   :config
@@ -630,34 +630,34 @@
 #+end_src
 ** evil-goggles
 #+begin_src emacs-lisp
-(e:deffered-config! evil-goggles
+(e:deferred-config! evil-goggles
   :after (evil)
   :config
   (evil-goggles-mode 1))
 #+end_src
 ** evil-lion
 #+begin_src emacs-lisp
-(e:deffered-config! evil-lion
+(e:deferred-config! evil-lion
   :after (evil)
   :config
   (evil-lion-mode 1))
 #+end_src
 ** evil-mc
 #+begin_src emacs-lisp
-(e:deffered-config! evil-mc
+(e:deferred-config! evil-mc
   :after (evil)
   :config
   (global-evil-mc-mode 1))
 #+end_src
 ** evil-nerd-commenter
 #+begin_src emacs-lisp
-(e:deffered-config! evil-nerd-commenter
+(e:deferred-config! evil-nerd-commenter
   :after (evil)
   :require t)
 #+end_src
 ** evil-surround
 #+begin_src emacs-lisp
-(e:deffered-config! evil-surround
+(e:deferred-config! evil-surround
   :after (evil)
   :config
   (general-def 'visual evil-surround-mode-map "s" 'evil-surround-region)
@@ -665,7 +665,7 @@
 #+end_src
 ** evil-textobj-tree-sitter
 #+begin_src emacs-lisp
-(e:deffered-config! evil-textobj-tree-sitter
+(e:deferred-config! evil-textobj-tree-sitter
   :defun (evil-textobj-tree-sitter-function--function.inner
           evil-textobj-tree-sitter-function--function.outer)
   :config
@@ -677,7 +677,7 @@
 * Config: SKK
 ** skk
 #+begin_src emacs-lisp
-(e:deffered-config! ddskk
+(e:deferred-config! ddskk
   :advice (:around evil-refresh-cursor ad:evil-refresh-cursor@with-skk)
   :defun (skk-latin-mode-on)
   :defvar (skk-mode-hook)
@@ -715,7 +715,7 @@
 #+end_src
 ** skk-server
 #+begin_src emacs-lisp
-(e:deffered-config! skk-server
+(e:deferred-config! skk-server
   :after (skk)
   :defun (e:prodigy-yaskkserv2 . prodigy)
   :defvar (skk-server-prog yaskkserv2-dictionary)
@@ -745,7 +745,7 @@
 #+end_src
 ** ddskk-posframe
 #+begin_src emacs-lisp
-(e:deffered-config! ddskk-posframe
+(e:deferred-config! ddskk-posframe
   :after (skk)
   :config
   (ddskk-posframe-mode 1))
@@ -754,14 +754,14 @@
 ** cape
 *** codeium
 #+begin_src emacs-lisp
-(e:deffered-config! codeium
+(e:deferred-config! codeium
   :commands (cape-codeium)
   :defer-config
   (defalias 'cape-codeium (cape-capf-interactive #'codeium-completion-at-point)))
 #+end_src
 *** company-org-block
 #+begin_src emacs-lisp
-(e:deffered-config! company-org-block
+(e:deferred-config! company-org-block
   :commands (cape-org-block)
   :defer-config
   (setopt company-org-block-edit-style 'inline)
@@ -769,7 +769,7 @@
 #+end_src
 *** cape
 #+begin_src emacs-lisp
-(e:deffered-config! cape
+(e:deferred-config! cape
   :defun (e:capf-function)
   :hook ((prog-mode-hook . e:setup-capf/default)
          (org-mode-hook . e:setup-capf/org)
@@ -798,7 +798,7 @@
 #+end_src
 ** consult
 #+begin_src emacs-lisp
-(e:deffered-config! consult
+(e:deferred-config! consult
   :advice (:around consult-line ad:consult-line@with-orderless)
   :commands (consult-faces consult-line-dwim consult-ripgrep-dwim consult-ripgrep-cwd consult-ripgrep-cwd-dwim)
   :defun (consult-ripgrep consult--read)
@@ -826,7 +826,7 @@
 #+end_src
 ** copilot
 #+begin_src emacs-lisp
-(e:deffered-config! copilot
+(e:deferred-config! copilot
   :advice ((:before-until corfu-complete ad:copilot-accept-completion-func)
            (:before-until indent-for-tab-command ad:copilot-accept-completion-func)
            (:before cape-codeium ad:copilot-cancel)
@@ -855,7 +855,7 @@
 #+end_src
 ** corfu
 #+begin_src emacs-lisp
-(e:deffered-config! corfu
+(e:deferred-config! corfu
   :defvar (corfu-map)
   :hook ((corfu-mode-hook . corfu-echo-mode)
          (corfu-mode-hook . corfu-popupinfo-mode)
@@ -882,7 +882,7 @@
 #+end_src
 ** embark
 #+begin_src emacs-lisp
-(e:deffered-config! embark
+(e:deferred-config! embark
   :config
   (general-def minibuffer-mode-map
     :prefix "C-c"
@@ -893,7 +893,7 @@
 #+end_src
 ** fussy
 #+begin_src emacs-lisp
-(e:deffered-config! fussy
+(e:deferred-config! fussy
   :init
   (setq completion-styles '(fussy orderless))
   (setq completion-category-defaults nil)
@@ -905,13 +905,13 @@
 #+end_src
 ** fzf-native
 #+begin_src emacs-lisp
-(e:deffered-config! fzf-native
+(e:deferred-config! fzf-native
   :config
   (fzf-native-load-dyn))
 #+end_src
 ** kind-icon
 #+begin_src emacs-lisp
-(e:deffered-config! kind-icon
+(e:deferred-config! kind-icon
   :after (corfu)
   :defvar (corfu-margin-formatters)
   :config
@@ -920,13 +920,13 @@
 #+end_src
 ** marginalia
 #+begin_src emacs-lisp
-(e:deffered-config! marginalia
+(e:deferred-config! marginalia
   :config
   (marginalia-mode 1))
 #+end_src
 ** orderless
 #+begin_src emacs-lisp
-(e:deffered-config! orderless
+(e:deferred-config! orderless
   :commands (orderless-migemo)
   :defvar (orderless-matching-styles)
   :init
@@ -942,12 +942,12 @@
 #+end_src
 ** origami
 #+begin_src emacs-lisp
-(e:deffered-config! origami
+(e:deferred-config! origami
   :hook (prog-mode-hook . origami-mode))
 #+end_src
 ** vertico
 #+begin_src emacs-lisp
-(e:deffered-config! vertico
+(e:deferred-config! vertico
   :priority :high
   :config
   (setopt vertico-count 20)
@@ -962,12 +962,12 @@
 * Config: Org
 ** evil-org
 #+begin_src emacs-lisp
-(e:deffered-config! evil-org
+(e:deferred-config! evil-org
   :hook (org-mode-hook . evil-org-mode))
 #+end_src
 ** org-support
 #+begin_src emacs-lisp
-(e:deffered-config! org-support
+(e:deferred-config! org-support
   :defun (org-support/archive-file org-support/note-file org-support/tasks-file)
   :defvar (org-directory)
   :config
@@ -988,7 +988,7 @@
 #+end_src
 ** org
 #+begin_src emacs-lisp
-(e:deffered-config! org
+(e:deferred-config! org
   :defer-config
   (setopt org-directory (f-expand "~/org/"))
   (setopt org-default-notes-file (org-support/note-file))
@@ -1003,7 +1003,7 @@
 #+end_src
 ** org-agenda
 #+begin_src emacs-lisp
-(e:deffered-config! org-agenda
+(e:deferred-config! org-agenda
   :after (org)
   :config
   (setopt org-agenda-current-time-string "← now")
@@ -1020,7 +1020,7 @@
 #+end_src
 ** org-clock
 #+begin_src emacs-lisp
-(e:deffered-config! org-clock
+(e:deferred-config! org-clock
   :after (org)
   :config
   (setopt org-clock-persist t)
@@ -1028,7 +1028,7 @@
 #+end_src
 ** org-faces
 #+begin_src emacs-lisp
-(e:deffered-config! org-faces
+(e:deferred-config! org-faces
   :after (org)
   :config
   (setopt org-todo-keyword-faces
@@ -1045,7 +1045,7 @@
 #+end_src
 ** org-refile
 #+begin_src emacs-lisp
-(e:deffered-config! org-refile
+(e:deferred-config! org-refile
   :after (org)
   :config
   (setopt org-refile-targets
@@ -1055,7 +1055,7 @@
 #+end_src
 ** org-src
 #+begin_src emacs-lisp
-(e:deffered-config! org-src
+(e:deferred-config! org-src
   :after (org)
   :config
   (setopt org-edit-src-content-indentation 0)
@@ -1063,21 +1063,21 @@
 #+end_src
 ** org-superstar
 #+begin_src emacs-lisp
-(e:deffered-config! org-superstar
+(e:deferred-config! org-superstar
   :after (org)
   :hook (org-mode-hook . org-superstar-mode))
 #+end_src
 * Config: Packages
 ** ace-window
 #+begin_src emacs-lisp
-(e:deffered-config! ace-window
+(e:deferred-config! ace-window
   :defer-config
   (setopt aw-keys (number-sequence ?1 ?9))
   (setopt aw-scope 'frame))
 #+end_src
 ** affe
 #+begin_src emacs-lisp
-(e:deffered-config! affe
+(e:deferred-config! affe
   :defvar (affe-find-command)
   :defer-config
   (setopt affe-find-command (or (executable-find "fd") affe-find-command))
@@ -1086,13 +1086,13 @@
 #+end_src
 ** atomic-chrome
 #+begin_src emacs-lisp
-(e:deffered-config! atomic-chrome
+(e:deferred-config! atomic-chrome
   :config
   (atomic-chrome-start-server))
 #+end_src
 ** apheleia
 #+begin_src emacs-lisp
-(e:deffered-config! apheleia
+(e:deferred-config! apheleia
   :defvar (apheleia-formatters apheleia-mode-alist)
   :config
   (apheleia-global-mode 1)
@@ -1126,7 +1126,7 @@
 #+end_src
 ** avy
 #+begin_src emacs-lisp
-(e:deffered-config! avy
+(e:deferred-config! avy
   :config
   (with-eval-after-load 'evil
     (general-def '(normal motion)
@@ -1140,7 +1140,7 @@
 #+end_src
 ** chezmoi
 #+begin_src emacs-lisp
-(e:deffered-config! chezmoi
+(e:deferred-config! chezmoi
   :defun (chezmoi-find chezmoi-target-file)
   :defvar (chezmoi-mode)
   :config
@@ -1156,7 +1156,7 @@
 ** denote
 *** denote
 #+begin_src emacs-lisp
-(e:deffered-config! denote
+(e:deferred-config! denote
   :defer-config
   (eval-and-compile (require 'org))
   (setopt denote-directory (expand-file-name "denote" org-directory))
@@ -1164,11 +1164,11 @@
 #+end_src
 *** denote-menu
 #+begin_src emacs-lisp
-(e:deffered-config! denote-menu)
+(e:deferred-config! denote-menu)
 #+end_src
 ** devdocs
 #+begin_src emacs-lisp
-(e:deffered-config! devdocs
+(e:deferred-config! devdocs
   :config
   (add-hook 'ruby-base-mode-hook
             (defun e:devdocs-ruby ()
@@ -1176,7 +1176,7 @@
 #+end_src
 ** difftastic
 #+begin_src emacs-lisp
-(e:deffered-config! difftastic
+(e:deferred-config! difftastic
   :config
   (with-eval-after-load 'magit-diff
     (transient-append-suffix 'magit-diff '(-1 -1)
@@ -1185,7 +1185,7 @@
 #+end_src
 ** doom-modeline
 #+begin_src emacs-lisp
-(e:deffered-config! doom-modeline
+(e:deferred-config! doom-modeline
   :config
   (setopt doom-modeline-buffer-file-name-style 'relative-from-project)
   (setopt doom-modeline-minor-modes t)
@@ -1193,7 +1193,7 @@
 #+end_src
 ** dtrt-indent
 #+begin_src emacs-lisp
-(e:deffered-config! dtrt-indent
+(e:deferred-config! dtrt-indent
   :defun (dtrt-indent-adapt)
   :hook (prog-mode-hook . setup-dtrt-indent)
   :defer-config
@@ -1203,25 +1203,25 @@
 #+end_src
 ** dumb-jump
 #+begin_src emacs-lisp
-(e:deffered-config! dumb-jump
+(e:deferred-config! dumb-jump
   :config
   (add-hook 'xref-backend-functions #'dumb-jump-xref-activate))
 #+end_src
 ** editorconfig
 #+begin_src emacs-lisp
-(e:deffered-config! editorconfig
+(e:deferred-config! editorconfig
   :config
   (editorconfig-mode 1))
 #+end_src
 ** elisp-demos
 #+begin_src emacs-lisp
-(e:deffered-config! elisp-demos
+(e:deferred-config! elisp-demos
   :advice ((:after describe-function-1 elisp-demos-advice-describe-function-1)
            (:after helpful-update      elisp-demos-advice-helpful-update)))
 #+end_src
 ** flycheck
 #+begin_src emacs-lisp
-(e:deffered-config! flycheck
+(e:deferred-config! flycheck
   :commands (e:flycheck-copy-error-ids)
   :defun (flycheck-add-next-checker
           flycheck-checker-get
@@ -1254,18 +1254,18 @@
 #+end_src
 ** git-gutter
 #+begin_src emacs-lisp
-(e:deffered-config! git-gutter
+(e:deferred-config! git-gutter
   :config
   (global-git-gutter-mode 1))
 #+end_src
 ** helm
 #+begin_src emacs-lisp
-(e:deffered-config! helm
+(e:deferred-config! helm
   :bind (([remap eval-expression] . helm-eval-expression-with-eldoc)))
 #+end_src
 ** highlight-indentation
 #+begin_src emacs-lisp
-(e:deffered-config! highlight-indentation
+(e:deferred-config! highlight-indentation
   :commands (highlight-indentation-mode-on)
   :config
   (setopt highlight-indentation-offset 2)
@@ -1275,13 +1275,13 @@
 #+end_src
 ** hl-todo
 #+begin_src emacs-lisp
-(e:deffered-config! hl-todo
+(e:deferred-config! hl-todo
   :config
   (global-hl-todo-mode 1))
 #+end_src
 ** jinx
 #+begin_src emacs-lisp
-(e:deffered-config! jinx
+(e:deferred-config! jinx
   :defvar (jinx-exclude-regexps jinx-include-faces)
   :hook (prog-mode-hook . jinx-mode)
   :config
@@ -1300,14 +1300,14 @@
 #+end_src
 ** locale-eaw
 #+begin_src emacs-lisp
-(e:deffered-config! eaw
+(e:deferred-config! eaw
   :commands (eaw-fullwidth)
   :init
   (eaw-fullwidth))
 #+end_src
 ** macrostep
 #+begin_src emacs-lisp
-(e:deffered-config! macrostep
+(e:deferred-config! macrostep
   :config
   (e:major-mode-key-def (emacs-lisp-mode lisp-interaction-mode)
     "d" "debug"
@@ -1319,7 +1319,7 @@
 ** magit
 *** magit
 #+begin_src emacs-lisp
-(e:deffered-config! magit
+(e:deferred-config! magit
   :advice (:override magit-repos-alist magit-repos-alist@override)
   :defun (magit-add-section-hook magit-list-repos magit-list-repos-uniquify)
   :defer-config
@@ -1346,7 +1346,7 @@
 #+end_src
 *** magit-delta
 #+begin_src emacs-lisp
-(e:deffered-config! magit-delta
+(e:deferred-config! magit-delta
   :advice (:around magit-delta-call-delta-and-convert-ansi-escape-sequences magit-delta-call-delta-and-convert-ansi-escape-sequences@auto-disable)
   :defvar (magit-delta-mode)
   :hook (magit-mode-hook . magit-delta-mode)
@@ -1365,7 +1365,7 @@
 #+end_src
 ** migemo
 #+begin_src emacs-lisp
-(e:deffered-config! migemo
+(e:deferred-config! migemo
   :config
   (require 'migemo)
   (setopt migemo-user-dictionary nil)
@@ -1377,20 +1377,20 @@
 #+end_src
 ** minions
 #+begin_src emacs-lisp
-(e:deffered-config! minions
+(e:deferred-config! minions
   :config
   (minions-mode 1))
 #+end_src
 ** open-junk-file
 #+begin_src emacs-lisp
-(e:deffered-config! open-junk-file
+(e:deferred-config! open-junk-file
   :config
   (setopt open-junk-file-format (f-expand "junk/%Y/%Y%m%d%H%M%S." no-littering-var-directory)))
 #+end_src
 ** prodigy
 *** prodigy
 #+begin_src emacs-lisp
-(e:deffered-config! prodigy
+(e:deferred-config! prodigy
   :defun (prodigy-find-service prodigy-start-service)
   :defer-config
   (setopt prodigy-view-buffer-maximum-size 2048)
@@ -1401,7 +1401,7 @@
 #+end_src
 *** prodigy-with-vterm
 #+begin_src emacs-lisp
-(e:deffered-config! prodigy-with-vterm
+(e:deferred-config! prodigy-with-vterm
   :advice (:around prodigy-start-service ad:prodigy-start-service@with-vterm)
   :after (prodigy)
   :defvar (vterm--process)
@@ -1425,7 +1425,7 @@
 #+end_src
 ** projectile
 #+begin_src emacs-lisp
-(e:deffered-config! projectile
+(e:deferred-config! projectile
   :commands (e:setup-projectile-known-projects)
   :defun (projectile-project-vcs)
   :defvar (projectile-known-projects)
@@ -1444,7 +1444,7 @@
 ** scratch
 *** scratch
 #+begin_src emacs-lisp
-(e:deffered-config! scratch
+(e:deferred-config! scratch
   :config
   (setopt persistent-scratch-scratch-buffer-p-function
           (defun scratch-buffer-p ()
@@ -1457,14 +1457,14 @@
 #+end_src
 *** persistent-scratch
 #+begin_src emacs-lisp
-(e:deffered-config! persistent-scratch
+(e:deferred-config! persistent-scratch
   :priority :high
   :config
   (persistent-scratch-setup-default))
 #+end_src
 ** separedit
 #+begin_src emacs-lisp
-(e:deffered-config! separedit
+(e:deferred-config! separedit
   :config
   (general-def prog-mode-map
     "C-c '" 'separedit)
@@ -1473,7 +1473,7 @@
 #+end_src
 ** shackle
 #+begin_src emacs-lisp
-(e:deffered-config! shackle
+(e:deferred-config! shackle
   :advice ((:after shackle-display-buffer-action ad:shackle-display-buffer-action@save-windows)
            (:before keyboard-quit ad:keyboard-quit@shackle-auto-close))
   :defvar (shackle-last-window)
@@ -1507,7 +1507,7 @@
 #+end_src
 ** shell-pop
 #+begin_src emacs-lisp
-(e:deffered-config! shell-pop
+(e:deferred-config! shell-pop
   :advice (:around shell-pop ad:shell-pop@auto-session-name)
   :defvar (shell-pop-shell-type)
   :config
@@ -1527,7 +1527,7 @@
 #+end_src
 ** smartparens
 #+begin_src emacs-lisp
-(e:deffered-config! smartparens
+(e:deferred-config! smartparens
   :defun (sp-local-pair)
   :config
   (setopt sp-cancel-autoskip-on-backward-movement nil)
@@ -1543,32 +1543,32 @@
 #+end_src
 ** symbol-overlay
 #+begin_src emacs-lisp
-(e:deffered-config! symbol-overlay
+(e:deferred-config! symbol-overlay
   :defvar (symbol-overlay-map)
   :defer-config
   (setq symbol-overlay-map (make-sparse-keymap)))
 #+end_src
 ** transient
 #+begin_src emacs-lisp
-(e:deffered-config! transient
+(e:deferred-config! transient
   :defer-config
   (setopt transient-default-level 7)
   (e:var! transient-values-file "transient-values.el"))
 #+end_src
 ** undo-fu
 #+begin_src emacs-lisp
-(e:deffered-config! undo-fu
+(e:deferred-config! undo-fu
   :config
   (setopt evil-undo-system 'undo-fu))
 #+end_src
 ** visual-regexp
 #+begin_src emacs-lisp
-(e:deffered-config! visual-regexp
+(e:deferred-config! visual-regexp
   :bind ([remap query-replace] . vr/query-replace))
 #+end_src
 ** vterm
 #+begin_src emacs-lisp
-(e:deffered-config! vterm
+(e:deferred-config! vterm
   :commands (e:vterm-exec)
   :defer-config
   (general-def vterm-mode-map
@@ -1588,7 +1588,7 @@
 #+end_src
 ** wakatime-mode
 #+begin_src emacs-lisp
-(e:deffered-config! wakatime-mode
+(e:deferred-config! wakatime-mode
   :defvar (wakatime-api-key wakatime-cli-path)
   :preface
   (setopt wakatime-cli-path (executable-find "wakatime-cli"))
@@ -1599,7 +1599,7 @@
 #+end_src
 ** which-key
 #+begin_src emacs-lisp
-(e:deffered-config! which-key
+(e:deferred-config! which-key
   :config
   (setopt which-key-idle-delay 0.4)
   (setopt which-key-idle-secondary-delay 0.01)
@@ -1610,7 +1610,7 @@
 #+end_src
 ** winum
 #+begin_src emacs-lisp
-(e:deffered-config! winum
+(e:deferred-config! winum
   :config
   (winum-mode 1))
 #+end_src
@@ -1618,7 +1618,7 @@
 ** Tools
 *** lsp-mode
 #+begin_src emacs-lisp
-(e:deffered-config! lsp-mode
+(e:deferred-config! lsp-mode
   :defun (lsp-deferred)
   :defer-config
   (setopt lsp-auto-execute-action nil)
@@ -1646,7 +1646,7 @@
 #+end_src
 *** lsp-ui
 #+begin_src emacs-lisp
-(e:deffered-config! lsp-ui
+(e:deferred-config! lsp-ui
   :defer-config
   (setopt lsp-ui-doc-delay 2.0)
   (setopt lsp-ui-doc-include-signature t)
@@ -1656,7 +1656,7 @@
 #+end_src
 *** lsp-rubocop
 #+begin_src emacs-lisp
-(e:deffered-config! lsp-rubocop
+(e:deferred-config! lsp-rubocop
   :defun (e:bundle-exists)
   :advice (:before lsp-rubocop--build-command ad:lsp-rubocop--build-command@auto-detect)
   :defer-config
@@ -1668,7 +1668,7 @@
 #+end_src
 *** lsp-solargraph
 #+begin_src emacs-lisp
-(e:deffered-config! lsp-solargraph
+(e:deferred-config! lsp-solargraph
   :defun (e:bundle-exists)
   :advice (:before lsp-solargraph--build-command ad:lsp-solargraph--build-command@auto-detect)
   :defer-config
@@ -1678,20 +1678,21 @@
 #+end_src
 *** lsp-volar
 #+begin_src emacs-lisp
-(e:deffered-config! lsp-volar
+(e:deferred-config! lsp-volar
   :defer-config
   (setopt lsp-volar-take-over-mode nil))
 #+end_src
 *** dap-mode
 #+begin_src emacs-lisp
-(e:deffered-config! dap-mode)
+(e:deferred-config! dap-mode)
 #+end_src
 *** tree-sitter
 #+begin_src emacs-lisp
-(e:deffered-config! treesit-auto
+(e:deferred-config! treesit-auto
   :commands (treesit-auto-add-to-auto-mode-alist global-treesit-auto-mode)
   :init
   (setopt treesit-auto-install t)
+  (setopt treesit-auto-langs (delete 'vue treesit-auto-langs))
   (setopt treesit-language-source-alist
                '((vue "https://github.com/ikatyang/tree-sitter-vue")))
   (treesit-auto-add-to-auto-mode-alist)
@@ -1700,7 +1701,7 @@
 ** Ruby
 *** ruby-ts-mode
 #+begin_src emacs-lisp
-(e:deffered-config! ruby-ts-mode
+(e:deferred-config! ruby-ts-mode
   :hook (ruby-ts-mode-hook . lsp-deferred)
   :mode "\\.csb\\'"
   :defer-config
@@ -1737,7 +1738,7 @@
 #+end_src
 *** haml-mode
 #+begin_src emacs-lisp
-(e:deffered-config! haml-mode
+(e:deferred-config! haml-mode
   :hook (haml-mode-hook . highlight-indentation-mode-on)
   :config
   (add-hook 'haml-mode-hook
@@ -1752,11 +1753,11 @@
 #+end_src
 *** bundler
 #+begin_src emacs-lisp
-(e:deffered-config! bundler)
+(e:deferred-config! bundler)
 #+end_src
 *** projectile-rails
 #+begin_src emacs-lisp
-(e:deffered-config! projectile-rails
+(e:deferred-config! projectile-rails
   :defvar (projectile-rails-views-re)
   :init
   (projectile-rails-global-mode 1)
@@ -1837,13 +1838,13 @@
 #+end_src
 *** rails-routes
 #+begin_src emacs-lisp
-(e:deffered-config! rails-routes
+(e:deferred-config! rails-routes
   :defer-config
   (e:var! rails-routes-cache-path "rails-routes"))
 #+end_src
 *** rspec-mode
 #+begin_src emacs-lisp
-(e:deffered-config! rspec-mode
+(e:deferred-config! rspec-mode
   :defer-config
   (e:minor-mode-key-def rspec-mode
     "t" "test"
@@ -1862,27 +1863,28 @@
 ** TypeScript/JavaScript
 *** typescript-ts-mode
 #+begin_src emacs-lisp
-(e:deffered-config! typescript-ts-mode
+(e:deferred-config! typescript-ts-mode
   :hook ((typescript-ts-mode-hook . lsp-deferred)
          (tsx-ts-mode-hook . lsp-deferred))
   :mode "\\.mts\\'")
 #+end_src
 *** vue-mode
 #+begin_src emacs-lisp
-(e:deffered-config! vue-mode
+(e:deferred-config! vue-mode
   :config
   (define-derived-mode vue-mode web-mode "Vue")
+  (add-to-list 'auto-mode-alist '("\\.vue\\'" . vue-mode))
   (add-hook 'vue-mode-hook #'lsp-deferred))
 #+end_src
 *** vue-ts-mode
 #+begin_src emacs-lisp :tangle no
-(e:deffered-config! vue-ts-mode
+(e:deferred-config! vue-ts-mode
   :hook (vue-ts-mode-hook . lsp-deferred)
   :mode "\\.vue\\'")
 #+end_src
 *** yarn
 #+begin_src emacs-lisp
-(e:deffered-config! yarn
+(e:deferred-config! yarn
   :commands (yarn-install
              yarn-self-udpate
              yarn-update
@@ -1891,24 +1893,24 @@
 ** HTML/CSS
 *** web-mode
 #+begin_src emacs-lisp
-(e:deffered-config! web-mode
+(e:deferred-config! web-mode
   :mode "\\.erb\\'"
   :config
   (setopt web-mode-enable-auto-indentation nil))
 #+end_src
 *** sass-mode
 #+begin_src emacs-lisp
-(e:deffered-config! sass-mode
+(e:deferred-config! sass-mode
   :hook (sass-mode-hook . rainbow-mode))
 #+end_src
 *** scss-mode
 #+begin_src emacs-lisp
-(e:deffered-config! scss-mode
+(e:deferred-config! scss-mode
   :hook (scss-mode-hook . rainbow-mode))
 #+end_src
 *** emmet-mode
 #+begin_src emacs-lisp
-(e:deffered-config! emmet-mode
+(e:deferred-config! emmet-mode
   :hook ((haml-mode-hook . emmet-mode)
          (tsx-ts-mode-hook . emmet-mode)
          (vue-ts-mode-hook . emmet-mode)
@@ -1922,9 +1924,9 @@
 ** Text
 *** yaml-ts-mode
 #+begin_src emacs-lisp
-(e:deffered-config! yaml-mode
+(e:deferred-config! yaml-mode
   :commands (yaml-indent-line))
-(e:deffered-config! yaml-ts-mode
+(e:deferred-config! yaml-ts-mode
   :hook ((yaml-ts-mode-hook . lsp-deferred)
          (yaml-ts-mode-hook . highlight-indentation-mode-on))
   :defer-config
@@ -2301,7 +2303,7 @@
 * 設定完了
 ** 完了処理
 #+begin_src emacs-lisp
-(setopt e:deffered-config-loaded t)
+(setopt e:deferred-config-loaded t)
 #+end_src
 ** 優先度高めの設定
 #+begin_src emacs-lisp
