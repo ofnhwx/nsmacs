@@ -1619,6 +1619,7 @@
 *** lsp-mode
 #+begin_src emacs-lisp
 (e:deffered-config! lsp-mode
+  :defun (lsp-deferred)
   :defer-config
   (setopt lsp-auto-execute-action nil)
   (setopt lsp-completion-provider :none)
@@ -1866,8 +1867,15 @@
          (tsx-ts-mode-hook . lsp-deferred))
   :mode "\\.mts\\'")
 #+end_src
-*** vue-ts-mode
+*** vue-mode
 #+begin_src emacs-lisp
+(e:deffered-config! vue-mode
+  :config
+  (define-derived-mode vue-mode web-mode "Vue")
+  (add-hook 'vue-mode-hook #'lsp-deferred))
+#+end_src
+*** vue-ts-mode
+#+begin_src emacs-lisp :tangle no
 (e:deffered-config! vue-ts-mode
   :hook (vue-ts-mode-hook . lsp-deferred)
   :mode "\\.vue\\'")
