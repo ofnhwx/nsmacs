@@ -1393,19 +1393,7 @@
 ** projectile
 #+begin_src emacs-lisp
 (e:deferred-config! projectile
-  :commands (e:setup-projectile-known-projects)
-  :defun (projectile-project-vcs)
-  :defvar (projectile-known-projects)
   :defer-config
-  (defun e:setup-projectile-known-projects ()
-    (when (executable-find "ghq")
-        (setq projectile-known-projects
-            (->> projectile-known-projects
-                (--remove (eq (projectile-project-vcs it) 'none))
-                (-union (-map 'f-short (kllib:shell-command-to-list "ghq list --full-path")))
-                (-map 'file-name-as-directory)
-                (-sort 's-less?)
-                (-distinct)))))
   (e:setup-projectile-known-projects))
 #+end_src
 ** scratch
@@ -1730,12 +1718,7 @@
   :init
   (projectile-rails-global-mode 1)
   :config
-  (let ((exts '("html" "erb" "haml" "slim"
-                "js" "coffee" "ts"
-                "css" "scss" "sass" "less"
-                "json" "builder" "jbuilder" "rabl"
-                "csb" "axlsx")))
-    (setopt projectile-rails-views-re (concat "\\." (regexp-opt exts))))
+  (e:setup-projectile-rails-views-re)
   (e:var! rake-cache-file "rake.cache")
   (setopt rake-completion-system 'completing-read-default)
   (e:minor-mode-key-def projectile-rails-mode
@@ -1746,13 +1729,13 @@
     "fcd" '("destroy" . projectile-rails-destroy)
     "ff" "find"
     "ff@" '("mailer" . projectile-rails-find-mailer)
-    "ffV" '("view component" . projectile-rails-find-view-components)
+    "ffV" '("view component" . e:projectile-rails-find-view-components)
     "ffa" '("locale" . projectile-rails-find-locale)
     "ffb" '("job" . projectile-rails-find-job)
     "ffc" '("controller" . projectile-rails-find-controller)
     "ffe" '("environment" . projectile-rails-find-environment)
     "fff" '("feature" . projectile-rails-find-feature)
-    "ffg" '("graphql" . projectile-rails-find-graphql)
+    "ffg" '("graphql" . e:projectile-rails-find-graphql)
     "ffh" '("helper" . projectile-rails-find-helper)
     "ffi" '("initializer" . projectile-rails-find-initializer)
     "ffj" '("javascript" . projectile-rails-find-javascript)
@@ -1784,25 +1767,7 @@
     "fgt" '("test" . projectile-rails-find-current-test)
     "fgu" '("fixture" . projectile-rails-find-current-fixture)
     "fgv" '("view" . projectile-rails-find-current-view)
-    "fgz" '("helper" . projectile-rails-goto-spec-helper))
-  :defer-config
-  (defun e:projectile-rails-find-resource (prompt dirs &optional newfile-template)
-    (eval '(projectile-rails-find-resource prompt dirs newfile-template)))
-  (defun projectile-rails-find-view-components ()
-    "Find a View component."
-    (interactive)
-    (e:projectile-rails-find-resource
-      "components: "
-      `(("app/components/" "\\(.+\\)\\.rb$")
-        ("app/components/" ,(concat "\\(.+\\)" projectile-rails-views-re)))
-      "app/components/${filename}"))
-  (defun projectile-rails-find-graphql ()
-    "Find a GraphQL."
-    (interactive)
-    (e:projectile-rails-find-resource
-     "graphql: "
-     '(("app/graphql/" "\\(.+\\)\\.rb$"))
-     "app/graphql/${filename}")))
+    "fgz" '("helper" . projectile-rails-goto-spec-helper)))
 #+end_src
 *** rails-routes
 #+begin_src emacs-lisp
