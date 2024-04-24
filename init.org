@@ -66,100 +66,6 @@
 #+begin_src emacs-lisp
 (require 'nsmacs-macros)
 #+end_src
-*** cl-lib
-#+begin_src emacs-lisp
-(eval-when-compile (require 'cl-lib))
-#+end_src
-*** e:default!
-#+begin_src emacs-lisp
-(defmacro e:default! (variable default)
-  `(setq-default ,variable ,default))
-#+end_src
-*** e:local!
-#+begin_src emacs-lisp
-(defmacro e:local! (variable value)
-  `(setq-local ,variable ,value))
-#+end_src
-*** e:var!
-#+begin_src emacs-lisp
-(defmacro e:var! (variable value)
-  `(setopt ,variable (no-littering-expand-var-file-name ,value)))
-#+end_src
-*** e:if!
-#+begin_src emacs-lisp
-(defmacro e:if! (condition &rest body)
-  (declare (indent defun))
-  (if (eval condition)
-      `(progn ,@body)))
-#+end_src
-*** e:eval!
-#+begin_src emacs-lisp
-(defmacro e:eval! (&rest body)
-  (declare (indent defun))
-  `(eval '(progn ,@body)))
-#+end_src
-*** e:deferred-config!
-#+begin_src emacs-lisp
-(defvar e:high-priority-config-queue nil)
-(defvar e:low-priority-config-queue nil)
-(defvar e:deferred-config-loaded nil)
-(defmacro e:deferred-config! (package &rest body)
-  (declare (indent defun))
-  (let* ((priority (or (plist-get body :priority) :low))
-         (queue (if (eq priority :high) 'e:high-priority-config-queue 'e:low-priority-config-queue))
-         (fn-name (intern (format "e:package-config-%s!" package))))
-    `(let ((fn (defun ,fn-name () (leaf ,package ,@body))))
-       (if e:deferred-config-loaded
-           (funcall fn)
-         (setq ,queue (append ,queue (list fn)))))))
-#+end_src
-*** e:mode-key-def
-#+begin_src emacs-lisp
-(defmacro e:major-mode-key-def (modes key def &rest bindings)
-  (declare (indent defun))
-  `(e:mode-key-def :major-modes ,modes ,key ,def ,@bindings))
-(defmacro e:minor-mode-key-def (modes key def &rest bindings)
-  (declare (indent defun))
-  `(e:mode-key-def :minor-modes ,modes ,key ,def ,@bindings))
-(defmacro e:mode-key-def (mode-key modes key def &rest bindings)
-  (declare (indent defun))
-  (let* ((modes (if (listp modes) modes (list modes)))
-         (mode (or (car-safe modes) modes))
-         (command (intern (format "e:%s-command" mode)))
-         (map (intern (format "e:%s-command-map" mode)))
-         (prefix-bindings nil)
-         (general-bindings nil))
-    (while key
-      (if (stringp def)
-          (setq prefix-bindings (append prefix-bindings (list key def)))
-        (setq general-bindings (append general-bindings (list key def))))
-      (setq key (pop bindings)
-            def (pop bindings)))
-    `(progn
-       (bind-map ,map
-         :prefix-cmd ,command
-         ,mode-key ,modes
-         :keys ("M-<return>" "M-m m")
-         :evil-keys ("," "SPC m")
-         :evil-states (motion normal visual))
-       (general-def ,map ,@general-bindings)
-       ,(when prefix-bindings
-         `(which-key-add-keymap-based-replacements ,map
-            ,@prefix-bindings)))))
-#+end_src
-*** e:define-minor-mode-switch
-#+begin_src emacs-lisp
-(defmacro e:define-minor-mode-switch (minor-mode)
-  `(progn
-     (defun ,(intern (format "%s-on" minor-mode)) ()
-       ,(format "[generated] Turn on `%s'" minor-mode)
-       (interactive)
-       (,minor-mode 1))
-     (defun ,(intern (format "%s-off" minor-mode)) ()
-       ,(format "[generated] Turn off `%s'" minor-mode)
-       (interactive)
-       (,minor-mode 0))))
-#+end_src
 ** ライブラリ
 #+begin_src emacs-lisp
 (require 'komunan-lisp-library)
@@ -321,10 +227,6 @@
 #+begin_src emacs-lisp
 (e:deferred-config! dired-filter
   :hook (dired-mode-hook . dired-filter-mode))
-#+end_src
-*** dired-toggle-sudo
-#+begin_src emacs-lisp
-(e:deferred-config! dired-toggle-sudo)
 #+end_src
 *** nerd-icons-dired
 #+begin_src emacs-lisp
@@ -1064,24 +966,9 @@
   :config
   (apheleia-global-mode 1)
   :defer-config
-  (defun apheleia-inhibit-unnecesary-major-mode ()
-    (--none? (derived-mode-p it)
-             '(
-               ruby-base-mode
-               )))
-  (defun apheleia-inhibit-rubocop-excludes ()
-    (--any? (s-ends-with? it buffer-file-name)
-            '(
-              "/config/application.rb"
-              "/config/environments/development.rb"
-              "/config/environments/production.rb"
-              "/config/environments/staging.rb"
-              "/config/environments/test.rb"
-              "/db/schema.rb"
-              )))
   (setopt apheleia-inhibit-functions
-          '(apheleia-inhibit-unnecesary-major-mode
-            apheleia-inhibit-rubocop-excludes))
+          '(e:apheleia-inhibit-unnecesary-major-mode
+            e:apheleia-inhibit-rubocop-excludes))
   ;; formatters
   (setf (alist-get 'rubocop apheleia-formatters)
         '((if (e:bundle-exists "rubocop")
@@ -1089,7 +976,8 @@
             "rubocop")
           file "--autocorrect" "--stderr" "--format" "quiet" "--fail-level" "fatal"))
   ;; mode-alist
-  (setf (alist-get 'ruby-ts-mode apheleia-mode-alist) '(rubocop)))
+  (setf (alist-get 'ruby-ts-mode apheleia-mode-alist)
+        '(rubocop)))
 #+end_src
 ** avy
 #+begin_src emacs-lisp
@@ -1108,38 +996,22 @@
 ** chezmoi
 #+begin_src emacs-lisp
 (e:deferred-config! chezmoi
-  :defun (chezmoi-find chezmoi-target-file)
-  :defvar (chezmoi-mode)
-  :config
-  (require 'chezmoi)
-  (add-hook 'find-file-hook
-            (defun reopen-in-chezmoi-mode ()
-              (let* ((source (buffer-file-name))
-                     (target (chezmoi-target-file (or source ""))))
-                (when (and target
-                           (not chezmoi-mode))
-                  (chezmoi-find target))))))
+  :commands (chezmoi-diff
+             chezmoi-find
+             chezmoi-open-other
+             chezmoi-sync-files
+             chezmoi-template-buffer-display
+             chezmoi-wirte)
+  :hook (find-file-hook . e:reopen-in-chezmoi-mode))
 #+end_src
 ** denote
-*** denote
+ denote
 #+begin_src emacs-lisp
 (e:deferred-config! denote
   :defer-config
   (eval-and-compile (require 'org))
   (setopt denote-directory (expand-file-name "denote" org-directory))
   (setopt denote-known-keywords '("memo" "task")))
-#+end_src
-*** denote-menu
-#+begin_src emacs-lisp
-(e:deferred-config! denote-menu)
-#+end_src
-** devdocs
-#+begin_src emacs-lisp
-(e:deferred-config! devdocs
-  :config
-  (add-hook 'ruby-base-mode-hook
-            (defun e:devdocs-ruby ()
-              (setq-local devdocs-current-docs '("rails~7.1" "ruby~3")))))
 #+end_src
 ** difftastic
 #+begin_src emacs-lisp
@@ -1161,12 +1033,7 @@
 ** dtrt-indent
 #+begin_src emacs-lisp
 (e:deferred-config! dtrt-indent
-  :defun (dtrt-indent-adapt)
-  :hook (prog-mode-hook . setup-dtrt-indent)
-  :defer-config
-  (defun setup-dtrt-indent ()
-    (dtrt-indent-mode 1)
-    (dtrt-indent-adapt)))
+  :hook (prog-mode-hook . dtrt-indent-mode))
 #+end_src
 ** dumb-jump
 #+begin_src emacs-lisp
@@ -1189,30 +1056,12 @@
 ** flycheck
 #+begin_src emacs-lisp
 (e:deferred-config! flycheck
-  :commands (e:flycheck-copy-error-ids)
-  :defun (flycheck-add-next-checker
-          flycheck-checker-get
-          flycheck-def-config-file-var
-          flycheck-error-id
-          flycheck-may-enable-checker
-          flycheck-overlay-errors-at
-          flycheck-select-checker)
-  :init
-  (global-flycheck-mode 1)
-  (defun e:flycheck-copy-error-ids ()
-    (interactive)
-    (let ((messages (->> (flycheck-overlay-errors-at (point))
-                         (-map #'flycheck-error-id)
-                         (-uniq)
-                         (-non-nil))))
-      (when messages
-        (kill-new (string-join messages ", "))
-        (message (string-join messages ", ")))))
   :config
   (setopt flycheck-check-syntax-automatically '(save idle-change mode-enabled))
   (setopt flycheck-idle-change-delay 5.0)
-  :defer-config
-  (e:eval!
+  (global-flycheck-mode 1)
+  (e:eval! ;; haml-lint
+    (flycheck-add-next-checker 'haml 'haml-lint)
     (flycheck-def-config-file-var flycheck-haml-lintrc haml-lint ".haml-lint.yml" :safe #'stringp)
     (setf (flycheck-checker-get 'haml-lint 'command)
           '("haml-lint" "--no-color" "--no-summary"
@@ -1276,59 +1125,41 @@
 #+begin_src emacs-lisp
 (e:deferred-config! macrostep
   :config
-  (e:major-mode-key-def (emacs-lisp-mode lisp-interaction-mode)
-    "d" "debug"
-    "dm" 'macrostep-mode)
   (hercules-def
    :toggle-funs #'macrostep-mode
-   :keymap 'macrostep-keymap))
+   :keymap 'macrostep-keymap)
+  (e:major-mode-key-def (emacs-lisp-mode lisp-interaction-mode)
+    "d" "debug"
+    "dm" 'macrostep-mode))
 #+end_src
 ** magit
 *** magit
 #+begin_src emacs-lisp
 (e:deferred-config! magit
-  :advice (:override magit-repos-alist magit-repos-alist@override)
-  :defun (magit-add-section-hook magit-list-repos magit-list-repos-uniquify)
+  :advice (:override magit-repos-alist ad:magit-repos-alist@override)
+  :defun (magit-add-section-hook)
   :defer-config
   (setopt magit-delete-by-moving-to-trash nil)
   (setopt magit-diff-refine-hunk 'all)
   (setopt magit-diff-refine-ignore-whitespace t)
   (setopt magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1)
   (setopt magit-log-margin '(t "%Y-%m-%d %H:%M" magit-log-margin-width t 15))
+  (e:setup-magit-repository-directories)
+  ;; magit-status で表示するセクションを追加
   (--each '(magit-insert-skip-worktree-files magit-insert-modules-overview)
     (magit-add-section-hook 'magit-status-sections-hook it 'magit-insert-unpulled-from-upstream t))
+  ;; magit-log のデフォルトオプション設定
   (let ((argments '("--graph" "-n256" "--decorate" "--date-order" "--show-signature")))
     (put 'magit-log-mode 'magit-log-default-arguments argments)
-    (put 'magit-log-select-mode 'magit-log-default-arguments argments))
-  ;; リポジトリの一覧表示にパスをつける
-  (defun magit-repos-alist@override (&rest _)
-    (magit-list-repos-uniquify
-     (--map (cons (f-short it) it)
-            (magit-list-repos))))
-  ;; `ghq' で管理しているディレクトリを探索の対象にする
-  (when (executable-find "ghq")
-    (setopt magit-repository-directories
-            (->> (kllib:shell-command-to-list "ghq root --all")
-                 (--map (cons it 5))))))
+    (put 'magit-log-select-mode 'magit-log-default-arguments argments)))
 #+end_src
 *** magit-delta
 #+begin_src emacs-lisp
 (e:deferred-config! magit-delta
-  :advice (:around magit-delta-call-delta-and-convert-ansi-escape-sequences magit-delta-call-delta-and-convert-ansi-escape-sequences@auto-disable)
-  :defvar (magit-delta-mode)
-  :hook (magit-mode-hook . magit-delta-mode)
-  :defer-config
-  ;; https://github.com/dandavison/magit-delta/issues/9#issuecomment-795435781
-  (defvar nth/magit-delta-point-max 50000)
-  (defun magit-delta-call-delta-and-convert-ansi-escape-sequences@auto-disable (fn &rest args)
-    (if (<= (point-max) nth/magit-delta-point-max)
-        (apply fn args)
-      (magit-delta-mode -1)))
-  (add-hook 'magit-post-refresh-hook
-            (defun nth/magit-delta-auto-enable (&rest _)
-              (when (and (not magit-delta-mode)
-                         (<= (point-max) nth/magit-delta-point-max))
-                (magit-delta-mode +1)))))
+  :advice (:around magit-delta-call-delta-and-convert-ansi-escape-sequences
+                   ad:magit-delta-call-delta-and-convert-ansi-escape-sequences@auto-disable)
+  :hook ((magit-mode-hook . magit-delta-mode)
+         (magit-post-refresh-hook . e:nth/magit-delta-auto-enable)))
 #+end_src
 ** migemo
 #+begin_src emacs-lisp
@@ -1401,10 +1232,7 @@
 #+begin_src emacs-lisp
 (e:deferred-config! scratch
   :config
-  (setopt persistent-scratch-scratch-buffer-p-function
-          (defun scratch-buffer-p ()
-            (or (eq (current-buffer) (get-scratch-buffer-create))
-                (bound-and-true-p scratch-buffer))))
+  (setopt persistent-scratch-scratch-buffer-p-function #'e:scratch-buffer-p)
   (save-window-excursion
     (scratch-buffer)
     (funcall initial-major-mode)
@@ -1431,7 +1259,6 @@
 (e:deferred-config! shackle
   :advice ((:after shackle-display-buffer-action ad:shackle-display-buffer-action@save-windows)
            (:before keyboard-quit ad:keyboard-quit@shackle-auto-close))
-  :defvar (shackle-last-window)
   :config
   (setopt shackle-rules
           '(;;
@@ -1449,36 +1276,18 @@
             ("*rspec-compilation*"            :align bottom :ratio 0.3)
             ("*trace-output*"                 :align bottom :ratio 0.3)
             ))
-  (shackle-mode 1)
-  :defer-config
-  (defvar e:shackle-auto-close-windows nil)
-  (defun ad:shackle-display-buffer-action@save-windows (&rest _)
-    (setq e:shackle-auto-close-windows (-filter #'window-live-p e:shackle-auto-close-windows))
-    (add-to-list 'e:shackle-auto-close-windows shackle-last-window))
-  (defun ad:keyboard-quit@shackle-auto-close (&rest _)
-    (ignore-errors
-      (-each e:shackle-auto-close-windows 'delete-window))
-    (setq e:shackle-auto-close-windows nil)))
+  (shackle-mode 1))
 #+end_src
 ** shell-pop
 #+begin_src emacs-lisp
 (e:deferred-config! shell-pop
   :advice (:around shell-pop ad:shell-pop@auto-session-name)
-  :defvar (shell-pop-shell-type)
   :config
   (setopt shell-pop-shell-type '("vterm" "*vterm-default*" (lambda () (vterm))))
   :defer-config
   (setopt shell-pop-autocd-to-working-dir nil)
   (setopt shell-pop-full-span t)
-  (setopt shell-pop-window-size 50)
-  (defun ad:shell-pop@auto-session-name (func &rest args)
-    (let* ((tab (tab-bar--current-tab))
-           (identifier (if (alist-get 'explicit-name tab)
-                           (alist-get 'name tab)
-                         "default"))
-           (shell-pop-internal-mode-buffer (format "*vterm-%s*" identifier))
-           (vterm-shell (format "tmux new -A -s emacs-%s" identifier)))
-      (apply func args))))
+  (setopt shell-pop-window-size 50))
 #+end_src
 ** smartparens
 #+begin_src emacs-lisp
@@ -1499,9 +1308,8 @@
 ** symbol-overlay
 #+begin_src emacs-lisp
 (e:deferred-config! symbol-overlay
-  :defvar (symbol-overlay-map)
   :defer-config
-  (setq symbol-overlay-map (make-sparse-keymap)))
+  (setopt symbol-overlay-map (make-sparse-keymap)))
 #+end_src
 ** transient
 #+begin_src emacs-lisp
@@ -1524,8 +1332,9 @@
 ** vterm
 #+begin_src emacs-lisp
 (e:deferred-config! vterm
-  :commands (e:vterm-exec)
   :defer-config
+  (setopt vterm-max-scrollback 20000)
+  (setopt vterm-shell "tmux new -A -s emacs-default")
   (general-def vterm-mode-map
     "<wheel-down>" 'ignore
     "<wheel-up>" 'ignore
@@ -1533,18 +1342,12 @@
     "C-g" 'vterm--self-insert)
   (general-def 'insert vterm-mode-map
     "<escape>" 'vterm-send-escape
-    "C-z" 'vterm--self-insert)
-  (setopt vterm-max-scrollback 20000)
-  (setopt vterm-shell "tmux new -A -s emacs-default")
-  (defun e:vterm-exec (name program &rest args)
-    (let ((vterm-buffer-name (format "*vterm %s*" name))
-          (vterm-shell (format "zsh -c '%s'" (s-join " " (cons program args)))))
-      (vterm))))
+    "C-z" 'vterm--self-insert))
 #+end_src
 ** wakatime-mode
 #+begin_src emacs-lisp
 (e:deferred-config! wakatime-mode
-  :defvar (wakatime-api-key wakatime-cli-path)
+  :defvar (wakatime-cli-path)
   :preface
   (setopt wakatime-cli-path (executable-find "wakatime-cli"))
   :if (and wakatime-cli-path
@@ -1612,24 +1415,16 @@
 *** lsp-rubocop
 #+begin_src emacs-lisp
 (e:deferred-config! lsp-rubocop
-  :defun (e:bundle-exists)
   :advice (:before lsp-rubocop--build-command ad:lsp-rubocop--build-command@auto-detect)
   :defer-config
-  (e:eval!
-    (let ((rubocop-ls (gethash 'rubocop-ls lsp-clients)))
-      (setf (lsp--client-add-on? rubocop-ls) t)))
-  (defun ad:lsp-rubocop--build-command@auto-detect ()
-    (setq-local lsp-rubocop-use-bundler (e:bundle-exists "rubocop"))))
+  (e:set-lsp-client-add-on 'rubocop-ls t))
 #+end_src
 *** lsp-solargraph
 #+begin_src emacs-lisp
 (e:deferred-config! lsp-solargraph
-  :defun (e:bundle-exists)
   :advice (:before lsp-solargraph--build-command ad:lsp-solargraph--build-command@auto-detect)
   :defer-config
-  (setopt lsp-solargraph-library-directories '("~/.asdf/installs/ruby"))
-  (defun ad:lsp-solargraph--build-command@auto-detect ()
-    (setq-local lsp-solargraph-use-bundler (e:bundle-exists "solargraph"))))
+  (setopt lsp-solargraph-library-directories '("~/.asdf/installs/ruby")))
 #+end_src
 *** lsp-volar
 #+begin_src emacs-lisp
@@ -1637,42 +1432,27 @@
   :defer-config
   (setopt lsp-volar-take-over-mode nil))
 #+end_src
-*** dap-mode
-#+begin_src emacs-lisp
-(e:deferred-config! dap-mode)
-#+end_src
 *** tree-sitter
 #+begin_src emacs-lisp
 (e:deferred-config! treesit-auto
-  :commands (treesit-auto-add-to-auto-mode-alist global-treesit-auto-mode)
+  :commands (global-treesit-auto-mode treesit-auto-add-to-auto-mode-alist)
+  :defvar (treesit-auto-langs)
   :init
-  (setopt treesit-auto-install t)
-  (setopt treesit-language-source-alist
-               '((vue "https://github.com/ikatyang/tree-sitter-vue")))
   (treesit-auto-add-to-auto-mode-alist)
   (global-treesit-auto-mode 1)
   :defer-config
-  (setopt treesit-auto-langs (delete 'vue treesit-auto-langs)))
+  (setopt treesit-auto-install t)
+  (setopt treesit-auto-langs (delete 'vue treesit-auto-langs))
+  (setopt treesit-language-source-alist
+          '((vue "https://github.com/ikatyang/tree-sitter-vue"))))
 #+end_src
 ** Ruby
 *** ruby-ts-mode
 #+begin_src emacs-lisp
 (e:deferred-config! ruby-ts-mode
-  :hook (ruby-ts-mode-hook . lsp-deferred)
-  :mode "\\.csb\\'"
+  :hook ((ruby-ts-mode-hook . lsp-deferred)
+         (ruby-ts-mode-hook . e:devdocs-ruby))
   :defer-config
-  (e:major-mode-key-def ruby-ts-mode
-    "b" "bundle"
-    "bc" 'bundle-check
-    "bi" 'bundle-install
-    "bo" 'bundle-open
-    "bu" 'bundle-update
-    "bx" 'bundle-exec
-    "r" "refactor"
-    "r\"" 'ruby-toggle-string-quotes
-    "r'" 'ruby-toggle-string-quotes
-    "r{" 'ruby-toggle-block
-    "r}" 'ruby-toggle-block)
   (grugru-define-multiple
     (ruby-ts-mode
      (symbol "have_button" "have_no_button")
@@ -1682,39 +1462,29 @@
      (symbol "let" "let!")
      (symbol "to" "not_to")
      (symbol "true" "false")))
-  (defvar e:bundle-exists-cache (ht-create 'equal))
-  (defun e:clear-bundle-exists-cache ()
-    (interactive)
-    (ht-clear! e:bundle-exists-cache))
-  (defun e:bundle-exists (name)
-    (let ((key (format "%s@%s" name (or (kllib:project-root) (buffer-name)))))
-      (unless (ht-get e:bundle-exists-cache key)
-        (ht-set e:bundle-exists-cache key (call-process-shell-command (format "bundle info %s" name))))
-      (zerop (ht-get e:bundle-exists-cache key)))))
+  (e:major-mode-key-def ruby-ts-mode
+    "b" "bundle"
+    "bc" 'bundle-check
+    "bi" 'bundle-install
+    "bo" 'bundle-open
+    "bu" 'bundle-update
+    "bx" 'bundle-exec
+    "r" "refactor"
+    "r\u0022" 'ruby-toggle-string-quotes ;; double quotation
+    "r'" 'ruby-toggle-string-quotes
+    "r{" 'ruby-toggle-block
+    "r}" 'ruby-toggle-block))
 #+end_src
 *** haml-mode
 #+begin_src emacs-lisp
 (e:deferred-config! haml-mode
-  :hook (haml-mode-hook . highlight-indentation-mode-on)
-  :config
-  (add-hook 'haml-mode-hook
-            (defun e:haml-mode-setup ()
-              (when (flycheck-may-enable-checker 'haml-lint)
-                (flycheck-select-checker 'haml-lint)
-                (setq-local flycheck-command-wrapper-function
-                            (lambda (command)
-                              (append '("bundle" "exec") command))))))
-  :defer-config
-  (flycheck-add-next-checker 'haml 'haml-lint))
-#+end_src
-*** bundler
-#+begin_src emacs-lisp
-(e:deferred-config! bundler)
+  :hook ((haml-mode-hook . e:setup-haml-mode)
+         (haml-mode-hook . emmet-mode)
+         (haml-mode-hook . highlight-indentation-mode-on)))
 #+end_src
 *** projectile-rails
 #+begin_src emacs-lisp
 (e:deferred-config! projectile-rails
-  :defvar (projectile-rails-views-re)
   :init
   (projectile-rails-global-mode 1)
   :config
@@ -1798,7 +1568,8 @@
 #+begin_src emacs-lisp
 (e:deferred-config! typescript-ts-mode
   :hook ((typescript-ts-mode-hook . lsp-deferred)
-         (tsx-ts-mode-hook . lsp-deferred))
+         (tsx-ts-mode-hook . lsp-deferred)
+         (tsx-ts-mode-hook . emmet-mode))
   :mode "\\.mts\\'")
 #+end_src
 *** vue-mode
@@ -1807,12 +1578,14 @@
   :config
   (define-derived-mode vue-mode web-mode "Vue")
   (add-to-list 'auto-mode-alist '("\\.vue\\'" . vue-mode))
-  (add-hook 'vue-mode-hook #'lsp-deferred))
+  (add-hook 'vue-mode-hook #'lsp-deferred)
+  (add-hook 'vue-mode-hook #'emmet-mode))
 #+end_src
 *** vue-ts-mode
 #+begin_src emacs-lisp :tangle no
 (e:deferred-config! vue-ts-mode
-  :hook (vue-ts-mode-hook . lsp-deferred)
+  :hook ((vue-ts-mode-hook . lsp-deferred)
+         (vue-ts-mode-hook . emmet-mode))
   :mode "\\.vue\\'")
 #+end_src
 *** yarn
@@ -1827,8 +1600,9 @@
 *** web-mode
 #+begin_src emacs-lisp
 (e:deferred-config! web-mode
+  :hook (web-mode-hook . emmet-mode)
   :mode "\\.erb\\'"
-  :config
+  :defer-config
   (setopt web-mode-enable-auto-indentation nil))
 #+end_src
 *** sass-mode
@@ -1844,10 +1618,6 @@
 *** emmet-mode
 #+begin_src emacs-lisp
 (e:deferred-config! emmet-mode
-  :hook ((haml-mode-hook . emmet-mode)
-         (tsx-ts-mode-hook . emmet-mode)
-         (vue-ts-mode-hook . emmet-mode)
-         (web-mode-hook . emmet-mode))
   :defer-config
   (general-def emmet-mode-keymap
     "<C-return>" nil
@@ -1882,7 +1652,7 @@
   "%" 'query-replace
   "&" 'async-shell-command
   "*" '(e:consult-ripgrep-dwim :wk "ripgrep(dwim)")
-  "/" '(e:consult-ripgrep :wk "ripgrap")
+  "/" '(consult-ripgrep :wk "ripgrap")
   ";" 'evilnc-comment-operator
   "^" 'ace-window
   "|" 'shell-command-on-region
