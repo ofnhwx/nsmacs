@@ -324,6 +324,12 @@
 [submodule "no-littering"]
 	path = lib/no-littering
 	url = https://github.com/emacscollective/no-littering
+[submodule "nsmacs-utils"]
+	path = lib/nsmacs-utils
+	url = git@github.com:ofnhwx/nsmacs-utils.git
+	load-path = .
+	load-path = commands
+	load-path = packages
 [submodule "open-junk-file"]
 	path = lib/open-junk-file
 	url = https://github.com/rubikitch/open-junk-file

@@ -56,7 +56,16 @@
   (require 'profiler)
   (profiler-start 'cpu))
 #+end_src
+** パッケージ管理
+#+begin_src emacs-lisp
+(add-to-list 'load-path (expand-file-name "lib/borg" user-emacs-directory))
+(require 'borg)
+(borg-initialize)
+#+end_src
 ** マクロ定義
+#+begin_src emacs-lisp
+(require 'nsmacs-macros)
+#+end_src
 *** cl-lib
 #+begin_src emacs-lisp
 (eval-when-compile (require 'cl-lib))
@@ -151,6 +160,18 @@
        (interactive)
        (,minor-mode 0))))
 #+end_src
+** ライブラリ
+#+begin_src emacs-lisp
+(require 'komunan-lisp-library)
+(require 'f)
+(require 's)
+(require 'ht)
+(require 'leaf)
+(require 'general)
+(require 'bind-map)
+(require 'hercules)
+(require 'no-littering)
+#+end_src
 ** 環境設定
 *** Theme
 #+begin_src emacs-lisp
@@ -198,25 +219,6 @@
   (setopt ns-alternate-modifier 'none)
   ;; ちょっと行間を広げる
   (e:default! line-spacing 2))
-#+end_src
-** ライブラリ
-*** borg
-#+begin_src emacs-lisp
-(add-to-list 'load-path (expand-file-name "lib/borg" user-emacs-directory))
-(require 'borg)
-(borg-initialize)
-#+end_src
-*** others
-#+begin_src emacs-lisp
-(require 'komunan-lisp-library)
-(require 'f)
-(require 's)
-(require 'ht)
-(require 'leaf)
-(require 'general)
-(require 'bind-map)
-(require 'hercules)
-(require 'no-littering)
 #+end_src
 * Config: Emacs
 ** startup
@@ -476,21 +478,7 @@
 #+begin_src emacs-lisp
 (e:deferred-config! tab-bar
   :config
-  (tab-bar-mode t)
-  (defun tab-bar-select-tab-1 () (interactive) (tab-bar-select-tab 1))
-  (defun tab-bar-select-tab-2 () (interactive) (tab-bar-select-tab 2))
-  (defun tab-bar-select-tab-3 () (interactive) (tab-bar-select-tab 3))
-  (defun tab-bar-select-tab-4 () (interactive) (tab-bar-select-tab 4))
-  (defun tab-bar-select-tab-5 () (interactive) (tab-bar-select-tab 5))
-  (defun tab-bar-select-tab-6 () (interactive) (tab-bar-select-tab 6))
-  (defun tab-bar-select-tab-7 () (interactive) (tab-bar-select-tab 7))
-  (defun tab-bar-select-tab-8 () (interactive) (tab-bar-select-tab 8))
-  (defun tab-bar-select-tab-9 () (interactive) (tab-bar-select-tab 9))
-  (defun tab-switch-last ()
-    (interactive)
-    (if-let* ((tab (car (tab-bar--tabs-recent)))
-              (name (alist-get 'name tab)))
-        (tab-bar-switch-to-tab name))))
+  (tab-bar-mode t))
 #+end_src
 ** timer
 #+begin_src emacs-lisp
@@ -800,29 +788,8 @@
 #+begin_src emacs-lisp
 (e:deferred-config! consult
   :advice (:around consult-line ad:consult-line@with-orderless)
-  :commands (consult-faces consult-line-dwim consult-ripgrep-dwim consult-ripgrep-cwd consult-ripgrep-cwd-dwim)
-  :defun (consult-ripgrep consult--read)
   :defer-config
-  (setopt consult-line-start-from-top t)
-  (defun ad:consult-line@with-orderless (fn &rest args)
-    (let ((completion-styles '(orderless)))
-      (apply fn args)))
-  (defun consult-faces ()
-    (interactive)
-    (consult--read (--map (format "%s" it) (face-list))
-                   :prompt "Face: "))
-  (defun consult-line-dwim ()
-    (interactive)
-    (consult-line (thing-at-point 'symbol)))
-  (defun consult-ripgrep-dwim ()
-    (interactive)
-    (consult-ripgrep nil (thing-at-point 'symbol)))
-  (defun consult-ripgrep-cwd (&optional initial)
-    (interactive)
-    (consult-ripgrep default-directory initial))
-  (defun consult-ripgrep-cwd-dwim ()
-    (interactive)
-    (consult-ripgrep default-directory (thing-at-point 'symbol))))
+  (setopt consult-line-start-from-top t))
 #+end_src
 ** copilot
 #+begin_src emacs-lisp
@@ -1936,35 +1903,21 @@
 #+end_src
 * Config: Keybinds
 ** Space
-*** support
+*** スペースがプレフィックスとして使用できない場合の代替キー
 #+begin_src emacs-lisp
-(defmacro e:key-def (name prefix &rest body)
-  (declare (indent defun))
-  `(general-def '(motion normal visual insert emacs) 'override
-     :prefix ,(s-trim-right (format "SPC %s" (or prefix "")))
-     :non-normal-prefix ,(s-trim-right (format "M-m %s" (or prefix "")))
-     :prefix-command ',(intern (format "e:%s-command" name))
-     :prefix-map ',(intern (format "e:%s-command-map" name))
-     ,@body))
-
 (general-def '(motion normal visual)
   "M-m" (general-simulate-key "SPC"))
 #+end_src
 *** root
 #+begin_src emacs-lisp
-(defun e:switch-to-last-buffer ()
-  (interactive)
-  (if-let ((buffer (caar (window-prev-buffers))))
-      (switch-to-buffer buffer)))
-
 (e:key-def root nil
   "SPC" '(execute-extended-command :wk "M-x")
   "TAB" '(e:switch-to-last-buffer :wk "Last buffer")
   "!" 'shell-command
   "%" 'query-replace
   "&" 'async-shell-command
-  "*" 'consult-ripgrep-dwim
-  "/" 'consult-ripgrep
+  "*" '(e:consult-ripgrep-dwim :wk "ripgrep(dwim)")
+  "/" '(e:consult-ripgrep :wk "ripgrap")
   ";" 'evilnc-comment-operator
   "^" 'ace-window
   "|" 'shell-command-on-region
@@ -2014,10 +1967,6 @@
 #+end_src
 *** [b] buffer
 #+begin_src emacs-lisp
-(defun e:switch-to-messages-buffer ()
-  (interactive)
-  (switch-to-buffer (messages-buffer)))
-
 (e:key-def buffer b
   "" '(:ignore t :wk "buffer")
   "S" 'scratch
@@ -2048,27 +1997,6 @@
 #+end_src
 *** [f] file
 #+begin_src emacs-lisp
-(defun e:file/find-user-init-file ()
-  (interactive)
-  (find-file-existing user-init-file))
-(defun e:file/find-early-init-file ()
-  (interactive)
-  (find-file-existing early-init-file))
-(defun e:file/find-config-file ()
-  (interactive)
-  (find-file-existing (f-expand "init.org" user-emacs-directory)))
-(defun e:make-config ()
-  (interactive)
-  (let ((default-directory user-emacs-directory)
-        (buffer (get-buffer-create "*Make*")))
-    (display-buffer buffer)
-    (set-process-sentinel
-     (start-process-shell-command "e:make-config" buffer "make init-tangle && make init-build")
-     (lambda (process event)
-       (let* ((message (s-trim-right (format "%s %s" process event)))
-              (command (format "notify-send '%s'" message)))
-         (call-process-shell-command command))))))
-
 (e:key-def file f
   "" '(:ignore t :wk "file")
   "S" 'evil-write-all
@@ -2154,16 +2082,16 @@
 #+begin_src emacs-lisp
 (e:key-def layout l
   "" '(:ignore t :wk "layout")
-  "1" '(tab-bar-select-tab-1 :wk "tab 1")
-  "2" '(tab-bar-select-tab-2 :wk "tab 2")
-  "3" '(tab-bar-select-tab-3 :wk "tab 3")
-  "4" '(tab-bar-select-tab-4 :wk "tab 4")
-  "5" '(tab-bar-select-tab-5 :wk "tab 5")
-  "6" '(tab-bar-select-tab-6 :wk "tab 6")
-  "7" '(tab-bar-select-tab-7 :wk "tab 7")
-  "8" '(tab-bar-select-tab-8 :wk "tab 8")
-  "9" '(tab-bar-select-tab-9 :wk "tab 9")
-  "TAB" 'tab-switch-last
+  "1" '(e:tab-bar-select-tab-1 :wk "tab 1")
+  "2" '(e:tab-bar-select-tab-2 :wk "tab 2")
+  "3" '(e:tab-bar-select-tab-3 :wk "tab 3")
+  "4" '(e:tab-bar-select-tab-4 :wk "tab 4")
+  "5" '(e:tab-bar-select-tab-5 :wk "tab 5")
+  "6" '(e:tab-bar-select-tab-6 :wk "tab 6")
+  "7" '(e:tab-bar-select-tab-7 :wk "tab 7")
+  "8" '(e:tab-bar-select-tab-8 :wk "tab 8")
+  "9" '(e:tab-bar-select-tab-9 :wk "tab 9")
+  "TAB" '(e:tab-switch-last :wk "last")
   "D" 'tab-close-other
   "c" 'tab-new
   "d" 'tab-close
@@ -2215,10 +2143,10 @@
 #+begin_src emacs-lisp
 (e:key-def search s
   "" '(:ignore t :wk "search")
-  "D" 'consult-ripgrep-cwd-dwim
+  "D" '(e:consult-ripgrep-cwd-dwim :wk "ripgrep(cwd+dwim)")
   "O" 'symbol-overlay-remove-all
-  "S" 'consult-line-dwim
-  "d" 'consult-ripgrep-cwd
+  "S" '(e:consult-line-dwim :wk "consult-line(dwim)")
+  "d" '(e:consult-ripgrep-cwd :wk "ripgrep(cwd)")
   "f" 'consult-fd
   "o" 'symbol-overlay-put
   "s" 'consult-line
@@ -2304,35 +2232,9 @@
 * 設定完了
 ** 完了処理
 #+begin_src emacs-lisp
-(setopt e:deferred-config-loaded t)
-#+end_src
-** 優先度高めの設定
-#+begin_src emacs-lisp
-(defvar e:high-priority-config-queue-timer nil)
-(defun e:process-high-priority-config-queue ()
-  (setq e:high-priority-config-queue-timer
-        (run-with-timer
-         0.0 0.001
-         (lambda ()
-           (if e:high-priority-config-queue
-               (let ((inhibit-message t))
-                 (funcall (pop e:high-priority-config-queue)))
-             (cancel-timer e:high-priority-config-queue-timer))))))
 (add-hook 'emacs-startup-hook #'e:process-high-priority-config-queue)
-#+end_src
-** 優先度低めの設定
-#+begin_src emacs-lisp
-(defvar e:low-priority-config-queue-timer nil)
-(defun e:process-low-priority-config-queue ()
-  (setq e:low-priority-config-queue-timer
-        (run-with-timer
-         0.2 0.005
-         (lambda ()
-           (if e:low-priority-config-queue
-               (let ((inhibit-message t))
-                 (funcall (pop e:low-priority-config-queue)))
-             (cancel-timer e:low-priority-config-queue-timer))))))
 (add-hook 'emacs-startup-hook #'e:process-low-priority-config-queue)
+(setopt e:deferred-config-loaded t)
 #+end_src
 ** 起動時間の計測
 #+begin_src emacs-lisp
