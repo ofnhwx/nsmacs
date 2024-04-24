@@ -1692,11 +1692,12 @@
   :commands (treesit-auto-add-to-auto-mode-alist global-treesit-auto-mode)
   :init
   (setopt treesit-auto-install t)
-  (setopt treesit-auto-langs (delete 'vue treesit-auto-langs))
   (setopt treesit-language-source-alist
                '((vue "https://github.com/ikatyang/tree-sitter-vue")))
   (treesit-auto-add-to-auto-mode-alist)
-  (global-treesit-auto-mode 1))
+  (global-treesit-auto-mode 1)
+  :defer-config
+  (setopt treesit-auto-langs (delete 'vue treesit-auto-langs)))
 #+end_src
 ** Ruby
 *** ruby-ts-mode
