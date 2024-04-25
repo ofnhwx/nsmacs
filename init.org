@@ -1059,6 +1059,7 @@
   :config
   (setopt flycheck-check-syntax-automatically '(save idle-change mode-enabled))
   (setopt flycheck-idle-change-delay 5.0)
+  (setopt flycheck-emacs-lisp-load-path 'inherit)
   (global-flycheck-mode 1)
   (e:eval! ;; haml-lint
     (flycheck-add-next-checker 'haml 'haml-lint)
@@ -1741,6 +1742,7 @@
   "ed" '(e:file/find-config-file :wk "init.org")
   "ei" '(e:file/find-user-init-file :wk "init.el")
   "em" '(e:make-config :wk "Make config")
+  "eu" '(e:file/find-utils-directory :wk "nsmacs-utils")
   "f" 'find-file
   "g" 'affe-grep
   "r" 'consult-recent-file
