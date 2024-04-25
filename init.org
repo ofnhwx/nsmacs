@@ -1848,7 +1848,7 @@
   "F" 'projectile-find-file-dwim
   "G" 'projectile-regenerate-tags
   "I" 'projectile-invalidate-cache
-  "P" 'consult-projectile-switch-project
+  "P" 'consult-projectile
   "R" 'projectile-replace
   "T" 'projectile-test-project
   "a" 'projectile-toggle-between-implementation-and-test
@@ -1859,7 +1859,7 @@
   "f" 'consult-projectile-find-file
   "g" 'projectile-find-tag
   "k" 'projectile-kill-buffers
-  "p" 'consult-projectile
+  "p" 'consult-projectile-switch-project
   "r" 'consult-projectile-recentf
   "v" 'projectile-vc)
 #+end_src
