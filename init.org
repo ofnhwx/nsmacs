@@ -693,6 +693,15 @@
   :defer-config
   (setopt consult-line-start-from-top t))
 #+end_src
+** consult-projectile
+#+begin_src emacs-lisp
+(e:deferred-config! consult-projectile
+  :defer-config
+  (e:eval!
+    (setf (plist-get consult-projectile--source-projectile-dir :category) 'project-file)
+    (setf (plist-get consult-projectile--source-projectile-file :category) 'project-file)
+    (setf (plist-get consult-projectile--source-projectile-recentf :category) 'project-file)))
+#+end_src
 ** copilot
 #+begin_src emacs-lisp
 (e:deferred-config! copilot
@@ -1454,15 +1463,16 @@
   :hook ((ruby-ts-mode-hook . lsp-deferred)
          (ruby-ts-mode-hook . e:devdocs-ruby))
   :defer-config
-  (grugru-define-multiple
-    (ruby-ts-mode
-     (symbol "have_button" "have_no_button")
-     (symbol "have_content" "have_no_content")
-     (symbol "have_link" "have_no_link")
-     (symbol "if" "unless")
-     (symbol "let" "let!")
-     (symbol "to" "not_to")
-     (symbol "true" "false")))
+  (e:eval! ;; native compile されると動かない？
+    (grugru-define-multiple
+      (ruby-ts-mode
+       (symbol "have_button" "have_no_button")
+       (symbol "have_content" "have_no_content")
+       (symbol "have_link" "have_no_link")
+       (symbol "if" "unless")
+       (symbol "let" "let!")
+       (symbol "to" "not_to")
+       (symbol "true" "false"))))
   (e:major-mode-key-def ruby-ts-mode
     "b" "bundle"
     "bc" 'bundle-check
@@ -1492,6 +1502,19 @@
   (e:setup-projectile-rails-views-re)
   (e:var! rake-cache-file "rake.cache")
   (setopt rake-completion-system 'completing-read-default)
+  (e:setup-projectile-rails-annotation controller "app/controllers" "_controller")
+  (e:setup-projectile-rails-annotation environment "config")
+  (e:setup-projectile-rails-annotation helper "app/helpers" "_helper")
+  (e:setup-projectile-rails-annotation layout "app/views/layouts")
+  (e:setup-projectile-rails-annotation lib "lib")
+  (e:setup-projectile-rails-annotation locale "config/locales")
+  (e:setup-projectile-rails-annotation mailer "app/mailers")
+  (e:setup-projectile-rails-annotation migration "db/migrate")
+  (e:setup-projectile-rails-annotation model "app/models")
+  (e:setup-projectile-rails-annotation spec "spec" "_spec")
+  (e:setup-projectile-rails-annotation validator "app/validators" "_validator")
+  (e:setup-projectile-rails-annotation view "app/views")
+  (e:setup-projectile-rails-annotation job "app/jobs" "_job")
   (e:minor-mode-key-def projectile-rails-mode
     "f" "rails"
     "f:" '("rake" . projectile-rails-rake)
@@ -1780,7 +1803,7 @@
 (e:key-def help h
   "" '(:ignore t :wk "help")
   "d" '(:ignore t :wk "describe")
-  "dF" 'consult-faces
+  "dF" 'e:consult-faces
   "dK" 'describe-keymap
   "da" 'helm-apropos
   "dd" '(:ignore t :wk "devdocs")
