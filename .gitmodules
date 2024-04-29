@@ -202,6 +202,9 @@
 [submodule "flycheck"]
 	path = lib/flycheck
 	url = https://github.com/flycheck/flycheck
+[submodule "flycheck-posframe"]
+	path = lib/flycheck-posframe
+	url = https://github.com/alexmurray/flycheck-posframe
 [submodule "forge"]
 	path = lib/forge
 	url = https://github.com/magit/forge

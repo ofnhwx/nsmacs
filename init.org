@@ -444,11 +444,8 @@
   :priority :high
   :defun (evil-get-auxiliary-keymap
           evil-half-cursor
-          evil-make-overriding-map
-          evil-normal-state
           evil-normalize-keymaps
-          evil-set-command-property
-          evil-visual-restore)
+          evil-set-command-property)
   :init
   (setopt evil-cross-lines t)
   (setopt evil-disable-insert-state-bindings t)
@@ -467,16 +464,6 @@
   (setopt evil-operator-state-cursor #'evil-half-cursor)
   (evil-mode 1)
   :config
-  (defun evil-shift-right-visual ()
-    (interactive)
-    (call-interactively 'evil-shift-right)
-    (evil-normal-state)
-    (evil-visual-restore))
-  (defun evil-shift-left-visual ()
-    (interactive)
-    (call-interactively 'evil-shift-left)
-    (evil-normal-state)
-    (evil-visual-restore))
   (general-def 'motion
     "TAB" nil
     "C-\\" 'ignore
@@ -569,8 +556,6 @@
 #+begin_src emacs-lisp
 (e:deferred-config! ddskk
   :advice (:around evil-refresh-cursor ad:evil-refresh-cursor@with-skk)
-  :defun (skk-latin-mode-on)
-  :defvar (skk-mode-hook)
   :hook ((evil-insert-state-entry-hook . e:skk-mode)
          (evil-insert-state-exit-hook . skk-mode-exit))
   :bind (([remap toggle-input-method] . skk-mode)
@@ -587,28 +572,12 @@
   (setopt skk-sticky-key ";")
   ;; (setopt skk-use-azik t)
   (setopt skk-use-jisx0201-input-method t)
-  (ccc-setup)
-  :defer-config
-  (defun e:skk-mode ()
-    "skk の有効化で半角英数入力にする"
-    (interactive)
-    (require 'skk)
-    (unless (derived-mode-p 'vterm-mode)
-      (if (bound-and-true-p skk-mode)
-          (skk-latin-mode-on)
-        (let ((skk-mode-hook (-union skk-mode-hook '(skk-latin-mode-on))))
-          (skk-mode)))))
-  (defun ad:evil-refresh-cursor@with-skk (fn &rest args)
-    (unless (and (eq evil-state 'insert)
-                 (bound-and-true-p skk-mode))
-      (apply fn args))))
+  (ccc-setup))
 #+end_src
 ** skk-server
 #+begin_src emacs-lisp
 (e:deferred-config! skk-server
   :after (skk)
-  :defun (e:prodigy-yaskkserv2 . prodigy)
-  :defvar (skk-server-prog yaskkserv2-dictionary)
   :preface
   (setopt skk-server-prog (executable-find "yaskkserv2"))
   (setopt yaskkserv2-dictionary (f-expand "~/sync/share/dictionary.yaskkserv2"))
@@ -618,20 +587,7 @@
   (setopt skk-large-jisyo nil)
   (setopt skk-server-inhibit-startup-server t)
   (setopt skk-server-host "127.0.0.1")
-  (setopt skk-server-portnum 1178)
-  (defun e:prodigy-yaskkserv2 ()
-    (interactive)
-    (let ((service "yaskkserv2"))
-      (require 'prodigy)
-      (unless (prodigy-find-service service)
-        (prodigy-define-service
-          :name service
-          :command skk-server-prog
-          :args `("--no-daemonize" "--google-suggest" ,yaskkserv2-dictionary)
-          :tags '(general)
-          :stop-signal 'int))
-      (prodigy-start-service (prodigy-find-service service))))
-  (e:prodigy-yaskkserv2))
+  (setopt skk-server-portnum 1178))
 #+end_src
 ** ddskk-posframe
 #+begin_src emacs-lisp
@@ -642,49 +598,13 @@
 #+end_src
 * Config: UI & Completions
 ** cape
-*** codeium
-#+begin_src emacs-lisp
-(e:deferred-config! codeium
-  :commands (cape-codeium)
-  :defer-config
-  (defalias 'cape-codeium (cape-capf-interactive #'codeium-completion-at-point)))
-#+end_src
-*** company-org-block
-#+begin_src emacs-lisp
-(e:deferred-config! company-org-block
-  :commands (cape-org-block)
-  :defer-config
-  (setopt company-org-block-edit-style 'inline)
-  (defalias 'cape-org-block (cape-capf-interactive (cape-company-to-capf #'company-org-block))))
-#+end_src
-*** cape
 #+begin_src emacs-lisp
 (e:deferred-config! cape
-  :defun (e:capf-function)
   :hook ((prog-mode-hook . e:setup-capf/default)
          (org-mode-hook . e:setup-capf/org)
          (lsp-completion-mode-hook . e:setup-capf/lsp))
   :defer-config
-  (defun e:capf-function (name &rest capfs)
-    (let ((fun (intern (format "e:cape-%s" name)))
-          (capfs (-concat capfs '(cape-dabbrev codeium-completion-at-point))))
-      (defalias fun
-        (cape-capf-interactive
-         (cape-capf-buster
-          (apply #'cape-capf-super capfs))))
-      (list #'cape-file fun)))
-  (defun e:setup-capf/default ()
-    (interactive)
-    (e:local! completion-at-point-functions
-              (e:capf-function major-mode (car completion-at-point-functions))))
-  (defun e:setup-capf/org ()
-    (interactive)
-    (e:local! completion-at-point-functions
-              (e:capf-function "org" #'cape-elisp-block #'cape-org-block)))
-  (defun e:setup-capf/lsp ()
-    (interactive)
-    (e:local! completion-at-point-functions
-              (e:capf-function "lsp" #'lsp-completion-at-point))))
+  (setopt company-org-block-edit-style 'inline))
 #+end_src
 ** consult
 #+begin_src emacs-lisp
@@ -705,18 +625,17 @@
 ** copilot
 #+begin_src emacs-lisp
 (e:deferred-config! copilot
-  :advice ((:before-until corfu-complete ad:copilot-accept-completion-func)
-           (:before-until indent-for-tab-command ad:copilot-accept-completion-func)
-           (:before cape-codeium ad:copilot-cancel)
-           (:before corfu-quick-complete ad:copilot-cancel))
-  :defun (copilot-accept-completion
-          copilot-clear-overlay)
+  :advice ((:before-until corfu-complete ad:copilot-accept-completion)
+           (:before-until indent-for-tab-command ad:copilot-accept-completion)
+           (:before cape-codeium ad:copilot-clear-overlay)
+           (:before corfu-quick-complete ad:copilot-clear-overlay))
   :hook ((prog-mode-hook . copilot-mode)
          (org-mode-hook . copilot-mode))
   :init
   (e:var! copilot-install-dir "copilot")
   :defer-config
   (setopt copilot-indent-offset-warning-disable t)
+  ;; (add-to-list 'copilot-enable-predicates 'ignore)
   (general-def copilot-mode-map
    "<backtab>" 'copilot-complete
    "C-z" 'copilot-complete)
@@ -724,12 +643,7 @@
    "<escape>" 'copilot-clear-overlay
    "C-n" 'copilot-next-completion
    "C-p" 'copilot-previous-completion
-   "C-z" 'copilot-complete)
-  ;; (add-to-list 'copilot-enable-predicates 'ignore)
-  (defun ad:copilot-accept-completion-func (&rest _)
-    (copilot-accept-completion))
-  (defun ad:copilot-cancel (&rest _)
-    (copilot-clear-overlay)))
+   "C-z" 'copilot-complete))
 #+end_src
 ** corfu
 #+begin_src emacs-lisp
@@ -737,7 +651,7 @@
   :defvar (corfu-map)
   :hook ((corfu-mode-hook . corfu-echo-mode)
          (corfu-mode-hook . corfu-popupinfo-mode)
-         (minibuffer-setpu-hook . corfu-enable-always-in-minibuffer))
+         (minibuffer-setpu-hook . e:corfu-enable-always-in-minibuffer))
   :init
   (setopt corfu-auto t)
   (setopt corfu-auto-prefix 1)
@@ -746,16 +660,6 @@
     "<escape>" 'corfu-quit
     "C-q" 'corfu-quick-complete
     "C-z" 'cape-codeium)
-  ;; https://github.com/minad/corfu?tab=readme-ov-file#completing-in-the-minibuffer
-  (defun corfu-enable-always-in-minibuffer ()
-    "Enable Corfu in the minibuffer if Vertico/Mct are not active."
-    (unless (or (bound-and-true-p mct--active)
-                (bound-and-true-p vertico--input)
-                (eq (current-local-map) read-passwd-map))
-      ;; (setq-local corfu-auto nil) ;; Enable/disable auto completion
-      (setq-local corfu-echo-delay nil ;; Disable automatic echo and popup
-                  corfu-popupinfo-delay nil)
-      (corfu-mode 1)))
   (global-corfu-mode 1))
 #+end_src
 ** embark
@@ -805,18 +709,8 @@
 ** orderless
 #+begin_src emacs-lisp
 (e:deferred-config! orderless
-  :commands (orderless-migemo)
-  :defvar (orderless-matching-styles)
-  :init
-  ;; setopt は警告が出るので setq を使用
-  (setq orderless-matching-styles '(orderless-literal orderless-regexp orderless-migemo))
-  :defer-config
-  (defun orderless-migemo (component)
-    (when (fboundp 'migemo-get-pattern)
-      (let ((pattern (migemo-get-pattern component)))
-        (condition-case nil
-            (progn (string-match-p pattern "") pattern)
-          (invalid-regexp nil))))))
+  :config
+  (setopt orderless-matching-styles '(orderless-literal orderless-regexp orderless-migemo)))
 #+end_src
 ** origami
 #+begin_src emacs-lisp
@@ -843,33 +737,12 @@
 (e:deferred-config! evil-org
   :hook (org-mode-hook . evil-org-mode))
 #+end_src
-** org-support
-#+begin_src emacs-lisp
-(e:deferred-config! org-support
-  :defun (org-support/archive-file org-support/note-file org-support/tasks-file)
-  :defvar (org-directory)
-  :config
-  (defun org-support/archive-file ()
-    (require 'org)
-    (f-expand (format-time-string "archives/%Y.org") org-directory))
-  (defun org-support/tasks-file ()
-    (require 'org)
-    (f-expand "denote/20000101T000000--タスク__task.org" org-directory))
-  (defun org-support/popup-tasks ()
-    (interactive)
-    (display-buffer (find-file-noselect (org-support/tasks-file))))
-  (defun org-support/note-file ()
-    (f-expand "denote/20000101T000001--メモ__memo.org" org-directory))
-  (defun org-support/popup-note ()
-    (interactive)
-    (display-buffer (find-file-noselect (org-support/note-file)))))
-#+end_src
 ** org
 #+begin_src emacs-lisp
 (e:deferred-config! org
   :defer-config
   (setopt org-directory (f-expand "~/org/"))
-  (setopt org-default-notes-file (org-support/note-file))
+  (setopt org-default-notes-file (e:org-note-file))
   (setopt org-log-done 'time)
   (setopt org-startup-folded nil)
   (setopt org-startup-indented t)
@@ -887,9 +760,9 @@
   (setopt org-agenda-current-time-string "← now")
   (setopt org-agenda-entry-text-leaders (s-concat (s-repeat 25 " ") "│ "))
   (setopt org-agenda-entry-text-maxlines 20)
-  (setopt org-agenda-files (list (org-support/note-file)
-                                 (org-support/tasks-file)
-                                 (f-parent (org-support/archive-file))))
+  (setopt org-agenda-files (list (e:org-note-file)
+                                 (e:org-tasks-file)
+                                 (f-parent (e:org-archive-file))))
   (setopt org-agenda-span 28)
   (setopt org-agenda-time-grid '((daily today require-timed)
                                  (800 1000 1200 1400 1600 1800 2000)
@@ -927,8 +800,8 @@
   :after (org)
   :config
   (setopt org-refile-targets
-          '((org-support/tasks-file   :level . 1)
-            (org-support/archive-file :level . 1)))
+          '((e:org-tasks-file   :level . 1)
+            (e:org-archive-file :level . 1)))
   (setopt org-refine-use-outline-path 'file))
 #+end_src
 ** org-src
@@ -1036,7 +909,10 @@
 (e:deferred-config! doom-modeline
   :config
   (setopt doom-modeline-buffer-file-name-style 'relative-from-project)
+  (setopt doom-modeline-hud t)
   (setopt doom-modeline-minor-modes t)
+  (setopt doom-modeline-percent-position nil)
+  (setopt doom-modeline-total-line-number t)
   (doom-modeline-mode 1))
 #+end_src
 ** dtrt-indent
@@ -1077,6 +953,14 @@
           '("haml-lint" "--no-color" "--no-summary"
             (config-file "--config" flycheck-haml-lintrc)
             source-inplace))))
+#+end_src
+** flycheck-posframe
+#+begin_src emacs-lisp
+(e:deferred-config! flycheck-posframe
+  :hook (flycheck-mode-hook . flycheck-posframe-mode)
+  :defer-config
+  (setopt flycheck-posframe-border-width 1)
+  (setopt flycheck-posframe-position 'frame-bottom-right-corner))
 #+end_src
 ** git-gutter
 #+begin_src emacs-lisp
@@ -1196,9 +1080,9 @@
   (setopt open-junk-file-format (f-expand "junk/%Y/%Y%m%d%H%M%S." no-littering-var-directory)))
 #+end_src
 ** prodigy
-*** prodigy
 #+begin_src emacs-lisp
 (e:deferred-config! prodigy
+  :advice (:around prodigy-start-service ad:prodigy-start-service@with-vterm)
   :defun (prodigy-find-service prodigy-start-service)
   :defer-config
   (setopt prodigy-view-buffer-maximum-size 2048)
@@ -1206,30 +1090,6 @@
   (prodigy-define-tag
     :name 'rails
     :ready-message "Use Ctrl-C to stop"))
-#+end_src
-*** prodigy-with-vterm
-#+begin_src emacs-lisp
-(e:deferred-config! prodigy-with-vterm
-  :advice (:around prodigy-start-service ad:prodigy-start-service@with-vterm)
-  :after (prodigy)
-  :defvar (vterm--process)
-  :defun (ad:start-process@with-vterm vterm--internal)
-  :config
-  (defun ad:start-process@with-vterm (name buffer program &rest args)
-    (let* ((cwd (plist-get (prodigy-find-service name) :cwd))
-           (sock-file (f-expand ".overmind.sock" cwd)))
-      (when (f-exists? sock-file)
-        (message "delete: %s" sock-file)
-        (delete-file sock-file)))
-    (save-window-excursion
-      (with-current-buffer
-          (apply #'e:vterm-exec name program args)
-        vterm--process)))
-  (defun ad:prodigy-start-service@with-vterm (func &rest args)
-    (when (require 'vterm nil t)
-      (advice-add 'start-process :override #'ad:start-process@with-vterm))
-    (prog1 (ignore-errors (apply func args))
-      (advice-remove 'start-process #'ad:start-process@with-vterm))))
 #+end_src
 ** projectile
 #+begin_src emacs-lisp
@@ -1972,8 +1832,8 @@
   [remap undo-redo] 'undo-fu-only-redo
   [remap undo] 'undo-fu-only-undo
   [remap yank] 'consult-yank-replace
-  "C-*" 'org-support/popup-note
-  "C-:" 'org-support/popup-tasks
+  "C-*" '(e:org-popup-note :wk "memo.org")
+  "C-:" '(e:org-popup-tasks :wk "tasks.org")
   "C-;" 'shell-pop
   "C-<" 'evil-jump-backward
   "C->" 'evil-jump-forward
