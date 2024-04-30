@@ -587,7 +587,8 @@
   (setopt skk-large-jisyo nil)
   (setopt skk-server-inhibit-startup-server t)
   (setopt skk-server-host "127.0.0.1")
-  (setopt skk-server-portnum 1178))
+  (setopt skk-server-portnum 1178)
+  (e:prodigy-yaskkserv2))
 #+end_src
 ** ddskk-posframe
 #+begin_src emacs-lisp
