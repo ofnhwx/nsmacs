@@ -471,6 +471,10 @@
   (general-def 'normal
     "<down>" 'evil-next-visual-line
     "<up>"   'evil-previous-visual-line
+    "M-h" 'evil-window-left
+    "M-j" 'evil-window-down
+    "M-k" 'evil-window-up
+    "M-l" 'evil-window-right
     "j" 'evil-next-visual-line
     "k" 'evil-previous-visual-line)
   (general-def 'visual
