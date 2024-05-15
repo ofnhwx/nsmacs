@@ -82,7 +82,7 @@
 *** Theme
 #+begin_src emacs-lisp
 (require-theme 'modus-themes)
-(load-theme 'modus-vivendi :no-confirm)
+(load-theme 'modus-vivendi-tinted :no-confirm)
 #+end_src
 *** Font
 #+begin_src emacs-lisp

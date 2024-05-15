@@ -318,6 +318,9 @@
 [submodule "minions"]
 	path = lib/minions
 	url = https://github.com/tarsius/minions
+[submodule "modus-themes"]
+	path = lib/modus-themes
+	url = https://github.com/protesilaos/modus-themes
 [submodule "nerd-icons"]
 	path = lib/nerd-icons
 	url = https://github.com/rainstormstudio/nerd-icons.el
