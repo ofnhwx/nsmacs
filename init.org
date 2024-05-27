@@ -1433,8 +1433,11 @@
 *** rails-routes
 #+begin_src emacs-lisp
 (e:deferred-config! rails-routes
+  :advice ((:override rails-routes--run-command ad:rails-routes--run-command@override)
+           (:override rails-routes-insert       ad:rails-routes-insert@override))
   :defer-config
-  (e:var! rails-routes-cache-path "rails-routes"))
+  (e:var! rails-routes-cache-path "rails-routes")
+  (e:setup-marginalia-annotate-rails-routes))
 #+end_src
 *** rspec-mode
 #+begin_src emacs-lisp
