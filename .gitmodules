@@ -193,6 +193,9 @@
 [submodule "f"]
 	path = lib/f
 	url = https://github.com/rejeep/f.el
+[submodule "fancy-compilation"]
+	path = lib/fancy-compilation
+	url = https://codeberg.org/ideasman42/emacs-fancy-compilation
 [submodule "findr"]
 	path = lib/findr
 	url = https://github.com/emacsorphanage/findr

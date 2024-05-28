@@ -943,6 +943,12 @@
   :advice ((:after describe-function-1 elisp-demos-advice-describe-function-1)
            (:after helpful-update      elisp-demos-advice-helpful-update)))
 #+end_src
+** fancy-compilation
+#+begin_src emacs-lisp
+(e:deferred-config! fancy-compilation
+  :config
+  (fancy-compilation-mode 1))
+#+end_src
 ** flycheck
 #+begin_src emacs-lisp
 (e:deferred-config! flycheck
@@ -1148,6 +1154,7 @@
             ("*General Keybindings*"          :align bottom :ratio 0.3)
             ("*Make*"                         :align bottom :ratio 0.3)
             ("*Warnings*"                     :align bottom :ratio 0.3)
+            ("*compilation*"                  :align bottom :ratio 0.3)
             ("*projectile-rails-compilation*" :align bottom :ratio 0.3)
             ("*rspec-compilation*"            :align bottom :ratio 0.3)
             ("*trace-output*"                 :align bottom :ratio 0.3)
