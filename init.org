@@ -1051,6 +1051,7 @@
   (setopt magit-log-margin '(t "%Y-%m-%d %H:%M" magit-log-margin-width t 15))
   (setopt magit-log-margin-show-committer-date t)
   (e:setup-magit-repository-directories)
+  (e:setup-marginalia-magit)
   ;; magit-status で表示するセクションを追加
   (--each '(magit-insert-skip-worktree-files magit-insert-modules-overview)
     (magit-add-section-hook 'magit-status-sections-hook it 'magit-insert-unpulled-from-upstream t))
