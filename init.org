@@ -1044,6 +1044,7 @@
   :advice (:override magit-repos-alist ad:magit-repos-alist@override)
   :defun (magit-add-section-hook)
   :defer-config
+  (require 'forge nil t)
   (setopt magit-delete-by-moving-to-trash nil)
   (setopt magit-diff-refine-hunk 'all)
   (setopt magit-diff-refine-ignore-whitespace t)
