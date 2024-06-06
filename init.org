@@ -129,6 +129,7 @@
 * Config: Emacs
 ** startup
 #+begin_src emacs-lisp
+(setopt inhibit-startup-buffer-menu t)
 (setopt inhibit-startup-screen t)
 (setopt initial-scratch-message nil)
 #+end_src
@@ -139,6 +140,7 @@
 ** C Sources
 #+begin_src emacs-lisp
 (e:default! bidi-display-reordering nil)
+(e:default! cursor-in-non-selected-windows nil)
 (e:default! fill-column 100)
 (e:default! truncate-lines t)
 (setopt create-lockfiles nil)
@@ -146,6 +148,7 @@
 (setopt enable-recursive-minibuffers t)
 (setopt frame-resize-pixelwise t)
 (setopt history-delete-duplicates t)
+(setopt inhibit-x-resources t)
 (setopt read-process-output-max 1048576)
 (setopt ring-bell-function #'ignore)
 (setopt scroll-conservatively 101)
@@ -161,6 +164,7 @@
 (setopt undo-strong-limit 100663296) ;; => 96mb.
 (setopt undo-outer-limit 1006632960) ;; => 960mb.
 (setopt use-dialog-box nil)
+(setopt use-file-dialog nil)
 (setopt use-short-answers t)
 (setopt window-resize-pixelwise t)
 #+end_src
