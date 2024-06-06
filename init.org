@@ -1261,6 +1261,8 @@
 *** lsp-mode
 #+begin_src emacs-lisp
 (e:deferred-config! lsp-mode
+  :advice ((:around lsp-resolve-final-command ad:lsp-resolve-final-command@with-lsp-booster)
+           (:around json-parse-buffer ad:json-read@with-lsp-booster))
   :defun (lsp-deferred)
   :defer-config
   (setopt lsp-auto-execute-action nil)
