@@ -744,7 +744,20 @@
 ** evil-org
 #+begin_src emacs-lisp
 (e:deferred-config! evil-org
-  :hook (org-mode-hook . evil-org-mode))
+  :hook (org-mode-hook . evil-org-mode)
+  :defun (evil-org-set-key-theme)
+  :defer-config
+  (setopt evil-org-key-theme
+          '(navigation
+            ;; insert
+            ;; return
+            textobjects
+            additional
+            ;; shift
+            ;; todo
+            ;; heading
+            calendar))
+  (evil-org-set-key-theme))
 #+end_src
 ** org
 #+begin_src emacs-lisp
@@ -753,6 +766,7 @@
   (setopt org-directory (f-expand "~/org/"))
   (setopt org-default-notes-file (e:org-note-file))
   (setopt org-log-done 'time)
+  (setopt org-return-follows-link t)
   (setopt org-startup-folded nil)
   (setopt org-startup-indented t)
   (setopt org-tags-column 0)
@@ -803,6 +817,45 @@
   (set-face-attribute 'org-level-2 nil :height 1.0)
   (set-face-attribute 'org-level-3 nil :height 1.0))
 #+end_src
+** org-modern
+#+begin_src emacs-lisp :lexical no
+(e:deferred-config! org-modern
+  :after (org)
+  :hook (org-mode-hook . org-modern-mode)
+  :defer-config
+  (setopt org-modern-star 'replace)
+  (setopt org-modern-todo-faces
+          '(("TODO"      :background "#ff69b4" :foreground "#000000")
+            ("STARTED"   :background "#90ee90" :foreground "#000000")
+            ("DONE"      :background "#4d4d4d" :foreground "#ffffff")
+            ("WAITING"   :background "#f0e68c" :foreground "#000000")
+            ("HOLD"      :background "#999999" :foreground "#000000")
+            ("CANCELLED" :background "#4d4d4d" :foreground "#ffffff")))
+  (setopt org-modern-priority-faces
+          '((?A :background "#ff4500" :foreground "#ffffff")
+            (?B :background "#ffd700" :foreground "#000000")
+            (?C :background "#00bfff" :foreground "#000000")))
+  (setopt org-modern-tag-faces
+          '((t :background "#caa6df" :foreground "#000000")))
+  (setopt org-modern-checkbox
+          '((88 . "󰱒 ")
+            (45 . "󰡖 ")
+            (32 . "󰄱 ")))
+  (setopt org-modern-list
+          '((42 . "•")   ;; +: Plus
+            (43 . "◦")   ;; *: Asterisk
+            (45 . "–"))) ;; -: Dash
+  )
+#+end_src
+** org-modern-indent
+#+begin_src emacs-lisp :lexical no
+(e:deferred-config! org-modern-indent
+  :hook (org-indent-mode-hook . org-modern-indent-mode)
+  :defer-config
+  (setopt org-modern-indent-begin (propertize "╭ " 'face 'org-modern-indent-bracket-line))
+  (setopt org-modern-indent-guide (propertize "│ " 'face 'org-modern-indent-bracket-line))
+  (setopt org-modern-indent-end   (propertize "╰ " 'face 'org-modern-indent-bracket-line)))
+#+end_src
 ** org-refile
 #+begin_src emacs-lisp
 (e:deferred-config! org-refile
@@ -820,12 +873,6 @@
   :config
   (setopt org-edit-src-content-indentation 0)
   (setopt org-src-window-setup 'split-window-below))
-#+end_src
-** org-superstar
-#+begin_src emacs-lisp
-(e:deferred-config! org-superstar
-  :after (org)
-  :hook (org-mode-hook . org-superstar-mode))
 #+end_src
 * Config: Packages
 ** ace-window

@@ -345,12 +345,12 @@
 [submodule "orderless"]
 	path = lib/orderless
 	url = https://github.com/oantolin/orderless
+[submodule "org-modern"]
+	path = lib/org-modern
+	url = https://github.com/minad/org-modern
 [submodule "org-re-reveal"]
 	path = lib/org-re-reveal
 	url = https://gitlab.com/oer/org-re-reveal
-[submodule "org-superstar"]
-	path = lib/org-superstar
-	url = https://github.com/integral-dw/org-superstar-mode
 [submodule "origami"]
 	path = lib/origami
 	url = https://github.com/gregsexton/origami.el
@@ -498,3 +498,6 @@
 [submodule "yarn"]
 	path = lib/yarn
 	url = git@github.com:jmfirth/yarn.el
+[submodule "org-modern-indent"]
+	path = lib/org-modern-indent
+	url = git@github.com:jdtsmith/org-modern-indent.git
