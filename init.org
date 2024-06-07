@@ -745,7 +745,8 @@
 #+begin_src emacs-lisp
 (e:deferred-config! evil-org
   :hook (org-mode-hook . evil-org-mode)
-  :defun (evil-org-set-key-theme)
+  :defun (evil-org-set-key-theme
+          evil-org-agenda-set-keys)
   :defer-config
   (setopt evil-org-key-theme
           '(navigation
@@ -757,7 +758,9 @@
             ;; todo
             ;; heading
             calendar))
-  (evil-org-set-key-theme))
+  (evil-org-set-key-theme)
+  (when (require 'evil-org-agenda nil t)
+    (evil-org-agenda-set-keys)))
 #+end_src
 ** org
 #+begin_src emacs-lisp
@@ -773,7 +776,20 @@
   (setopt org-todo-keywords '((sequence "TODO(t)" "STARTED(s)" "|" "DONE(d)")
                               (sequence "WAITING(w)" "HOLD(h)" "|" "CANCELLED(c)")))
   (e:major-mode-key-def org-mode
-    "," 'org-ctrl-c-ctrl-c))
+    "," 'org-ctrl-c-ctrl-c
+    "d" "date"
+    "dT" 'org-timestamp-inactive
+    "dd" 'org-deadline
+    "ds" 'org-schedule
+    "dt" 'org-timestamp
+    "t" "todo/toggle"
+    "tc" 'org-toggle-checkbox
+    "te" 'org-toggle-pretty-entities
+    "ti" 'org-toggle-inline-images
+    "tl" 'org-toggle-link-display
+    "tn" 'org-num-mode
+    "tt" 'org-todo
+    "tx" 'org-latex-preview))
 #+end_src
 ** org-agenda
 #+begin_src emacs-lisp
@@ -783,6 +799,7 @@
   (setopt org-agenda-current-time-string "← now")
   (setopt org-agenda-entry-text-leaders (s-concat (s-repeat 25 " ") "│ "))
   (setopt org-agenda-entry-text-maxlines 20)
+  (setopt org-agenda-tags-column 0)
   (setopt org-agenda-files (list (e:org-note-file)
                                  (e:org-tasks-file)
                                  (f-parent (e:org-archive-file))))
@@ -821,7 +838,8 @@
 #+begin_src emacs-lisp :lexical no
 (e:deferred-config! org-modern
   :after (org)
-  :hook (org-mode-hook . org-modern-mode)
+  :hook ((org-mode-hook . org-modern-mode)
+         (org-agenda-finalize-hook . org-modern-agenda))
   :defer-config
   (setopt org-modern-star 'replace)
   (setopt org-modern-todo-faces
@@ -850,11 +868,7 @@
 ** org-modern-indent
 #+begin_src emacs-lisp :lexical no
 (e:deferred-config! org-modern-indent
-  :hook (org-indent-mode-hook . org-modern-indent-mode)
-  :defer-config
-  (setopt org-modern-indent-begin (propertize "╭ " 'face 'org-modern-indent-bracket-line))
-  (setopt org-modern-indent-guide (propertize "│ " 'face 'org-modern-indent-bracket-line))
-  (setopt org-modern-indent-end   (propertize "╰ " 'face 'org-modern-indent-bracket-line)))
+  :hook (org-indent-mode-hook . org-modern-indent-mode))
 #+end_src
 ** org-refile
 #+begin_src emacs-lisp
@@ -1645,6 +1659,14 @@
   "cs" 'chezmoi-sync-files
   "ct" 'chezmoi-template-buffer-display
   "cw" 'chezmoi-write
+  "o" '(:ignore t :wk "org")
+  "oa" 'org-agenda-list
+  "oc" 'org-capture
+  "ol" 'org-store-link
+  "om" 'org-tags-view
+  "oo" 'org-agenda
+  "os" 'org-search-view
+  "ot" 'org-todo-list
   "p" '(:ignore t :wk "packages")
   "pa" 'borg-activate
   "pb" 'borg-build
