@@ -317,8 +317,7 @@
 ** hl-line
 #+begin_src emacs-lisp
 (e:deferred-config! hl-line
-  :hook ((find-file-hook . hl-line-mode-on)
-         (prog-mode-hook . hl-line-mode-on))
+  :hook ((prog-mode-hook . hl-line-mode-on))
   :config
   (e:define-minor-mode-switch hl-line-mode))
 #+end_src
