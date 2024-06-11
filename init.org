@@ -717,8 +717,9 @@
 ** orderless
 #+begin_src emacs-lisp
 (e:deferred-config! orderless
+  :defvar (orderless-matching-styles)
   :config
-  (setopt orderless-matching-styles '(orderless-literal orderless-regexp orderless-migemo)))
+  (setq orderless-matching-styles '(orderless-literal orderless-regexp orderless-migemo)))
 #+end_src
 ** origami
 #+begin_src emacs-lisp
