@@ -1504,7 +1504,10 @@
     "fgt" '("test" . projectile-rails-find-current-test)
     "fgu" '("fixture" . projectile-rails-find-current-fixture)
     "fgv" '("view" . projectile-rails-find-current-view)
-    "fgz" '("helper" . projectile-rails-goto-spec-helper)))
+    "fgz" '("helper" . projectile-rails-goto-spec-helper)
+    "i" "insert"
+    "iR" '("route" . rails-routes-insert-no-cache)
+    "ir" '("route" . rails-routes-insert)))
 #+end_src
 *** rails-routes
 #+begin_src emacs-lisp
