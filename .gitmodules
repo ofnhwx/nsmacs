@@ -114,6 +114,9 @@
 [submodule "dired-toggle-sudo"]
 	path = lib/dired-toggle-sudo
 	url = https://github.com/renard/dired-toggle-sudo
+[submodule "doct"]
+	path = lib/doct
+	url = https://github.com/progfolio/doct
 [submodule "doom-modeline"]
 	path = lib/doom-modeline
 	url = https://github.com/seagle0128/doom-modeline
@@ -348,6 +351,9 @@
 [submodule "org-modern"]
 	path = lib/org-modern
 	url = https://github.com/minad/org-modern
+[submodule "org-modern-indent"]
+	path = lib/org-modern-indent
+	url = git@github.com:jdtsmith/org-modern-indent.git
 [submodule "org-re-reveal"]
 	path = lib/org-re-reveal
 	url = https://gitlab.com/oer/org-re-reveal
@@ -498,6 +504,3 @@
 [submodule "yarn"]
 	path = lib/yarn
 	url = git@github.com:jmfirth/yarn.el
-[submodule "org-modern-indent"]
-	path = lib/org-modern-indent
-	url = git@github.com:jdtsmith/org-modern-indent.git
