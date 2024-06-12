@@ -330,6 +330,9 @@
 [submodule "nerd-icons"]
 	path = lib/nerd-icons
 	url = https://github.com/rainstormstudio/nerd-icons.el
+[submodule "nerd-icons-completion"]
+	path = lib/nerd-icons-completion
+	url = https://github.com/rainstormstudio/nerd-icons-completion
 [submodule "nerd-icons-dired"]
 	path = lib/nerd-icons-dired
 	url = https://github.com/rainstormstudio/nerd-icons-dired

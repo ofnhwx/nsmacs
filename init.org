@@ -232,11 +232,6 @@
 (e:deferred-config! dired-filter
   :hook (dired-mode-hook . dired-filter-mode))
 #+end_src
-*** nerd-icons-dired
-#+begin_src emacs-lisp
-(e:deferred-config! nerd-icons-dired
-  :hook (dired-mode-hook . nerd-icons-dired-mode))
-#+end_src
 *** ls-lisp-extension
 #+begin_src emacs-lisp
 (e:deferred-config! ls-lisp-extension
@@ -1133,6 +1128,18 @@
                    ad:magit-delta-call-delta-and-convert-ansi-escape-sequences@auto-disable)
   :hook ((magit-mode-hook . magit-delta-mode)
          (magit-post-refresh-hook . e:nth/magit-delta-auto-enable)))
+#+end_src
+** nerd-icons-completion
+#+begin_src emacs-lisp
+(e:deferred-config! nerd-icons-completion
+  :hook (merginalia-mode-hook . nerd-icons-completion-marginalia-setup)
+  :init
+  (nerd-icons-completion-mode))
+#+end_src
+** nerd-icons-dired
+#+begin_src emacs-lisp
+(e:deferred-config! nerd-icons-dired
+  :hook (dired-mode-hook . nerd-icons-dired-mode))
 #+end_src
 ** migemo
 #+begin_src emacs-lisp
