@@ -1452,7 +1452,7 @@
   (e:setup-projectile-rails-views-re)
   (e:var! rake-cache-file "rake.cache")
   (setopt rake-completion-system 'completing-read-default)
-  (e:setup-projectile-rails-annotation controller "app/controllers" "_controller")
+  (e:setup-projectile-rails-annotation controller "app/controllers" "*")
   (e:setup-projectile-rails-annotation environment "config")
   (e:setup-projectile-rails-annotation helper "app/helpers" "_helper")
   (e:setup-projectile-rails-annotation layout "app/views/layouts")
