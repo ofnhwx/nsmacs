@@ -193,6 +193,9 @@
     (let ((browsers '(eww-browse-url browse-url-default-browser xwidget-webkit-browse-url)))
       (when browse-url-generic-program
         (add-to-list 'browsers 'browse-url-generic t))
+      (and (fboundp 'pr-review-url-parse)
+           (pr-review-url-parse url)
+           (add-to-list 'browsers 'pr-review-open-url t))
       (funcall (intern (completing-read "Choose Browser: " browsers)) url new-window))))
 #+end_src
 ** comp
