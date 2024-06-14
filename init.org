@@ -833,7 +833,7 @@
   (set-face-attribute 'org-level-3 nil :height 1.0))
 #+end_src
 ** org-modern
-#+begin_src emacs-lisp :lexical no
+#+begin_src emacs-lisp
 (e:deferred-config! org-modern
   :after (org)
   :hook ((org-mode-hook . org-modern-mode)
@@ -864,7 +864,7 @@
   )
 #+end_src
 ** org-modern-indent
-#+begin_src emacs-lisp :lexical no
+#+begin_src emacs-lisp
 (e:deferred-config! org-modern-indent
   :hook (org-indent-mode-hook . org-modern-indent-mode))
 #+end_src
@@ -1167,6 +1167,11 @@
 (e:deferred-config! open-junk-file
   :config
   (setopt open-junk-file-format (f-expand "junk/%Y/%Y%m%d%H%M%S." no-littering-var-directory)))
+#+end_src
+** pr-review
+#+begin_src emacs-lisp
+(e:deferred-config! pr-review
+  :advice (:around pr-review--insert-subscription-info ad:ignore-errors))
 #+end_src
 ** prodigy
 #+begin_src emacs-lisp
