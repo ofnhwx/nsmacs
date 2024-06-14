@@ -1132,6 +1132,13 @@
   :hook ((magit-mode-hook . magit-delta-mode)
          (magit-post-refresh-hook . e:nth/magit-delta-auto-enable)))
 #+end_src
+*** magit-file-icons
+#+begin_src emacs-lisp :lexical no
+(e:deferred-config! magit-file-icons
+  :after (magit)
+  :config
+  (magit-file-icons-mode 1))
+#+end_src
 ** nerd-icons-completion
 #+begin_src emacs-lisp
 (e:deferred-config! nerd-icons-completion

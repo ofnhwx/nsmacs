@@ -138,6 +138,9 @@
 [submodule "eimp"]
 	path = lib/eimp
 	url = https://github.com/nicferrier/eimp
+[submodule "el-patch"]
+	path = lib/el-patch
+	url = https://github.com/radian-software/el-patch
 [submodule "elisp-demos"]
 	path = lib/elisp-demos
 	url = https://github.com/xuchunyang/elisp-demos
@@ -312,6 +315,9 @@
 [submodule "magit-delta"]
 	path = lib/magit-delta
 	url = https://github.com/dandavison/magit-delta
+[submodule "magit-file-icons"]
+	path = lib/magit-file-icons
+	url = https://github.com/gekoke/magit-file-icons.git
 [submodule "marginalia"]
 	path = lib/marginalia
 	url = https://github.com/minad/marginalia
