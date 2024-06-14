@@ -27,7 +27,7 @@
 	url = https://github.com/justbur/emacs-bind-map
 [submodule "borg"]
 	path = lib/borg
-	url = git@github.com:emacscollective/borg.git
+	url = https://github.com/emacscollective/borg
 [submodule "browse-at-remote"]
 	path = lib/browse-at-remote
 	url = https://github.com/rmuslimov/browse-at-remote
@@ -45,10 +45,10 @@
 	url = https://github.com/tuh8888/chezmoi.el
 [submodule "closql"]
 	path = lib/closql
-	url = git@github.com:emacscollective/closql.git
+	url = https://github.com/emacscollective/closql
 [submodule "codeium"]
 	path = lib/codeium
-	url = git@github.com:Exafunction/codeium.el
+	url = https://github.com/Exafunction/codeium.el
 [submodule "company"]
 	path = lib/company
 	url = https://github.com/company-mode/company-mode
@@ -57,7 +57,7 @@
 	url = https://github.com/xenodium/company-org-block
 [submodule "compat"]
 	path = lib/compat
-	url = git@github.com:emacs-compat/compat.git
+	url = https://github.com/emacs-compat/compat
 [submodule "consult"]
 	path = lib/consult
 	url = https://github.com/minad/consult
@@ -72,10 +72,10 @@
 	url = https://gitlab.com/OlMon/consult-projectile
 [submodule "consult-todo"]
 	path = lib/consult-todo
-	url = git@github.com:liuyinz/consult-todo
+	url = https://github.com/liuyinz/consult-todo
 [submodule "copilot"]
 	path = lib/copilot
-	url = git@github.com:copilot-emacs/copilot.el
+	url = https://github.com/copilot-emacs/copilot.el
 [submodule "corfu"]
 	path = lib/corfu
 	url = https://github.com/minad/corfu
@@ -83,7 +83,7 @@
 	load-path = extensions
 [submodule "csv-mode"]
 	path = lib/csv-mode
-	url = git@github.com:emacsmirror/csv-mode.git
+	url = https://github.com/emacsmirror/csv-mode
 [submodule "dap-mode"]
 	path = lib/dap-mode
 	url = https://github.com/emacs-lsp/dap-mode
@@ -128,7 +128,7 @@
 	url = https://github.com/jacktasia/dumb-jump
 [submodule "eaw"]
 	path = lib/eaw
-	url = git@github.com:hamano/locale-eaw
+	url = https://github.com/hamano/locale-eaw
 [submodule "edit-indirect"]
 	path = lib/edit-indirect
 	url = https://github.com/Fanael/edit-indirect
@@ -149,7 +149,7 @@
 	url = https://github.com/Wilfred/elisp-refs
 [submodule "emacsql"]
 	path = lib/emacsql
-	url = git@github.com:skeeto/emacsql.git
+	url = https://github.com/skeeto/emacsql
 	no-byte-compile = emacsql-pg.el
 [submodule "embark"]
 	path = lib/embark
@@ -159,7 +159,7 @@
 	url = https://github.com/smihica/emmet-mode
 [submodule "epkg"]
 	path = lib/epkg
-	url = git@github.com:emacscollective/epkg.git
+	url = https://github.com/emacscollective/epkg
 [submodule "evil"]
 	path = lib/evil
 	url = https://github.com/emacs-evil/evil
@@ -362,7 +362,7 @@
 	url = https://github.com/minad/org-modern
 [submodule "org-modern-indent"]
 	path = lib/org-modern-indent
-	url = git@github.com:jdtsmith/org-modern-indent.git
+	url = https://github.com/jdtsmith/org-modern-indent
 [submodule "org-re-reveal"]
 	path = lib/org-re-reveal
 	url = https://gitlab.com/oer/org-re-reveal
@@ -401,7 +401,7 @@
 	url = https://github.com/otavioschwanck/rails-routes.el
 [submodule "rainbow-mode"]
 	path = lib/rainbow-mode
-	url = git@github.com:emacsmirror/rainbow-mode.git
+	url = https://github.com/emacsmirror/rainbow-mode
 [submodule "rake"]
 	path = lib/rake
 	url = https://github.com/asok/rake
@@ -482,7 +482,7 @@
 	url = https://github.com/akermu/emacs-libvterm
 [submodule "vue-ts-mode"]
 	path = lib/vue-ts-mode
-	url = git@github.com:8uff3r/vue-ts-mode
+	url = https://github.com/8uff3r/vue-ts-mode
 [submodule "wakatime-mode"]
 	path = lib/wakatime-mode
 	url = https://github.com/wakatime/wakatime-mode
@@ -515,4 +515,4 @@
 	url = https://github.com/yoshiki/yaml-mode
 [submodule "yarn"]
 	path = lib/yarn
-	url = git@github.com:jmfirth/yarn.el
+	url = https://github.com/jmfirth/yarn.el
