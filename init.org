@@ -878,6 +878,13 @@
             (e:org-archive-file :level . 1)))
   (setopt org-refine-use-outline-path 'file))
 #+end_src
+** org-sliced-images
+#+begin_src emacs-lisp :lexical no
+(e:deferred-config! org-sliced-images
+  :after (org)
+  :config
+  (org-sliced-images-mode 1))
+#+end_src
 ** org-src
 #+begin_src emacs-lisp
 (e:deferred-config! org-src

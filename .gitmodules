@@ -366,6 +366,9 @@
 [submodule "org-re-reveal"]
 	path = lib/org-re-reveal
 	url = https://gitlab.com/oer/org-re-reveal
+[submodule "org-sliced-images"]
+	path = lib/org-sliced-images
+	url = https://github.com/jcfk/org-sliced-images
 [submodule "origami"]
 	path = lib/origami
 	url = https://github.com/gregsexton/origami.el
