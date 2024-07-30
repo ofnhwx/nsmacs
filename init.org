@@ -997,7 +997,10 @@
 ** dtrt-indent
 #+begin_src emacs-lisp
 (e:deferred-config! dtrt-indent
-  :hook (prog-mode-hook . dtrt-indent-mode))
+  :hook (prog-mode-hook . dtrt-indent-mode)
+  :config
+  (add-to-list 'dtrt-indent-hook-mapping-list
+               '(js-ts-mode javascript js-indent-level)))
 #+end_src
 ** dumb-jump
 #+begin_src emacs-lisp
