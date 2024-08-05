@@ -193,6 +193,9 @@
 [submodule "evil-textobj-tree-sitter"]
 	path = lib/evil-textobj-tree-sitter
 	url = https://github.com/meain/evil-textobj-tree-sitter
+[submodule "exec-path-from-shell"]
+	path = lib/exec-path-from-shell
+	url = https://github.com/purcell/exec-path-from-shell
 [submodule "expand-region"]
 	path = lib/expand-region
 	url = https://github.com/magnars/expand-region.el
@@ -351,6 +354,9 @@
 	load-path = .
 	load-path = commands
 	load-path = packages
+[submodule "ob-mermaid"]
+	path = lib/ob-mermaid
+	url = https://github.com/arnm/ob-mermaid
 [submodule "open-junk-file"]
 	path = lib/open-junk-file
 	url = https://github.com/rubikitch/open-junk-file

@@ -776,6 +776,7 @@
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((emacs-lisp . t)
+     (mermaid . t)
      (sql . t)))
   (e:major-mode-key-def org-mode
     "," 'org-ctrl-c-ctrl-c
@@ -997,6 +998,7 @@
 ** dtrt-indent
 #+begin_src emacs-lisp
 (e:deferred-config! dtrt-indent
+  :defvar (dtrt-indent-hook-mapping-list)
   :hook (prog-mode-hook . dtrt-indent-mode)
   :config
   (add-to-list 'dtrt-indent-hook-mapping-list
@@ -1019,6 +1021,13 @@
 (e:deferred-config! elisp-demos
   :advice ((:after describe-function-1 elisp-demos-advice-describe-function-1)
            (:after helpful-update      elisp-demos-advice-helpful-update)))
+#+end_src
+** exec-path-from-shell
+#+begin_src emacs-lisp
+(e:deferred-config! exec-path-from-shell
+  :config
+  (when (memq window-system '(mac ns x))
+    (exec-path-from-shell-initialize)))
 #+end_src
 ** fancy-compilation
 #+begin_src emacs-lisp
