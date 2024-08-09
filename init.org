@@ -1385,6 +1385,7 @@
   :defer-config
   (setopt lsp-auto-execute-action nil)
   (setopt lsp-completion-provider :none)
+  (setopt lsp-disabled-clients '(ruby-ls))
   (setopt lsp-enable-file-watchers nil)
   (setopt lsp-enable-snippet nil)
   (setopt lsp-file-watch-threshold 100000)
