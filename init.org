@@ -1971,6 +1971,14 @@
   "gg" 'grugru
   "gq" 'google-translate-query-translate
   "gt" 'google-translate-at-point
+  "i" '(:ignore t :wk "inflection")
+  "i-" '(string-inflection-kebab-case :wk "kebab-case")
+  "iC" '(string-inflection-camelcase :wk "CamelCase")
+  "i_" '(string-inflection-underscore :wk "underscore")
+  "ic" '(string-inflection-lower-camelcase :wk "camelCase")
+  "ip" '(string-inflection-pluralize :wk "pluralize")
+  "is" '(string-inflection-singularize :wk "singularize")
+  "iu" '(string-inflection-upcase :wk "UPCASE")
   "l" '(:ignore t :wk "lines")
   "ls" 'sort-lines
   "m" 'link-hint-open-multiple-links
