@@ -414,6 +414,9 @@
 [submodule "rake"]
 	path = lib/rake
 	url = https://github.com/asok/rake
+[submodule "reformatter"]
+	path = lib/reformatter
+	url = https://github.com/purcell/emacs-reformatter
 [submodule "rspec-mode"]
 	path = lib/rspec-mode
 	url = https://github.com/pezra/rspec-mode
@@ -447,6 +450,9 @@
 [submodule "spinner"]
 	path = lib/spinner
 	url = https://github.com/Malabarba/spinner.el
+[submodule "sqlformat"]
+	path = lib/sqlformat
+	url = https://github.com/purcell/sqlformat
 [submodule "string-inflection"]
 	path = lib/string-inflection
 	url = https://github.com/akicho8/string-inflection
