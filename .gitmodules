@@ -291,7 +291,7 @@
 	url = https://github.com/noctuid/link-hint.el
 [submodule "llama"]
 	path = lib/llama
-	url = https://git.sr.ht/~tarsius/llama
+	url = https://github.com/tarsius/llama
 [submodule "ls-lisp-extension"]
 	path = lib/ls-lisp-extension
 	url = git@github.com:ofnhwx/ls-lisp-extension.git
