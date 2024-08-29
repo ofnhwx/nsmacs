@@ -1457,7 +1457,7 @@
 (e:deferred-config! ruby-ts-mode
   :hook ((ruby-ts-mode-hook . lsp-deferred)
          (ruby-ts-mode-hook . e:devdocs-ruby))
-  :mode "\\.csb\\'" "\\.csvbuilder\\'"
+  :mode "\\.csb\\'" "\\.csvbuilder\\'" "\\.axlsx\\'"
   :defer-config
   (e:eval! ;; native compile されると動かない？
     (grugru-define-multiple
