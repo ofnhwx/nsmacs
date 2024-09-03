@@ -1263,20 +1263,20 @@
   :config
   (setopt shackle-rules
           '(;;
-            ("*Backtrace*"        :align bottom :ratio 0.3 :select t)
-            ("*Flycheck errors*"  :align bottom :ratio 0.3 :select t)
-            ("*Google Translate*" :align bottom :ratio 0.3 :select t)
-            ("*Help*"             :align bottom :ratio 0.3 :select t)
+            ("*Backtrace*"        :align bottom :ratio 0.35 :select t)
+            ("*Flycheck errors*"  :align bottom :ratio 0.35 :select t)
+            ("*Google Translate*" :align bottom :ratio 0.35 :select t)
+            ("*Help*"             :align bottom :ratio 0.35 :select t)
             ;;
-            ("*Async Shell Command*"          :align bottom :ratio 0.3)
-            ("*Bundler*"                      :align bottom :ratio 0.3)
-            ("*General Keybindings*"          :align bottom :ratio 0.3)
-            ("*Make*"                         :align bottom :ratio 0.3)
-            ("*Warnings*"                     :align bottom :ratio 0.3)
-            ("*compilation*"                  :align bottom :ratio 0.3)
-            ("*projectile-rails-compilation*" :align bottom :ratio 0.3)
-            ("*rspec-compilation*"            :align bottom :ratio 0.3)
-            ("*trace-output*"                 :align bottom :ratio 0.3)
+            ("*Async Shell Command*"          :align bottom :ratio 0.35)
+            ("*Bundler*"                      :align bottom :ratio 0.35)
+            ("*General Keybindings*"          :align bottom :ratio 0.35)
+            ("*Make*"                         :align bottom :ratio 0.35)
+            ("*Warnings*"                     :align bottom :ratio 0.35)
+            ("*compilation*"                  :align bottom :ratio 0.35)
+            ("*projectile-rails-compilation*" :align bottom :ratio 0.35)
+            ("*rspec-compilation*"            :align bottom :ratio 0.35)
+            ("*trace-output*"                 :align bottom :ratio 0.35)
             ))
   (shackle-mode 1))
 #+end_src
