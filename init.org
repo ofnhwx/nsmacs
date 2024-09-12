@@ -1734,6 +1734,7 @@
   "pd" 'borg-remove
   "pi" 'borg-assimilate
   "pl" 'epkg-list-packages
+  "pu" 'epkg-update
   "pv" 'epkg-describe-package
   "t" '(:ignore t :wk "tools")
   "tp" 'prodigy)
