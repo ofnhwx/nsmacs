@@ -1169,6 +1169,12 @@
   :config
   (magit-file-icons-mode 1))
 #+end_src
+** mise
+#+begin_src emacs-lisp
+(e:deferred-config! mise
+  :config
+  (global-mise-mode 1))
+#+end_src
 ** nerd-icons-completion
 #+begin_src emacs-lisp
 (e:deferred-config! nerd-icons-completion

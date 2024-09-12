@@ -268,6 +268,9 @@
 [submodule "inf-ruby"]
 	path = lib/inf-ruby
 	url = https://github.com/nonsequitur/inf-ruby
+[submodule "inheritenv"]
+	path = lib/inheritenv
+	url = https://github.com/purcell/inheritenv
 [submodule "jinx"]
 	path = lib/jinx
 	url = https://github.com/minad/jinx
@@ -333,6 +336,9 @@
 [submodule "minions"]
 	path = lib/minions
 	url = https://github.com/tarsius/minions
+[submodule "mise"]
+	path = lib/mise
+	url = https://github.com/liuyinz/mise.el
 [submodule "modus-themes"]
 	path = lib/modus-themes
 	url = https://github.com/protesilaos/modus-themes
