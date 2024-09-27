@@ -1107,10 +1107,8 @@
 #+end_src
 ** locale-eaw
 #+begin_src emacs-lisp
-(e:deferred-config! eaw
-  :commands (eaw-fullwidth)
-  :init
-  (eaw-fullwidth))
+(e:deferred-config! eaw-fullwidth
+  :require t)
 #+end_src
 ** macrostep
 #+begin_src emacs-lisp
@@ -1391,7 +1389,7 @@
   :defer-config
   (setopt lsp-auto-execute-action nil)
   (setopt lsp-completion-provider :none)
-  (setopt lsp-disabled-clients '(ruby-ls))
+  (setopt lsp-disabled-clients '(ruby-ls rubocop-ls))
   (setopt lsp-enable-file-watchers nil)
   (setopt lsp-enable-snippet nil)
   (setopt lsp-file-watch-threshold 100000)

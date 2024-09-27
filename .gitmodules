@@ -129,6 +129,8 @@
 [submodule "eaw"]
 	path = lib/eaw
 	url = https://github.com/hamano/locale-eaw
+	load-path = .
+	load-path = dist
 [submodule "edit-indirect"]
 	path = lib/edit-indirect
 	url = https://github.com/Fanael/edit-indirect
