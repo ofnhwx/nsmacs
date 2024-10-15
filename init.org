@@ -641,6 +641,7 @@
   (e:var! copilot-install-dir "copilot")
   :defer-config
   (setopt copilot-indent-offset-warning-disable t)
+  (setopt copilot-max-char 200000)
   ;; (add-to-list 'copilot-enable-predicates 'ignore)
   (general-def copilot-mode-map
    "<backtab>" 'copilot-complete
@@ -1022,6 +1023,22 @@
   :advice ((:after describe-function-1 elisp-demos-advice-describe-function-1)
            (:after helpful-update      elisp-demos-advice-helpful-update)))
 #+end_src
+** ellama
+#+begin_src emacs-lisp
+(e:deferred-config! ellama
+  :defun (ellama-generate-name-by-llm)
+  :defvar (ellama-providers)
+  :config
+  (e:var! ellama-sessions-directory "ellama-sessions")
+  (setopt ellama-naming-scheme #'ellama-generate-name-by-llm)
+  (setopt ellama-language "Japanese")
+  (setopt ellama-providers
+          '(("codegemma" . (make-llm-ollama :chat-model "codegemma:7b"  :embedding-model "codegemma:7b"))
+            ("codestral" . (make-llm-ollama :chat-model "codestral:22b" :embedding-model "codestral:22b"))
+            ("aya"       . (make-llm-ollama :chat-model "aya:8b"        :embedding-model "aya:8b"))))
+  (setopt ellama-provider (eval (cdr (assoc "codegemma" ellama-providers))))
+  (setopt ellama-translation-provider (eval (cdr (assoc "aya" ellama-providers)))))
+#+end_src
 ** exec-path-from-shell
 #+begin_src emacs-lisp
 (e:deferred-config! exec-path-from-shell
@@ -1383,8 +1400,8 @@
 *** lsp-mode
 #+begin_src emacs-lisp
 (e:deferred-config! lsp-mode
-  :advice ((:around lsp-resolve-final-command ad:lsp-resolve-final-command@with-lsp-booster)
-           (:around json-parse-buffer ad:json-read@with-lsp-booster))
+  ;; :advice ((:around lsp-resolve-final-command ad:lsp-resolve-final-command@with-lsp-booster)
+  ;;          (:around json-parse-buffer ad:json-read@with-lsp-booster))
   :defun (lsp-deferred)
   :defer-config
   (setopt lsp-auto-execute-action nil)
