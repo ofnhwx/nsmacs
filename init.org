@@ -1028,7 +1028,7 @@
 (e:deferred-config! ellama
   :defun (ellama-generate-name-by-llm)
   :defvar (ellama-providers)
-  :config
+  :defer-config
   (e:var! ellama-sessions-directory "ellama-sessions")
   (setopt ellama-naming-scheme #'ellama-generate-name-by-llm)
   (setopt ellama-language "Japanese")
