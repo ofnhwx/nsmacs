@@ -1740,6 +1740,50 @@
   "cs" 'chezmoi-sync-files
   "ct" 'chezmoi-template-buffer-display
   "cw" 'chezmoi-write
+  "e" '(:ignore t :wk "ellama")
+  "ea" '(:ignore t :wk "ellama-ask")
+  "eaa" 'ellama-ask-about
+  "eai" 'ellama-chat
+  "eal" 'ellama-ask-line
+  "eas" 'ellama-ask-selection
+  "ec" '(:ignore t :wk "ellama-code")
+  "eca" 'ellama-code-add
+  "ecc" 'ellama-code-complete
+  "ece" 'ellama-code-edit
+  "eci" 'ellama-code-improve
+  "ecm" 'ellama-generate-commit-message
+  "ecr" 'ellama-code-review
+  "ed" '(:ignore t :wk "ellama-define")
+  "edw" 'ellama-define-word
+  "ei" '(:ignore t :wk "ellama-improve")
+  "eic" 'ellama-improve-conciseness
+  "eig" 'ellama-improve-grammar
+  "eiw" 'ellama-improve-wording
+  "em" '(:ignore t :wk "ellama-make")
+  "emf" 'ellama-make-format
+  "eml" 'ellama-make-list
+  "emt" 'ellama-make-table
+  "ep" '(:ignore t :wk "ellama-provider")
+  "eps" 'ellama-provider-select
+  "es" '(:ignore t :wk "ellama-summarize/session")
+  "esa" 'ellama-session-switch
+  "esc" 'ellama-summarize-killring
+  "esd" 'ellama-session-remove
+  "esl" 'ellama-load-session
+  "esr" 'ellama-session-rename
+  "ess" 'ellama-summarize
+  "esw" 'ellama-summarize-webpage
+  "et" '(:ignore t :wk "ellama-translate/text")
+  "etb" 'ellama-translate-buffer
+  "etc" 'ellama-complete
+  "etd" 'ellama-chat-translation-disable
+  "ete" 'ellama-chat-translation-enable
+  "ett" 'ellama-translate
+  "ex" '(:ignore t :wk "ellama-context")
+  "exb" 'ellama-context-add-buffer
+  "exf" 'ellama-context-add-file
+  "exi" 'ellama-context-add-info-node
+  "exs" 'ellama-context-add-selection
   "o" '(:ignore t :wk "org")
   "oa" 'org-agenda-list
   "oc" 'org-capture
