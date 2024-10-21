@@ -1027,16 +1027,20 @@
 #+begin_src emacs-lisp
 (e:deferred-config! ellama
   :defun (ellama-generate-name-by-llm)
-  :defvar (ellama-providers)
+  :defvar (ellama-providers openai-api-key)
   :defer-config
+  (require 'llm-openai)
+  (setopt llm-warn-on-nonfree nil)
   (e:var! ellama-sessions-directory "ellama-sessions")
   (setopt ellama-naming-scheme #'ellama-generate-name-by-llm)
   (setopt ellama-language "Japanese")
+  (setopt ellama-summarize-prompt-template "次のテキストを要約して\n-----\n%s")
   (setopt ellama-providers
-          '(("codegemma" . (make-llm-ollama :chat-model "codegemma:7b"  :embedding-model "codegemma:7b"))
-            ("codestral" . (make-llm-ollama :chat-model "codestral:22b" :embedding-model "codestral:22b"))
-            ("aya"       . (make-llm-ollama :chat-model "aya:8b"        :embedding-model "aya:8b"))))
-  (setopt ellama-provider (eval (cdr (assoc "codegemma" ellama-providers))))
+          '(("gpt-4o-mini" . (make-llm-openai :key openai-api-key :chat-model "gpt-4o-mini"))
+            ("codegemma"   . (make-llm-ollama :chat-model "codegemma:7b"  :embedding-model "codegemma:7b"))
+            ("codestral"   . (make-llm-ollama :chat-model "codestral:22b" :embedding-model "codestral:22b"))
+            ("aya"         . (make-llm-ollama :chat-model "aya:8b"        :embedding-model "aya:8b"))))
+  (setopt ellama-provider (eval (cdr (assoc "gpt-4o-mini" ellama-providers))))
   (setopt ellama-translation-provider (eval (cdr (assoc "aya" ellama-providers)))))
 #+end_src
 ** exec-path-from-shell
