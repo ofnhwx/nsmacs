@@ -64,6 +64,9 @@
 [submodule "consult-flycheck"]
 	path = lib/consult-flycheck
 	url = https://github.com/minad/consult-flycheck
+[submodule "consult-gh"]
+	path = lib/consult-gh
+	url = https://github.com/armindarvish/consult-gh
 [submodule "consult-lsp"]
 	path = lib/consult-lsp
 	url = https://github.com/gagbo/consult-lsp
@@ -509,6 +512,9 @@
 	url = https://github.com/minad/vertico
 	load-path = .
 	load-path = extensions
+[submodule "vimrc-mode"]
+	path = lib/vimrc-mode
+	url = https://github.com/mcandre/vimrc-mode
 [submodule "visual-regexp"]
 	path = lib/visual-regexp
 	url = https://github.com/benma/visual-regexp.el
