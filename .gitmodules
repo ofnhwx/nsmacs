@@ -341,6 +341,9 @@
 [submodule "markdown-mode"]
 	path = lib/markdown-mode
 	url = https://github.com/jrblevin/markdown-mode
+[submodule "mathjax"]
+	path = lib/mathjax
+	url = https://github.com/astoff/mathjax.el
 [submodule "migemo"]
 	path = lib/migemo
 	url = https://github.com/emacs-jp/migemo
