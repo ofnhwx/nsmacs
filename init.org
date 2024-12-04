@@ -619,6 +619,21 @@
   :defer-config
   (setopt consult-line-start-from-top t))
 #+end_src
+** consult-gh
+#+begin_src emacs-lisp :lexical no
+(e:deferred-config! consult-gh
+  :defer-config
+  (setopt consult-gh-default-orgs-list (consult-gh--get-current-orgs t))
+  (setopt consult-gh-show-preview t)
+  (setopt consult-gh-preview-key "C-o")
+  (setopt consult-gh-repo-action #'consult-gh--repo-browse-files-action)
+  (setopt consult-gh-issue-action #'consult-gh--issue-view-action)
+  (setopt consult-gh-pr-action #'consult-gh--pr-view-action)
+  (setopt consult-gh-code-action #'consult-gh--code-view-action)
+  (setopt consult-gh-file-action #'consult-gh--files-view-action)
+  (setopt consult-gh-notifications-action #'consult-gh--notifications-action)
+  (setopt consult-gh-dashboard-action #'consult-gh--dashboard-action))
+#+end_src
 ** consult-projectile
 #+begin_src emacs-lisp
 (e:deferred-config! consult-projectile
@@ -1877,6 +1892,7 @@
   "fl" 'magit-log-buffer-file
   "fm" 'magit-file-dispatch
   "m" 'magit-dispatch
+  "n" 'consult-gh-notifications
   "o" 'browse-at-remote
   "s" 'magit-status
   "v" '(:ignore t :wk "vc")
@@ -2064,6 +2080,7 @@
   [remap undo-redo] 'undo-fu-only-redo
   [remap undo] 'undo-fu-only-undo
   [remap yank] 'consult-yank-replace
+  "C-<return>" 'embark-act
   "C-*" '(e:org-popup-note :wk "memo.org")
   "C-:" '(e:org-popup-tasks :wk "tasks.org")
   "C-;" 'shell-pop
