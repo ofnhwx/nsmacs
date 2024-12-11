@@ -622,17 +622,11 @@
 ** consult-gh
 #+begin_src emacs-lisp :lexical no
 (e:deferred-config! consult-gh
+  :defun (consult-gh--get-current-orgs)
   :defer-config
   (setopt consult-gh-default-orgs-list (consult-gh--get-current-orgs t))
   (setopt consult-gh-show-preview t)
-  (setopt consult-gh-preview-key "C-o")
-  (setopt consult-gh-repo-action #'consult-gh--repo-browse-files-action)
-  (setopt consult-gh-issue-action #'consult-gh--issue-view-action)
-  (setopt consult-gh-pr-action #'consult-gh--pr-view-action)
-  (setopt consult-gh-code-action #'consult-gh--code-view-action)
-  (setopt consult-gh-file-action #'consult-gh--files-view-action)
-  (setopt consult-gh-notifications-action #'consult-gh--notifications-action)
-  (setopt consult-gh-dashboard-action #'consult-gh--dashboard-action))
+  (setopt consult-gh-preview-key "C-o"))
 #+end_src
 ** consult-projectile
 #+begin_src emacs-lisp
@@ -2054,6 +2048,7 @@
   "d SPC" 'cycle-spacing
   "d" '(:ignore t :wk "delete")
   "dl" 'delete-blank-lines
+  "du" 'delete-duplicate-lines
   "dw" 'delete-trailing-whitespace
   "g" '(:ignore t :wk "google/grugru")
   "gQ" 'google-translate-query-translate-reverse
