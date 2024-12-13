@@ -513,6 +513,9 @@
 [submodule "undo-fu"]
 	path = lib/undo-fu
 	url = https://codeberg.org/ideasman42/emacs-undo-fu
+[submodule "verb"]
+	path = lib/verb
+	url = https://github.com/federicotdn/verb
 [submodule "vertico"]
 	path = lib/vertico
 	url = https://github.com/minad/vertico
