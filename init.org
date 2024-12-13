@@ -109,6 +109,11 @@
   (setenv "LANG" value)
   (setenv "LC_ALL" value))
 #+end_src
+*** NixOS
+#+begin_src emacs-lisp
+(if (--find (s-match "^/nix/.+?/jinx" it) load-path)
+    (setopt load-path (--reject (s-match "lib/jinx$" it) load-path)))
+#+end_src
 *** Mac
 #+begin_src emacs-lisp
 (e:if! (eq system-type 'darwin)
@@ -787,6 +792,7 @@
    'org-babel-load-languages
    '((emacs-lisp . t)
      (mermaid . t)
+     (verb . t)
      (sql . t)))
   (e:major-mode-key-def org-mode
     "," 'org-ctrl-c-ctrl-c
@@ -1553,12 +1559,13 @@
     "fcd" '("destroy" . projectile-rails-destroy)
     "ff" "find"
     "ff@" '("mailer" . projectile-rails-find-mailer)
+    "ffF" '("feature" . projectile-rails-find-feature)
     "ffV" '("view component" . e:projectile-rails-find-view-components)
     "ffa" '("locale" . projectile-rails-find-locale)
     "ffb" '("job" . projectile-rails-find-job)
     "ffc" '("controller" . projectile-rails-find-controller)
     "ffe" '("environment" . projectile-rails-find-environment)
-    "fff" '("feature" . projectile-rails-find-feature)
+    "fff" '("form" . e:projectile-rails-find-form)
     "ffg" '("graphql" . e:projectile-rails-find-graphql)
     "ffh" '("helper" . projectile-rails-find-helper)
     "ffi" '("initializer" . projectile-rails-find-initializer)
