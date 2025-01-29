@@ -240,6 +240,11 @@
 (e:deferred-config! dired-filter
   :hook (dired-mode-hook . dired-filter-mode))
 #+end_src
+*** dired-launch
+#+begin_src emacs-lisp
+(e:deferred-config! dired-launch
+  :hook (dired-mode-hook . dired-launch-enable))
+#+end_src
 *** ls-lisp-extension
 #+begin_src emacs-lisp
 (e:deferred-config! ls-lisp-extension
@@ -1896,6 +1901,7 @@
   "n" 'consult-gh-notifications
   "o" 'browse-at-remote
   "s" 'magit-status
+  "t" 'git-timemachine
   "v" '(:ignore t :wk "vc")
   "vh" 'vc-region-history)
 #+end_src
