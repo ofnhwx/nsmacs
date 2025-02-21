@@ -295,7 +295,7 @@
   :defer-config
   (general-def eww-mode-map
     "e" 'eww-open-current-url-with-default-browser)
-  (setopt eww-search-prefix "https://www.google.com/search?q=")
+  ;; (setopt eww-search-prefix "https://www.google.com/search?q=")
   (defun eww-open-current-url-with-default-browser ()
     (interactive)
     (browse-url-default-browser (eww-current-url))))
@@ -1046,6 +1046,15 @@
 ** ellama
 #+begin_src emacs-lisp
 (e:deferred-config! ellama
+  :commands (ellama-transient-ask-menu
+             ellama-transient-code-menu
+             ellama-transient-context-menu
+             ellama-transient-improve-menu
+             ellama-transient-main-menu
+             ellama-transient-make-menu
+             ellama-transient-session-menu
+             ellama-transient-summarize-menu
+             ellama-transient-translate-menu)
   :defun (ellama-generate-name-by-llm)
   :defvar (ellama-providers openai-api-key)
   :defer-config
@@ -1054,14 +1063,17 @@
   (e:var! ellama-sessions-directory "ellama-sessions")
   (setopt ellama-naming-scheme #'ellama-generate-name-by-llm)
   (setopt ellama-language "Japanese")
+  (setopt ellama-code-review-prompt-template "あなたはプロのソフトウェアエンジニアです。提供されたコードをレビューし、簡潔な提案をしてください。")
   (setopt ellama-summarize-prompt-template "次のテキストを要約して\n-----\n%s")
   (setopt ellama-providers
-          '(("gpt-4o-mini" . (make-llm-openai :key openai-api-key :chat-model "gpt-4o-mini"))
+          '(;; ("o3-mini"     . (make-llm-openai :key openai-api-key :chat-model "o3-mini"))
+            ("o1-mini"     . (make-llm-openai :key openai-api-key :chat-model "o1-mini"))
+            ("gpt-4o-mini" . (make-llm-openai :key openai-api-key :chat-model "gpt-4o-mini"))
             ("codegemma"   . (make-llm-ollama :chat-model "codegemma:7b"  :embedding-model "codegemma:7b"))
             ("codestral"   . (make-llm-ollama :chat-model "codestral:22b" :embedding-model "codestral:22b"))
             ("aya"         . (make-llm-ollama :chat-model "aya:8b"        :embedding-model "aya:8b"))))
   (setopt ellama-provider (eval (cdr (assoc "gpt-4o-mini" ellama-providers))))
-  (setopt ellama-translation-provider (eval (cdr (assoc "aya" ellama-providers)))))
+  (setopt ellama-translation-provider (eval (cdr (assoc "gpt-4o-mini" ellama-providers)))))
 #+end_src
 ** exec-path-from-shell
 #+begin_src emacs-lisp
@@ -1766,49 +1778,15 @@
   "ct" 'chezmoi-template-buffer-display
   "cw" 'chezmoi-write
   "e" '(:ignore t :wk "ellama")
-  "ea" '(:ignore t :wk "ellama-ask")
-  "eaa" 'ellama-ask-about
-  "eai" 'ellama-chat
-  "eal" 'ellama-ask-line
-  "eas" 'ellama-ask-selection
-  "ec" '(:ignore t :wk "ellama-code")
-  "eca" 'ellama-code-add
-  "ecc" 'ellama-code-complete
-  "ece" 'ellama-code-edit
-  "eci" 'ellama-code-improve
-  "ecm" 'ellama-generate-commit-message
-  "ecr" 'ellama-code-review
-  "ed" '(:ignore t :wk "ellama-define")
-  "edw" 'ellama-define-word
-  "ei" '(:ignore t :wk "ellama-improve")
-  "eic" 'ellama-improve-conciseness
-  "eig" 'ellama-improve-grammar
-  "eiw" 'ellama-improve-wording
-  "em" '(:ignore t :wk "ellama-make")
-  "emf" 'ellama-make-format
-  "eml" 'ellama-make-list
-  "emt" 'ellama-make-table
-  "ep" '(:ignore t :wk "ellama-provider")
-  "eps" 'ellama-provider-select
-  "es" '(:ignore t :wk "ellama-summarize/session")
-  "esa" 'ellama-session-switch
-  "esc" 'ellama-summarize-killring
-  "esd" 'ellama-session-remove
-  "esl" 'ellama-load-session
-  "esr" 'ellama-session-rename
-  "ess" 'ellama-summarize
-  "esw" 'ellama-summarize-webpage
-  "et" '(:ignore t :wk "ellama-translate/text")
-  "etb" 'ellama-translate-buffer
-  "etc" 'ellama-complete
-  "etd" 'ellama-chat-translation-disable
-  "ete" 'ellama-chat-translation-enable
-  "ett" 'ellama-translate
-  "ex" '(:ignore t :wk "ellama-context")
-  "exb" 'ellama-context-add-buffer
-  "exf" 'ellama-context-add-file
-  "exi" 'ellama-context-add-info-node
-  "exs" 'ellama-context-add-selection
+  "eS" '(ellama-transient-session-menu   :wk "Session")
+  "ea" '(ellama-transient-ask-menu       :wk "Ask")
+  "ec" '(ellama-transient-code-menu      :wk "Code")
+  "ee" '(ellama-transient-main-menu      :wk "Main")
+  "ei" '(ellama-transient-improve-menu   :wk "Improve")
+  "ek" '(ellama-transient-make-menu      :wk "Make")
+  "es" '(ellama-transient-summarize-menu :wk "Summarize")
+  "et" '(ellama-transient-translate-menu :wk "Translate")
+  "ex" '(ellama-transient-context-menu   :wk "Context")
   "o" '(:ignore t :wk "org")
   "oa" 'org-agenda-list
   "oc" 'org-capture
