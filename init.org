@@ -1195,6 +1195,7 @@
   (setopt magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1)
   (setopt magit-log-margin '(t "%Y-%m-%d %H:%M" magit-log-margin-width t 15))
   (setopt magit-log-margin-show-committer-date t)
+  (setopt magit-refs-show-branch-descriptions t)
   (e:setup-magit-repository-directories)
   (e:setup-marginalia-magit)
   ;; magit-status で表示するセクションを追加
