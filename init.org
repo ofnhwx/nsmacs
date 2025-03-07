@@ -6,13 +6,13 @@
 ** 設定ファイルのヘッダー
 *** early-init.el
 #+begin_src emacs-lisp :tangle early-init.el
-;;; early-init.el
 ;;; -*- lexical-binding: t -*-
+;;; early-init.el
 #+end_src
 *** init.el
 #+begin_src emacs-lisp
-;;; init.el
 ;;; -*- lexical-binding: t -*-
+;;; init.el
 #+end_src
 ** early-init.el
 *** 起動時間短縮のための設定
@@ -197,10 +197,10 @@
     "選択したブラウザで URL を開く."
     (let ((browsers '(eww-browse-url browse-url-default-browser xwidget-webkit-browse-url)))
       (when browse-url-generic-program
-        (add-to-list 'browsers 'browse-url-generic t))
+        (push 'browse-url-generic browsers))
       (and (fboundp 'pr-review-url-parse)
            (pr-review-url-parse url)
-           (add-to-list 'browsers 'pr-review-open-url t))
+           (push 'pr-review-open-url browsers))
       (funcall (intern (completing-read "Choose Browser: " browsers)) url new-window))))
 #+end_src
 ** comp
@@ -699,6 +699,12 @@
     "C-d" 'embark-dwim
     "C-e" 'embark-export))
 #+end_src
+** flx-rs
+#+begin_src emacs-lisp
+(e:deferred-config! flx-rs
+  :config
+  (flx-rs-load-dyn))
+#+end_src
 ** fussy
 #+begin_src emacs-lisp
 (e:deferred-config! fussy
@@ -708,14 +714,8 @@
   (setq completion-category-overrides nil)
   :defer-config
   (setopt fussy-filter-fn 'fussy-filter-orderless)
-  (setopt fussy-score-fn 'fussy-fzf-native-score)
+  (setopt fussy-score-fn 'fussy-flx-rs-score)
   (setopt fussy-max-candidate-limit 5000))
-#+end_src
-** fzf-native
-#+begin_src emacs-lisp
-(e:deferred-config! fzf-native
-  :config
-  (fzf-native-load-dyn))
 #+end_src
 ** kind-icon
 #+begin_src emacs-lisp
@@ -1066,13 +1066,13 @@
   (setopt ellama-code-review-prompt-template "あなたはプロのソフトウェアエンジニアです。提供されたコードをレビューし、簡潔な提案をしてください。")
   (setopt ellama-summarize-prompt-template "次のテキストを要約して\n-----\n%s")
   (setopt ellama-providers
-          '(;; ("o3-mini"     . (make-llm-openai :key openai-api-key :chat-model "o3-mini"))
-            ("o1-mini"     . (make-llm-openai :key openai-api-key :chat-model "o1-mini"))
+          '(("o3-mini"     . (make-llm-openai :key openai-api-key :chat-model "o3-mini"))
             ("gpt-4o-mini" . (make-llm-openai :key openai-api-key :chat-model "gpt-4o-mini"))
             ("codegemma"   . (make-llm-ollama :chat-model "codegemma:7b"  :embedding-model "codegemma:7b"))
             ("codestral"   . (make-llm-ollama :chat-model "codestral:22b" :embedding-model "codestral:22b"))
             ("aya"         . (make-llm-ollama :chat-model "aya:8b"        :embedding-model "aya:8b"))))
-  (setopt ellama-provider (eval (cdr (assoc "gpt-4o-mini" ellama-providers))))
+  (setopt ellama-provider             (eval (cdr (assoc "gpt-4o-mini" ellama-providers))))
+  (setopt ellama-coding-provider      (eval (cdr (assoc "o3-mini"     ellama-providers))))
   (setopt ellama-translation-provider (eval (cdr (assoc "gpt-4o-mini" ellama-providers)))))
 #+end_src
 ** exec-path-from-shell
@@ -1155,7 +1155,7 @@
           font-lock-type-face))
   ;; https://github.com/minad/jinx/issues/4#issuecomment-1484786256
   (let ((re (alist-get t jinx-exclude-regexps)))
-    (add-to-list 're "\\cc")
+    (cl-pushnew "\\cc" re :test #'string=)
     (setf (alist-get t jinx-exclude-regexps) re)))
 #+end_src
 ** locale-eaw
