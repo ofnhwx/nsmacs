@@ -1249,7 +1249,7 @@
   (e:if! (eq system-type 'darwin)
     (setopt migemo-dictionary "/usr/local/share/migemo/utf-8/migemo-dict"))
   (e:if! (eq system-type 'gnu/linux)
-    (setopt migemo-dictionary "/usr/share/cmigemo/utf-8/migemo-dict")))
+    (setopt migemo-dictionary "/usr/share/migemo/utf-8/migemo-dict")))
 #+end_src
 ** minions
 #+begin_src emacs-lisp
