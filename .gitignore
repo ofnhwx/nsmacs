@@ -6,4 +6,5 @@
 /early-init.el
 /init.el
 
+/.aider*
 *.elc
