@@ -1066,14 +1066,15 @@
   (setopt ellama-code-review-prompt-template "あなたはプロのソフトウェアエンジニアです。提供されたコードをレビューし、簡潔な提案をしてください。")
   (setopt ellama-summarize-prompt-template "次のテキストを要約して\n-----\n%s")
   (setopt ellama-providers
-          '(("o3-mini"     . (make-llm-openai :key openai-api-key :chat-model "o3-mini"))
-            ("gpt-4o-mini" . (make-llm-openai :key openai-api-key :chat-model "gpt-4o-mini"))
-            ("codegemma"   . (make-llm-ollama :chat-model "codegemma:7b"  :embedding-model "codegemma:7b"))
-            ("codestral"   . (make-llm-ollama :chat-model "codestral:22b" :embedding-model "codestral:22b"))
-            ("aya"         . (make-llm-ollama :chat-model "aya:8b"        :embedding-model "aya:8b"))))
-  (setopt ellama-provider             (eval (cdr (assoc "gpt-4o-mini" ellama-providers))))
-  (setopt ellama-coding-provider      (eval (cdr (assoc "o3-mini"     ellama-providers))))
-  (setopt ellama-translation-provider (eval (cdr (assoc "gpt-4o-mini" ellama-providers)))))
+          '(("gpt-4.1-nano" . (make-llm-openai :key openai-api-key :chat-model "gpt-4.1-nano"))
+            ("gpt-4o-mini"  . (make-llm-openai :key openai-api-key :chat-model "gpt-4o-mini"))
+            ("o3-mini"      . (make-llm-openai :key openai-api-key :chat-model "o3-mini"))
+            ("codegemma"    . (make-llm-ollama :chat-model "codegemma:7b"  :embedding-model "codegemma:7b"))
+            ("codestral"    . (make-llm-ollama :chat-model "codestral:22b" :embedding-model "codestral:22b"))
+            ("aya"          . (make-llm-ollama :chat-model "aya:8b"        :embedding-model "aya:8b"))))
+  (setopt ellama-provider             (eval (cdr (assoc "gpt-4.1-nano" ellama-providers))))
+  (setopt ellama-coding-provider      (eval (cdr (assoc "gpt-4.1-nano" ellama-providers))))
+  (setopt ellama-translation-provider (eval (cdr (assoc "gpt-4.1-nano" ellama-providers)))))
 #+end_src
 ** exec-path-from-shell
 #+begin_src emacs-lisp
