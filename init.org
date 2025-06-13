@@ -1213,7 +1213,9 @@
   :advice (:around magit-delta-call-delta-and-convert-ansi-escape-sequences
                    ad:magit-delta-call-delta-and-convert-ansi-escape-sequences@auto-disable)
   :hook ((magit-mode-hook . magit-delta-mode)
-         (magit-post-refresh-hook . e:nth/magit-delta-auto-enable)))
+         (magit-post-refresh-hook . e:nth/magit-delta-auto-enable))
+  :defer-config
+  (setopt magit-delta-hide-plus-minus-markers nil))
 #+end_src
 *** magit-file-icons
 #+begin_src emacs-lisp
