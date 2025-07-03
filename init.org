@@ -1058,6 +1058,7 @@
   :defun (ellama-generate-name-by-llm)
   :defvar (ellama-providers openai-api-key)
   :defer-config
+  (require 'llm-claude)
   (require 'llm-openai)
   (setopt llm-warn-on-nonfree nil)
   (e:var! ellama-sessions-directory "ellama-sessions")
@@ -1066,15 +1067,20 @@
   (setopt ellama-code-review-prompt-template "あなたはプロのソフトウェアエンジニアです。提供されたコードをレビューし、簡潔な提案をしてください。")
   (setopt ellama-summarize-prompt-template "次のテキストを要約して\n-----\n%s")
   (setopt ellama-providers
-          '(("gpt-4.1-nano" . (make-llm-openai :key openai-api-key :chat-model "gpt-4.1-nano"))
+          '(;; Claude
+            ("claude-opus-4"   . (make-llm-claude :key claude-api-key :chat-model "claude-opus-4-20250514"))
+            ("claude-sonnet-4" . (make-llm-claude :key claude-api-key :chat-model "claude-sonnet-4-20250514"))
+            ;; Open AI
+            ("gpt-4.1-nano" . (make-llm-openai :key openai-api-key :chat-model "gpt-4.1-nano"))
             ("gpt-4o-mini"  . (make-llm-openai :key openai-api-key :chat-model "gpt-4o-mini"))
             ("o3-mini"      . (make-llm-openai :key openai-api-key :chat-model "o3-mini"))
-            ("codegemma"    . (make-llm-ollama :chat-model "codegemma:7b"  :embedding-model "codegemma:7b"))
-            ("codestral"    . (make-llm-ollama :chat-model "codestral:22b" :embedding-model "codestral:22b"))
-            ("aya"          . (make-llm-ollama :chat-model "aya:8b"        :embedding-model "aya:8b"))))
-  (setopt ellama-provider             (eval (cdr (assoc "gpt-4.1-nano" ellama-providers))))
-  (setopt ellama-coding-provider      (eval (cdr (assoc "gpt-4.1-nano" ellama-providers))))
-  (setopt ellama-translation-provider (eval (cdr (assoc "gpt-4.1-nano" ellama-providers)))))
+            ;; Ollama
+            ("codegemma" . (make-llm-ollama :chat-model "codegemma:7b"  :embedding-model "codegemma:7b"))
+            ("codestral" . (make-llm-ollama :chat-model "codestral:22b" :embedding-model "codestral:22b"))
+            ("aya"       . (make-llm-ollama :chat-model "aya:8b"        :embedding-model "aya:8b"))))
+  (setopt ellama-provider             (eval (cdr (assoc "claude-sonnet-4" ellama-providers))))
+  (setopt ellama-coding-provider      (eval (cdr (assoc "claude-sonnet-4" ellama-providers))))
+  (setopt ellama-translation-provider (eval (cdr (assoc "claude-sonnet-4" ellama-providers)))))
 #+end_src
 ** exec-path-from-shell
 #+begin_src emacs-lisp
@@ -1092,6 +1098,7 @@
 ** flycheck
 #+begin_src emacs-lisp
 (e:deferred-config! flycheck
+  :advice (:around flycheck-start-command-checker ad:flycheck-start-command-checker@with-cwd)
   :config
   (setopt flycheck-check-syntax-automatically '(save idle-change mode-enabled))
   (setopt flycheck-idle-change-delay 5.0)
