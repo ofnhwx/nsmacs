@@ -240,11 +240,6 @@
 (e:deferred-config! dired-filter
   :hook (dired-mode-hook . dired-filter-mode))
 #+end_src
-*** dired-launch
-#+begin_src emacs-lisp
-(e:deferred-config! dired-launch
-  :hook (dired-mode-hook . dired-launch-enable))
-#+end_src
 *** ls-lisp-extension
 #+begin_src emacs-lisp
 (e:deferred-config! ls-lisp-extension
@@ -866,6 +861,7 @@
          (org-agenda-finalize-hook . org-modern-agenda))
   :defer-config
   (setopt org-modern-star 'replace)
+  (setopt org-modern-table nil)
   (setopt org-modern-todo-faces
           '(("TODO"      :background "#ff69b4" :foreground "#000000")
             ("STARTED"   :background "#90ee90" :foreground "#000000")
@@ -1788,6 +1784,7 @@
   "cs" 'chezmoi-sync-files
   "ct" 'chezmoi-template-buffer-display
   "cw" 'chezmoi-write
+  "d" '(e:consult-dunst-history :wk "dunst history")
   "e" '(:ignore t :wk "ellama")
   "eS" '(ellama-transient-session-menu   :wk "Session")
   "ea" '(ellama-transient-ask-menu       :wk "Ask")
