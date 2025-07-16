@@ -7,9 +7,6 @@
 [submodule "ag"]
 	path = lib/ag
 	url = https://github.com/Wilfred/ag.el
-[submodule "aidermacs"]
-	path = lib/aidermacs
-	url = https://github.com/MatthewZMD/aidermacs
 [submodule "annalist"]
 	path = lib/annalist
 	url = https://github.com/noctuid/annalist.el
@@ -158,9 +155,6 @@
 [submodule "elisp-refs"]
 	path = lib/elisp-refs
 	url = https://github.com/Wilfred/elisp-refs
-[submodule "ellama"]
-	path = lib/ellama
-	url = https://github.com/s-kostyaev/ellama
 [submodule "emacsql"]
 	path = lib/emacsql
 	url = https://github.com/skeeto/emacsql
@@ -255,6 +249,9 @@
 [submodule "google-translate"]
 	path = lib/google-translate
 	url = https://github.com/atykhonov/google-translate
+[submodule "gptel"]
+	path = lib/gptel
+	url = https://github.com/karthink/gptel
 [submodule "grugru"]
 	path = lib/grugru
 	url = https://github.com/ROCKTAKEY/grugru
@@ -312,9 +309,6 @@
 [submodule "llama"]
 	path = lib/llama
 	url = https://github.com/tarsius/llama
-[submodule "llm"]
-	path = lib/llm
-	url = https://github.com/ahyatt/llm
 [submodule "ls-lisp-extension"]
 	path = lib/ls-lisp-extension
 	url = git@github.com:ofnhwx/ls-lisp-extension.git
@@ -428,9 +422,6 @@
 [submodule "plz"]
 	path = lib/plz
 	url = https://github.com/alphapapa/plz.el
-[submodule "plz-event-source"]
-	path = lib/plz-event-source
-	url = https://github.com/r0man/plz-event-source
 [submodule "plz-media-type"]
 	path = lib/plz-media-type
 	url = https://github.com/r0man/plz-media-type
