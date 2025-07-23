@@ -343,6 +343,7 @@
   :defun (recentf-include-p)
   :defvar (recentf-list)
   :init
+  (setopt recentf-auto-cleanup 300)
   (setopt recentf-filename-handlers '(abbreviate-file-name))
   (setopt recentf-max-menu-items 20)
   (setopt recentf-max-saved-items 3000)
@@ -1404,8 +1405,8 @@
 *** lsp-mode
 #+begin_src emacs-lisp
 (e:deferred-config! lsp-mode
-  ;; :advice ((:around lsp-resolve-final-command ad:lsp-resolve-final-command@with-lsp-booster)
-  ;;          (:around json-parse-buffer ad:json-read@with-lsp-booster))
+  :advice ((:around lsp-resolve-final-command ad:lsp-resolve-final-command@with-lsp-booster)
+           (:around json-parse-buffer ad:json-read@with-lsp-booster))
   :defun (lsp-deferred)
   :defer-config
   (setopt lsp-auto-execute-action nil)
