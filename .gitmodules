@@ -347,6 +347,9 @@
 [submodule "mathjax"]
 	path = lib/mathjax
 	url = https://github.com/astoff/mathjax.el
+[submodule "mcp"]
+	path = lib/mcp
+	url = https://github.com/lizqwerscott/mcp.el
 [submodule "migemo"]
 	path = lib/migemo
 	url = https://github.com/emacs-jp/migemo
