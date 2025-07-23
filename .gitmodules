@@ -425,9 +425,6 @@
 [submodule "plz"]
 	path = lib/plz
 	url = https://github.com/alphapapa/plz.el
-[submodule "plz-media-type"]
-	path = lib/plz-media-type
-	url = https://github.com/r0man/plz-media-type
 [submodule "popup"]
 	path = lib/popup
 	url = https://github.com/auto-complete/popup-el
