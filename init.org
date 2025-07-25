@@ -1084,6 +1084,17 @@
   :config
   (global-git-gutter-mode 1))
 #+end_src
+** gptel
+#+begin_src emacs-lisp
+(e:deferred-config! gptel
+  :defvar (claude-api-key)
+  :defer-config
+  (setopt gptel-backend (gptel-make-anthropic "claude" :stream t :key claude-api-key))
+  (setopt gptel-model 'claude-3-7-sonnet-20250219)
+  (when (require 'gptel-integrations nil t)
+    (setopt mcp-hub-servers
+            '(("Claude" . (:command "claude" :args ("mcp" "serve")))))))
+#+end_src
 ** helm
 #+begin_src emacs-lisp
 (e:deferred-config! helm
@@ -2045,16 +2056,19 @@
   "TAB" 'cape-codeium)
 #+end_src
 * 設定完了
+** 起動時間の計測
+#+begin_src emacs-lisp
+(e:deferred-config! complete-start-process
+  :config
+  (run-with-timer 1.0 nil #'e:display-feature-load-time)
+  (when init-file-debug
+    (eval-when-compile (require 'profiler))
+    (profiler-report)
+    (profiler-stop)))
+#+end_src
 ** 完了処理
 #+begin_src emacs-lisp
 (add-hook 'emacs-startup-hook #'e:process-high-priority-config-queue)
 (add-hook 'emacs-startup-hook #'e:process-low-priority-config-queue)
 (setopt e:deferred-config-loaded t)
-#+end_src
-** 起動時間の計測
-#+begin_src emacs-lisp
-(when init-file-debug
-  (eval-when-compile (require 'profiler))
-  (profiler-report)
-  (profiler-stop))
 #+end_src
