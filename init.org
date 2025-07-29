@@ -1538,6 +1538,7 @@
   (e:setup-projectile-rails-annotation controller "app/controllers" "*")
   (e:setup-projectile-rails-annotation environment "config")
   (e:setup-projectile-rails-annotation helper "app/helpers" "_helper")
+  (e:setup-projectile-rails-annotation job "app/jobs" "_job")
   (e:setup-projectile-rails-annotation layout "app/views/layouts")
   (e:setup-projectile-rails-annotation lib "lib")
   (e:setup-projectile-rails-annotation locale "config/locales")
@@ -1547,7 +1548,6 @@
   (e:setup-projectile-rails-annotation spec "spec" "_spec")
   (e:setup-projectile-rails-annotation validator "app/validators" "_validator")
   (e:setup-projectile-rails-annotation view "app/views")
-  (e:setup-projectile-rails-annotation job "app/jobs" "_job")
   (e:minor-mode-key-def projectile-rails-mode
     "f" "rails"
     "f:" '("rake" . projectile-rails-rake)
@@ -1557,6 +1557,7 @@
     "ff" "find"
     "ff@" '("mailer" . projectile-rails-find-mailer)
     "ffF" '("feature" . projectile-rails-find-feature)
+    "ffR" '("rake task" . projectile-rails-find-rake-task)
     "ffV" '("view component" . e:projectile-rails-find-view-components)
     "ffa" '("locale" . projectile-rails-find-locale)
     "ffb" '("job" . projectile-rails-find-job)
@@ -1572,7 +1573,7 @@
     "ffn" '("migration" . projectile-rails-find-migration)
     "ffo" '("log" . projectile-rails-find-log)
     "ffp" '("spec" . projectile-rails-find-spec)
-    "ffr" '("rake task" . projectile-rails-find-rake-task)
+    "ffr" '("route" . e:projectile-rails-find-route)
     "ffs" '("stylesheet" . projectile-rails-find-stylesheet)
     "fft" '("test" . projectile-rails-find-test)
     "ffu" '("fixture" . projectile-rails-find-fixture)
