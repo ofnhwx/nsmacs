@@ -108,9 +108,6 @@
 [submodule "devdocs"]
 	path = lib/devdocs
 	url = https://github.com/astoff/devdocs.el
-[submodule "difftastic"]
-	path = lib/difftastic
-	url = https://github.com/pkryger/difftastic.el
 [submodule "dired-atool"]
 	path = lib/dired-atool
 	url = https://github.com/HKey/dired-atool
