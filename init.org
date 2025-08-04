@@ -1059,8 +1059,9 @@
   :advice (:around flycheck-start-command-checker ad:flycheck-start-command-checker@with-cwd)
   :config
   (setopt flycheck-check-syntax-automatically '(save idle-change mode-enabled))
-  (setopt flycheck-idle-change-delay 5.0)
   (setopt flycheck-emacs-lisp-load-path 'inherit)
+  (setopt flycheck-idle-change-delay 5.0)
+  (setopt flycheck-temp-prefix ".flycheck")
   (global-flycheck-mode 1)
   (e:eval! ;; haml-lint
     (flycheck-add-next-checker 'haml 'haml-lint)
@@ -1241,6 +1242,12 @@
 (e:deferred-config! open-junk-file
   :config
   (setopt open-junk-file-format (f-expand "junk/%Y/%Y%m%d%H%M%S." no-littering-var-directory)))
+#+end_src
+** pdf-tools
+#+begin_src emacs-lisp
+(e:deferred-config! pdf-tools
+  :config
+  (pdf-loader-install))
 #+end_src
 ** pr-review
 #+begin_src emacs-lisp
