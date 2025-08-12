@@ -1108,7 +1108,7 @@
   :config
   (setopt highlight-indentation-offset 2)
   :defer-config
-  (set-face-attribute 'highlight-indentation-face nil :background "#202020" :inherit nil)
+  (set-face-attribute 'highlight-indentation-face nil :background "#404040" :inherit nil)
   (e:define-minor-mode-switch highlight-indentation-mode))
 #+end_src
 ** hl-todo
