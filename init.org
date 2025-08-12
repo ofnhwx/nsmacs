@@ -993,15 +993,6 @@
   (setopt denote-directory (expand-file-name "denote" org-directory))
   (setopt denote-known-keywords '("memo" "task")))
 #+end_src
-** difftastic
-#+begin_src emacs-lisp
-(e:deferred-config! difftastic
-  :config
-  (with-eval-after-load 'magit-diff
-    (transient-append-suffix 'magit-diff '(-1 -1)
-      [("D" "Difftastic diff (dwim)" difftastic-magit-diff)
-       ("S" "Difftastic show" difftastic-magit-show)])))
-#+end_src
 ** doom-modeline
 #+begin_src emacs-lisp
 (e:deferred-config! doom-modeline
