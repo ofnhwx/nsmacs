@@ -1546,6 +1546,7 @@
     "ffa" '("locale" . projectile-rails-find-locale)
     "ffb" '("job" . projectile-rails-find-job)
     "ffc" '("controller" . projectile-rails-find-controller)
+    "ffd" '("decorator" . e:projectile-rails-find-decorator)
     "ffe" '("environment" . projectile-rails-find-environment)
     "fff" '("form" . e:projectile-rails-find-form)
     "ffg" '("graphql" . e:projectile-rails-find-graphql)
