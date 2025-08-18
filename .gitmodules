@@ -216,9 +216,6 @@
 [submodule "flx"]
 	path = lib/flx
 	url = https://github.com/lewang/flx
-[submodule "flx-rs"]
-	path = lib/flx-rs
-	url = https://github.com/jcs-elpa/flx-rs
 [submodule "flycheck"]
 	path = lib/flycheck
 	url = https://github.com/flycheck/flycheck
@@ -228,9 +225,6 @@
 [submodule "forge"]
 	path = lib/forge
 	url = https://github.com/magit/forge
-[submodule "fussy"]
-	path = lib/fussy
-	url = https://github.com/jojojames/fussy
 [submodule "general"]
 	path = lib/general
 	url = https://github.com/noctuid/general.el

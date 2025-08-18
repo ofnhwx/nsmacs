@@ -695,24 +695,6 @@
     "C-d" 'embark-dwim
     "C-e" 'embark-export))
 #+end_src
-** flx-rs
-#+begin_src emacs-lisp
-(e:deferred-config! flx-rs
-  :config
-  (flx-rs-load-dyn))
-#+end_src
-** fussy
-#+begin_src emacs-lisp
-(e:deferred-config! fussy
-  :init
-  (setq completion-styles '(fussy orderless))
-  (setq completion-category-defaults nil)
-  (setq completion-category-overrides nil)
-  :defer-config
-  (setopt fussy-filter-fn 'fussy-filter-orderless)
-  (setopt fussy-score-fn 'fussy-flx-rs-score)
-  (setopt fussy-max-candidate-limit 5000))
-#+end_src
 ** kind-icon
 #+begin_src emacs-lisp
 (e:deferred-config! kind-icon
@@ -732,6 +714,10 @@
 #+begin_src emacs-lisp
 (e:deferred-config! orderless
   :defvar (orderless-matching-styles)
+  :init
+  (setq completion-styles '(orderless basic))
+  (setq completion-category-defaults nil)
+  (setq completion-category-overrides nil)
   :config
   (setq orderless-matching-styles '(orderless-literal orderless-regexp orderless-migemo)))
 #+end_src
