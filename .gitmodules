@@ -416,6 +416,9 @@
 [submodule "plz"]
 	path = lib/plz
 	url = https://github.com/alphapapa/plz.el
+[submodule "poporg"]
+	path = lib/poporg
+	url = https://github.com/QBobWatson/poporg
 [submodule "popup"]
 	path = lib/popup
 	url = https://github.com/auto-complete/popup-el
@@ -563,3 +566,6 @@
 [submodule "yarn"]
 	path = lib/yarn
 	url = https://github.com/jmfirth/yarn.el
+[submodule "claude-code-ide"]
+	path = lib/claude-code-ide
+	url = https://github.com/manzaltu/claude-code-ide.el

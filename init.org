@@ -970,6 +970,13 @@
              chezmoi-wirte)
   :hook (find-file-hook . e:reopen-in-chezmoi-mode))
 #+end_src
+** claude-code-ide
+#+begin_src emacs-lisp
+(e:deferred-config! claude-code-ide
+  :config
+  (claude-code-ide-emacs-tools-setup)
+  (setopt claude-code-ide-terminal-backend 'vterm))
+#+end_src
 ** denote
  denote
 #+begin_src emacs-lisp
