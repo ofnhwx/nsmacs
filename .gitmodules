@@ -10,6 +10,9 @@
 [submodule "annalist"]
 	path = lib/annalist
 	url = https://github.com/noctuid/annalist.el
+[submodule "annotate"]
+	path = lib/annotate
+	url = https://github.com/bastibe/annotate.el
 [submodule "apheleia"]
 	path = lib/apheleia
 	url = https://github.com/radian-software/apheleia
@@ -43,6 +46,9 @@
 [submodule "chezmoi"]
 	path = lib/chezmoi
 	url = https://github.com/tuh8888/chezmoi.el
+[submodule "claude-code-ide"]
+	path = lib/claude-code-ide
+	url = https://github.com/manzaltu/claude-code-ide.el
 [submodule "closql"]
 	path = lib/closql
 	url = https://github.com/emacscollective/closql
@@ -566,6 +572,3 @@
 [submodule "yarn"]
 	path = lib/yarn
 	url = https://github.com/jmfirth/yarn.el
-[submodule "claude-code-ide"]
-	path = lib/claude-code-ide
-	url = https://github.com/manzaltu/claude-code-ide.el
