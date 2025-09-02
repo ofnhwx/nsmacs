@@ -941,9 +941,16 @@
               '("bundle" "exec" "rubocop")
             "rubocop")
           file "--autocorrect" "--stderr" "--format" "quiet" "--fail-level" "fatal"))
+  (setf (alist-get 'haml-lint apheleia-formatters)
+        '((if (e:bundle-exists "haml_lint")
+              '("bundle" "exec" "haml-lint")
+            "haml-lint")
+          file "--auto-correct" "--stderr" "--fail-fast" "--fail-level" "error"))
   ;; mode-alist
   (setf (alist-get 'ruby-ts-mode apheleia-mode-alist)
-        '(rubocop)))
+        '(rubocop))
+  (setf (alist-get 'haml-mode apheleia-mode-alist)
+        '(haml-lint)))
 #+end_src
 ** avy
 #+begin_src emacs-lisp
