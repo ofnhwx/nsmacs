@@ -359,6 +359,9 @@
 [submodule "mise"]
 	path = lib/mise
 	url = https://github.com/liuyinz/mise.el
+[submodule "mmm-mode"]
+	path = lib/mmm-mode
+	url = https://github.com/dgutov/mmm-mode
 [submodule "modus-themes"]
 	path = lib/modus-themes
 	url = https://github.com/protesilaos/modus-themes
