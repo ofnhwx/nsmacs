@@ -771,7 +771,7 @@
   (setopt org-default-notes-file (e:org-note-file))
   (setopt org-log-done 'time)
   (setopt org-return-follows-link t)
-  (setopt org-startup-folded nil)
+  (setopt org-startup-folded 'nofold)
   (setopt org-startup-indented t)
   (setopt org-tags-column 0)
   (setopt org-todo-keywords '((sequence "TODO(t)" "STARTED(s)" "|" "DONE(d)")
