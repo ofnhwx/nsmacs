@@ -447,7 +447,8 @@
 * Config: Evil
 ** evil
 #+begin_src emacs-lisp
-(e:deferred-config! evil
+;; 遅延ロードすると逆に遅くなるので直接ロードする
+(leaf evil
   :priority :high
   :defun (evil-get-auxiliary-keymap
           evil-half-cursor
@@ -1268,10 +1269,8 @@
 #+begin_src emacs-lisp
 (e:deferred-config! scratch
   :config
-  (setopt persistent-scratch-scratch-buffer-p-function #'e:scratch-buffer-p)
   (save-window-excursion
     (scratch-buffer)
-    (funcall initial-major-mode)
     (display-line-numbers-mode-on)))
 #+end_src
 *** persistent-scratch
@@ -1279,6 +1278,7 @@
 (e:deferred-config! persistent-scratch
   :priority :high
   :config
+  (setopt persistent-scratch-scratch-buffer-p-function #'e:scratch-buffer-p)
   (persistent-scratch-setup-default))
 #+end_src
 ** separedit
