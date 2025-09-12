@@ -22,11 +22,10 @@
 (setq gc-cons-percentage 1.0)
 (setq gc-cons-threshold most-positive-fixnum)
 
-(defun e:emacs-startup-config ()
+(defun e:restore-startup-config ()
   (setq file-name-handler-alist default-file-name-handler-alist)
   (setq gc-cons-percentage 0.1)
   (setq gc-cons-threshold 10485760))
-(add-hook 'emacs-startup-hook #'e:emacs-startup-config)
 #+end_src
 *** 不要なUI要素を非表示
 #+begin_src emacs-lisp :tangle early-init.el
@@ -2067,6 +2066,11 @@
     (eval-when-compile (require 'profiler))
     (profiler-report)
     (profiler-stop)))
+#+end_src
+** 起動時間高速化のための設定を元に戻す
+#+begin_src emacs-lisp
+(e:deferred-config! restore-startup-config
+  (e:restore-startup-config))
 #+end_src
 ** 完了処理
 #+begin_src emacs-lisp
