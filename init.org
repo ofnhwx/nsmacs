@@ -207,7 +207,9 @@
 #+begin_src emacs-lisp
 (e:deferred-config! comp
   :defer-config
-  (setopt native-comp-async-report-warnings-errors nil))
+  (setopt native-comp-async-jobs-number 4)
+  (setopt native-comp-async-report-warnings-errors nil)
+  (setopt native-comp-speed 3))
 #+end_src
 ** compile
 #+begin_src emacs-lisp
