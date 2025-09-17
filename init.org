@@ -2057,6 +2057,12 @@
   "TAB" 'cape-codeium)
 #+end_src
 * 設定完了
+** 起動時間高速化のための設定を元に戻す
+#+begin_src emacs-lisp
+(e:deferred-config! restore-startup-config
+  :config
+  (e:restore-startup-config))
+#+end_src
 ** 起動時間の計測
 #+begin_src emacs-lisp
 (e:deferred-config! complete-start-process
@@ -2066,11 +2072,6 @@
     (eval-when-compile (require 'profiler))
     (profiler-report)
     (profiler-stop)))
-#+end_src
-** 起動時間高速化のための設定を元に戻す
-#+begin_src emacs-lisp
-(e:deferred-config! restore-startup-config
-  (e:restore-startup-config))
 #+end_src
 ** 完了処理
 #+begin_src emacs-lisp
