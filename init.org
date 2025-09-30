@@ -981,6 +981,7 @@
 ** claude-code-ide
 #+begin_src emacs-lisp
 (e:deferred-config! claude-code-ide
+  :advice (:filter-return claude-code-ide--didplay-buffer-in-side-window ad:claude-code-ide--display-buffer-in-side-window@setup)
   :config
   (claude-code-ide-emacs-tools-setup)
   (setopt claude-code-ide-terminal-backend 'vterm))
@@ -1035,6 +1036,7 @@
 ** emacs-cdp
 #+begin_src emacs-lisp
 (e:deferred-config! emacs-cdp
+  :defvar (emacs-cdp-mode)
   :defer-config
   (setopt emacs-cdp-profile-directory (f-expand "~/.config/chrome-debug"))
   (add-hook 'emacs-cdp-mode-hook
