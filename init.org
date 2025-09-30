@@ -984,6 +984,8 @@
   :advice (:filter-return claude-code-ide--didplay-buffer-in-side-window ad:claude-code-ide--display-buffer-in-side-window@setup)
   :config
   (claude-code-ide-emacs-tools-setup)
+  (setopt claude-code-ide-focus-on-open nil)
+  (setopt claude-code-ide-focus-claude-after-ediff nil)
   (setopt claude-code-ide-terminal-backend 'vterm))
 #+end_src
 ** denote
