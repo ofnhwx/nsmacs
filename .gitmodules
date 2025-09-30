@@ -158,6 +158,9 @@
 [submodule "elisp-refs"]
 	path = lib/elisp-refs
 	url = https://github.com/Wilfred/elisp-refs
+[submodule "emacs-cdp"]
+	path = lib/emacs-cdp
+	url = git@github.com:ofnhwx/emacs-cdp.el.git
 [submodule "emacsql"]
 	path = lib/emacsql
 	url = https://github.com/skeeto/emacsql
@@ -494,6 +497,9 @@
 [submodule "sqlformat"]
 	path = lib/sqlformat
 	url = https://github.com/purcell/sqlformat
+[submodule "sticky-window"]
+	path = lib/sticky-window
+	url = git@github.com:ofnhwx/sticky-window.el.git
 [submodule "string-inflection"]
 	path = lib/string-inflection
 	url = https://github.com/akicho8/string-inflection

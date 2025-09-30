@@ -630,9 +630,8 @@
 ** consult-gh
 #+begin_src emacs-lisp :lexical no
 (e:deferred-config! consult-gh
-  :defun (consult-gh--get-current-orgs)
+  :defun (consult-gh--get-current-user-orgs)
   :defer-config
-  (setopt consult-gh-default-orgs-list (consult-gh--get-current-orgs t))
   (setopt consult-gh-show-preview t)
   (setopt consult-gh-preview-key "C-o"))
 #+end_src
@@ -1033,6 +1032,17 @@
   :advice ((:after describe-function-1 elisp-demos-advice-describe-function-1)
            (:after helpful-update      elisp-demos-advice-helpful-update)))
 #+end_src
+** emacs-cdp
+#+begin_src emacs-lisp
+(e:deferred-config! emacs-cdp
+  :defer-config
+  (setopt emacs-cdp-profile-directory (f-expand "~/.config/chrome-debug"))
+  (add-hook 'emacs-cdp-mode-hook
+            (lambda ()
+              (if emacs-cdp-mode
+                  (evil-emacs-state)
+                (evil-normal-state)))))
+#+end_src
 ** exec-path-from-shell
 #+begin_src emacs-lisp
 (e:deferred-config! exec-path-from-shell
@@ -1342,6 +1352,12 @@
   (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
   (sp-local-pair 'lisp-interaction-mode "'" nil :actions nil)
   (require 'smartparens-config))
+#+end_src
+** sticky-window
+#+begin_src emacs-lisp
+(e:deferred-config! sticky-window
+  :defer-config
+  (sticky-window-mode 1))
 #+end_src
 ** symbol-overlay
 #+begin_src emacs-lisp
@@ -1759,6 +1775,13 @@
   "ct" 'chezmoi-template-buffer-display
   "cw" 'chezmoi-write
   "d" '(e:consult-dunst-history :wk "dunst history")
+  "g" '(:ignore t :wk "Chrome(CDP)")
+  "gg" 'emacs-cdp-mode
+  "gi" 'emacs-cdp-insert-text
+  "gn" 'emacs-cdp-navigate
+  "gr" 'emacs-cdp-reload-page
+  "gs" 'emacs-cdp-select-tab
+  "gt" 'emacs-cdp-new-tab
   "o" '(:ignore t :wk "org")
   "oa" 'org-agenda-list
   "oc" 'org-capture
