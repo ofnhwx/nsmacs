@@ -8,11 +8,15 @@
 #+begin_src emacs-lisp :tangle early-init.el
 ;;; -*- lexical-binding: t -*-
 ;;; early-init.el
+(when init-file-debug
+  (message "[%f] loading: %s." (float-time (time-since before-init-time)) "early-init.el"))
 #+end_src
 *** init.el
 #+begin_src emacs-lisp
 ;;; -*- lexical-binding: t -*-
 ;;; init.el
+(when init-file-debug
+  (message "[%f] loading: %s." (float-time (time-since before-init-time)) "init.el"))
 #+end_src
 ** early-init.el
 *** 起動時間短縮のための設定
@@ -60,28 +64,27 @@
 (add-to-list 'load-path (expand-file-name "lib/borg" user-emacs-directory))
 (require 'borg)
 (borg-initialize)
-#+end_src
-** マクロ定義
-#+begin_src emacs-lisp
-(require 'nsmacs-macros)
+(when init-file-debug
+  (message "[%f] done: %s." (float-time (time-since before-init-time)) "borg initialized"))
 #+end_src
 ** ライブラリ
 #+begin_src emacs-lisp
+(require 'nsmacs-macros)
+(require 'nsmacs-deferred)
 (require 'komunan-lisp-library)
 (require 'f)
 (require 's)
-(require 'ht)
 (require 'leaf)
 (require 'general)
-(require 'bind-map)
-(require 'hercules)
 (require 'no-littering)
+(e:debug-log "done: load libraries.")
 #+end_src
 ** 環境設定
 *** Theme
 #+begin_src emacs-lisp
 (require-theme 'modus-themes)
 (load-theme 'modus-vivendi-tinted :no-confirm)
+(e:debug-log "done: load theme.")
 #+end_src
 *** Font
 #+begin_src emacs-lisp
@@ -91,27 +94,32 @@
   (set-face-attribute 'fixed-pitch       nil :family font)
   (set-face-attribute 'fixed-pitch-serif nil :family font)
   (set-face-attribute 'variable-pitch    nil :family font))
+(e:debug-log "done: set font.")
 #+end_src
 *** Japanese
 #+begin_src emacs-lisp
 (set-language-environment "Japanese")
+(e:debug-log "done: set language environment.")
 #+end_src
 *** Encoding
 #+begin_src emacs-lisp
 (let ((coding-system 'utf-8))
   (prefer-coding-system          coding-system)
   (set-buffer-file-coding-system coding-system))
+(e:debug-log "done: set coding system.")
 #+end_src
 *** Locale
 #+begin_src emacs-lisp
 (let ((value "ja_JP.UTF-8"))
   (setenv "LANG" value)
   (setenv "LC_ALL" value))
+(e:debug-log "done: set locale.")
 #+end_src
 *** NixOS
 #+begin_src emacs-lisp
-(if (--find (s-match "^/nix/.+?/jinx" it) load-path)
-    (setopt load-path (--reject (s-match "lib/jinx$" it) load-path)))
+(e:if! (--find (s-match "^/nix/.+?/jinx" it) load-path)
+  (setopt load-path (--reject (s-match "lib/jinx$" it) load-path))
+  (e:debug-log "done: NixOS config."))
 #+end_src
 *** Mac
 #+begin_src emacs-lisp
@@ -128,18 +136,21 @@
   (setopt ns-right-command-modifier 'super)
   (setopt ns-alternate-modifier 'none)
   ;; ちょっと行間を広げる
-  (e:default! line-spacing 2))
+  (e:default! line-spacing 2)
+  (e:debug-log "done: Mac config."))
 #+end_src
 * Config: Emacs
+** Alias
+#+begin_src emacs-lisp
+(defalias 'exit 'save-buffers-kill-terminal)
+(e:debug-log "done: set alias.")
+#+end_src
 ** startup
 #+begin_src emacs-lisp
 (setopt inhibit-startup-buffer-menu t)
 (setopt inhibit-startup-screen t)
 (setopt initial-scratch-message nil)
-#+end_src
-** Alias
-#+begin_src emacs-lisp
-(defalias 'exit 'save-buffers-kill-terminal)
+(e:debug-log "done: startup config.")
 #+end_src
 ** C Sources
 #+begin_src emacs-lisp
@@ -171,6 +182,16 @@
 (setopt use-file-dialog nil)
 (setopt use-short-answers t)
 (setopt window-resize-pixelwise t)
+(e:debug-log "done: set C sources config.")
+#+end_src
+** 個人設定
+#+begin_src emacs-lisp
+(e:deferred-config! load-private-config
+  :config
+  (let ((private-config (f-expand "private/config" user-emacs-directory)))
+    (condition-case err
+        (load private-config)
+      (display-warning :warning err))))
 #+end_src
 ** auth-source
 #+begin_src emacs-lisp
@@ -436,15 +457,6 @@
   :config
   (winner-mode 1))
 #+end_src
-** 個人設定
-#+begin_src emacs-lisp
-(add-hook 'emacs-startup-hook
-          (defun e:load-private-config ()
-            (let ((private-config (f-expand "private/config" user-emacs-directory)))
-              (condition-case err
-                  (load private-config)
-                (display-warning :warning err)))))
-#+end_src
 * Config: Evil
 ** evil
 #+begin_src emacs-lisp
@@ -472,6 +484,7 @@
   (setopt evil-emacs-state-cursor   '("SkyBlue2" box))
   (setopt evil-operator-state-cursor #'evil-half-cursor)
   (evil-mode 1)
+  (e:debug-log "done: load evil.")
   :config
   (general-def 'motion
     "TAB" nil
@@ -2094,7 +2107,7 @@
 #+begin_src emacs-lisp
 (e:deferred-config! complete-start-process
   :config
-  (run-with-timer 1.0 nil #'e:display-feature-load-time)
+  (run-with-timer 1.0 nil #'e:deferred-config-stats)
   (when init-file-debug
     (eval-when-compile (require 'profiler))
     (profiler-report)
