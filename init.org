@@ -999,7 +999,8 @@
   (claude-code-ide-emacs-tools-setup)
   (setopt claude-code-ide-focus-on-open nil)
   (setopt claude-code-ide-focus-claude-after-ediff nil)
-  (setopt claude-code-ide-terminal-backend 'vterm))
+  (setopt claude-code-ide-terminal-backend 'vterm)
+  (setopt claude-code-ide-use-ide-diff nil))
 #+end_src
 ** denote
  denote
@@ -1784,13 +1785,24 @@
 #+begin_src emacs-lisp
 (e:key-def application a
   "" '(:ignore t :wk "application")
-  "c" '(:ignore t :wk "chezmoi")
-  "cd" 'chezmoi-diff
-  "cf" 'chezmoi-find
-  "co" 'chezmoi-open-other
-  "cs" 'chezmoi-sync-files
-  "ct" 'chezmoi-template-buffer-display
-  "cw" 'chezmoi-write
+  "C" '(:ignore t :wk "chezmoi")
+  "Cd" 'chezmoi-diff
+  "Cf" 'chezmoi-find
+  "Co" 'chezmoi-open-other
+  "Cs" 'chezmoi-sync-files
+  "Ct" 'chezmoi-template-buffer-display
+  "Cw" 'chezmoi-write
+  "c" '(:ignore t :wk "claude-code-ide")
+  "c ESC" 'claude-code-ide-send-escape
+  "cc" 'claude-code-ide-continue
+  "ci" 'claude-code-ide-insert-at-mentioned
+  "cm" 'claude-code-ide-menu
+  "cp" 'claude-code-ide-send-prompt
+  "cq" 'claude-code-ide-stop
+  "cr" 'claude-code-ide-resume
+  "cs" 'claude-code-ide
+  "ct" 'claude-code-ide-toggle
+  "cw" 'claude-code-ide-switch-to-buffer
   "d" '(e:consult-dunst-history :wk "dunst history")
   "g" '(:ignore t :wk "Chrome(CDP)")
   "gg" 'emacs-cdp-mode
