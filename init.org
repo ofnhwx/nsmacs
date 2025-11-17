@@ -665,7 +665,8 @@
            (:before cape-codeium ad:copilot-clear-overlay)
            (:before corfu-quick-complete ad:copilot-clear-overlay))
   :hook ((prog-mode-hook . copilot-mode)
-         (org-mode-hook . copilot-mode))
+         ;; (org-mode-hook . copilot-mode)
+         )
   :init
   (e:var! copilot-install-dir "copilot")
   :defer-config
