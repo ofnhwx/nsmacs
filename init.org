@@ -950,22 +950,17 @@
   (setopt apheleia-inhibit-functions
           '(e:apheleia-inhibit-unnecesary-major-mode
             e:apheleia-inhibit-rubocop-excludes))
+  (setopt apheleia-skip-functions '(buffer-modified-p))
   ;; formatters
   (setf (alist-get 'rubocop apheleia-formatters)
-        '((if (e:bundle-exists "rubocop")
-              '("bundle" "exec" "rubocop")
-            "rubocop")
-          file "--autocorrect" "--stderr" "--format" "quiet" "--fail-level" "fatal"))
+        '((if (e:bundle-exists "rubocop") '("bundle" "exec" "rubocop") "rubocop")
+          "--server" file "--autocorrect" "--stderr" "--format" "quiet" "--fail-level" "fatal"))
   (setf (alist-get 'haml-lint apheleia-formatters)
-        '((if (e:bundle-exists "haml_lint")
-              '("bundle" "exec" "haml-lint")
-            "haml-lint")
+        '((if (e:bundle-exists "haml_lint") '("bundle" "exec" "haml-lint") "haml-lint")
           file "--auto-correct" "--stderr" "--fail-fast" "--fail-level" "error"))
   ;; mode-alist
-  (setf (alist-get 'ruby-ts-mode apheleia-mode-alist)
-        '(rubocop))
-  (setf (alist-get 'haml-mode apheleia-mode-alist)
-        '(haml-lint)))
+  (setf (alist-get 'ruby-ts-mode apheleia-mode-alist) '(rubocop))
+  (setf (alist-get 'haml-mode apheleia-mode-alist) '(haml-lint)))
 #+end_src
 ** avy
 #+begin_src emacs-lisp
