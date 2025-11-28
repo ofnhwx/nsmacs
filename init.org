@@ -688,7 +688,7 @@
   :defvar (corfu-map)
   :hook ((corfu-mode-hook . corfu-echo-mode)
          (corfu-mode-hook . corfu-popupinfo-mode)
-         (minibuffer-setpu-hook . e:corfu-enable-always-in-minibuffer))
+         (minibuffer-setup-hook . e:corfu-enable-always-in-minibuffer))
   :init
   (setopt corfu-auto t)
   (setopt corfu-auto-prefix 1)
@@ -900,7 +900,7 @@
   (setopt org-refile-targets
           '((e:org-tasks-file   :level . 1)
             (e:org-archive-file :level . 1)))
-  (setopt org-refine-use-outline-path 'file))
+  (setopt org-refile-use-outline-path 'file))
 #+end_src
 ** org-sliced-images
 #+begin_src emacs-lisp
@@ -984,7 +984,7 @@
              chezmoi-open-other
              chezmoi-sync-files
              chezmoi-template-buffer-display
-             chezmoi-wirte)
+             chezmoi-write)
   :hook (find-file-hook . e:reopen-in-chezmoi-mode))
 #+end_src
 ** claude-code-ide
@@ -1108,7 +1108,7 @@
   :defvar (claude-api-key)
   :defer-config
   (setopt gptel-backend (gptel-make-anthropic "claude" :stream t :key claude-api-key))
-  (setopt gptel-model 'claude-3-7-sonnet-20250219)
+  (setopt gptel-model 'claude-sonnet-4-5-20250929)
   (when (require 'gptel-integrations nil t)
     (setopt mcp-hub-servers
             '(("Claude" . (:command "claude" :args ("mcp" "serve")))))))
@@ -1227,7 +1227,7 @@
 ** nerd-icons-completion
 #+begin_src emacs-lisp
 (e:deferred-config! nerd-icons-completion
-  :hook (merginalia-mode-hook . nerd-icons-completion-marginalia-setup)
+  :hook (marginalia-mode-hook . nerd-icons-completion-marginalia-setup)
   :init
   (nerd-icons-completion-mode))
 #+end_src
