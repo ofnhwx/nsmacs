@@ -89,11 +89,13 @@
 *** Font
 #+begin_src emacs-lisp
 (let ((font "UDEV Gothic NF")
-      (size (if (eq system-type 'darwin) 16.0 12.0)))
+      (size (if (eq system-type 'darwin) 16.0 12.0))
+      (spacing 0))
   (set-frame-font (font-spec :name font :size size) nil t)
   (set-face-attribute 'fixed-pitch       nil :family font)
   (set-face-attribute 'fixed-pitch-serif nil :family font)
-  (set-face-attribute 'variable-pitch    nil :family font))
+  (set-face-attribute 'variable-pitch    nil :family font)
+  (setq-default line-spacing spacing))
 (e:debug-log "done: set font.")
 #+end_src
 *** Japanese
@@ -1155,7 +1157,7 @@
 #+end_src
 ** locale-eaw
 #+begin_src emacs-lisp
-(e:deferred-config! eaw-fullwidth
+(e:deferred-config! eaw-console
   :require t)
 #+end_src
 ** macrostep
