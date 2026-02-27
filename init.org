@@ -642,14 +642,6 @@
   :defer-config
   (setopt consult-line-start-from-top t))
 #+end_src
-** consult-gh
-#+begin_src emacs-lisp :lexical no
-(e:deferred-config! consult-gh
-  :defun (consult-gh--get-current-user-orgs)
-  :defer-config
-  (setopt consult-gh-show-preview t)
-  (setopt consult-gh-preview-key "C-o"))
-#+end_src
 ** consult-projectile
 #+begin_src emacs-lisp
 (e:deferred-config! consult-projectile

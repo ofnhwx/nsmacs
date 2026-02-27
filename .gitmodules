@@ -70,9 +70,6 @@
 [submodule "consult-flycheck"]
 	path = lib/consult-flycheck
 	url = https://github.com/minad/consult-flycheck
-[submodule "consult-gh"]
-	path = lib/consult-gh
-	url = https://github.com/armindarvish/consult-gh
 [submodule "consult-lsp"]
 	path = lib/consult-lsp
 	url = https://github.com/gagbo/consult-lsp
