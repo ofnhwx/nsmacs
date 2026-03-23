@@ -1177,7 +1177,14 @@
     (set-face-attribute 'forge-topic-done nil :inherit 'forge-dimmed :slant 'normal)
     (set-face-attribute 'forge-pullreq-open nil :foreground 'unspecified)
     (set-face-attribute 'forge-pullreq-merged nil :foreground 'unspecified :inherit 'forge-dimmed)
-    (set-face-attribute 'forge-pullreq-rejected nil :foreground 'unspecified :inherit 'forge-dimmed))
+    (set-face-attribute 'forge-pullreq-rejected nil :foreground 'unspecified :inherit 'forge-dimmed)
+    (when (require 'forge-review-overlay nil t)
+      (setopt forge-review-overlay-ignored-reviewers
+              '("claude"
+                "copilot-pull-request-reviewer"
+                "gemini-code-assist"
+                "github-actions"))
+      (add-hook 'magit-status-mode-hook #'forge-review-overlay-mode)))
   (setopt magit-delete-by-moving-to-trash nil)
   (setopt magit-diff-refine-hunk 'all)
   (setopt magit-diff-refine-ignore-whitespace t)

@@ -231,6 +231,9 @@
 [submodule "forge"]
 	path = lib/forge
 	url = https://github.com/magit/forge
+[submodule "forge-review-overlay"]
+	path = lib/forge-review-overlay
+	url = git@github.com:ofnhwx/forge-review-overlay.el.git
 [submodule "general"]
 	path = lib/general
 	url = https://github.com/noctuid/general.el
