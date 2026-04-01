@@ -1405,8 +1405,8 @@
   (setopt vterm-max-scrollback 20000)
   (setopt vterm-shell "tmux new -A -s emacs-default")
   (general-def vterm-mode-map
-    "<wheel-down>" 'ignore
-    "<wheel-up>" 'ignore
+    ;; "<wheel-down>" 'ignore
+    ;; "<wheel-up>" 'ignore
     "C-c C-g" 'keyboard-quit
     "C-g" 'vterm--self-insert)
   (general-def 'insert vterm-mode-map

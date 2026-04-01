@@ -46,6 +46,9 @@
 [submodule "claude-code-ide"]
 	path = lib/claude-code-ide
 	url = https://github.com/manzaltu/claude-code-ide.el
+[submodule "claude-send-tmux"]
+	path = lib/claude-send-tmux
+	url = git@github.com:ofnhwx/claude-send-tmux.el.git
 [submodule "closql"]
 	path = lib/closql
 	url = https://github.com/emacscollective/closql
