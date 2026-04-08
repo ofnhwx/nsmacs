@@ -661,7 +661,6 @@
 (e:deferred-config! copilot
   :advice ((:before-until corfu-complete ad:copilot-accept-completion)
            (:before-until indent-for-tab-command ad:copilot-accept-completion)
-           (:before cape-codeium ad:copilot-clear-overlay)
            (:before corfu-quick-complete ad:copilot-clear-overlay))
   :hook ((prog-mode-hook . copilot-mode)
          ;; (org-mode-hook . copilot-mode)
@@ -694,8 +693,7 @@
   (setopt corfu-cycle t)
   (general-def corfu-map
     "<escape>" 'corfu-quit
-    "C-q" 'corfu-quick-complete
-    "C-z" 'cape-codeium)
+    "C-q" 'corfu-quick-complete)
   (global-corfu-mode 1))
 #+end_src
 ** embark
@@ -981,17 +979,6 @@
              chezmoi-write)
   :hook (find-file-hook . e:reopen-in-chezmoi-mode))
 #+end_src
-** claude-code-ide
-#+begin_src emacs-lisp
-(e:deferred-config! claude-code-ide
-  :advice (:filter-return claude-code-ide--didplay-buffer-in-side-window ad:claude-code-ide--display-buffer-in-side-window@setup)
-  :config
-  (claude-code-ide-emacs-tools-setup)
-  (setopt claude-code-ide-focus-on-open nil)
-  (setopt claude-code-ide-focus-claude-after-ediff nil)
-  (setopt claude-code-ide-terminal-backend 'vterm)
-  (setopt claude-code-ide-use-ide-diff nil))
-#+end_src
 ** denote
  denote
 #+begin_src emacs-lisp
@@ -1096,17 +1083,6 @@
 (e:deferred-config! git-gutter
   :config
   (global-git-gutter-mode 1))
-#+end_src
-** gptel
-#+begin_src emacs-lisp
-(e:deferred-config! gptel
-  :defvar (claude-api-key)
-  :defer-config
-  (setopt gptel-backend (gptel-make-anthropic "claude" :stream t :key claude-api-key))
-  (setopt gptel-model 'claude-sonnet-4-5-20250929)
-  (when (require 'gptel-integrations nil t)
-    (setopt mcp-hub-servers
-            '(("Claude" . (:command "claude" :args ("mcp" "serve")))))))
 #+end_src
 ** helm
 #+begin_src emacs-lisp
@@ -1791,24 +1767,13 @@
 #+begin_src emacs-lisp
 (e:key-def application a
   "" '(:ignore t :wk "application")
-  "C" '(:ignore t :wk "chezmoi")
-  "Cd" 'chezmoi-diff
-  "Cf" 'chezmoi-find
-  "Co" 'chezmoi-open-other
-  "Cs" 'chezmoi-sync-files
-  "Ct" 'chezmoi-template-buffer-display
-  "Cw" 'chezmoi-write
-  "c" '(:ignore t :wk "claude-code-ide")
-  "c ESC" 'claude-code-ide-send-escape
-  "cc" 'claude-code-ide-continue
-  "ci" 'claude-code-ide-insert-at-mentioned
-  "cm" 'claude-code-ide-menu
-  "cp" 'claude-code-ide-send-prompt
-  "cq" 'claude-code-ide-stop
-  "cr" 'claude-code-ide-resume
-  "cs" 'claude-code-ide
-  "ct" 'claude-code-ide-toggle
-  "cw" 'claude-code-ide-switch-to-buffer
+  "c" '(:ignore t :wk "chezmoi")
+  "cd" 'chezmoi-diff
+  "cf" 'chezmoi-find
+  "co" 'chezmoi-open-other
+  "cs" 'chezmoi-sync-files
+  "ct" 'chezmoi-template-buffer-display
+  "cw" 'chezmoi-write
   "d" '(e:consult-dunst-history :wk "dunst history")
   "g" '(:ignore t :wk "Chrome(CDP)")
   "gg" 'emacs-cdp-mode
@@ -2108,11 +2073,6 @@
 #+begin_src emacs-lisp
 (general-def ctl-x-map
   "C-c" 'execute-extended-command)
-#+end_src
-** mode-specific-map
-#+begin_src emacs-lisp
-(general-def mode-specific-map
-  "TAB" 'cape-codeium)
 #+end_src
 * 設定完了
 ** 起動時間高速化のための設定を元に戻す

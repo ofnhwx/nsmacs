@@ -40,18 +40,12 @@
 [submodule "chezmoi"]
 	path = lib/chezmoi
 	url = https://github.com/tuh8888/chezmoi.el
-[submodule "claude-code-ide"]
-	path = lib/claude-code-ide
-	url = https://github.com/manzaltu/claude-code-ide.el
 [submodule "claude-send-tmux"]
 	path = lib/claude-send-tmux
 	url = git@github.com:ofnhwx/claude-send-tmux.el.git
 [submodule "closql"]
 	path = lib/closql
 	url = https://github.com/emacscollective/closql
-[submodule "codeium"]
-	path = lib/codeium
-	url = https://github.com/Exafunction/codeium.el
 [submodule "company"]
 	path = lib/company
 	url = https://github.com/company-mode/company-mode
@@ -246,9 +240,6 @@
 [submodule "google-translate"]
 	path = lib/google-translate
 	url = https://github.com/atykhonov/google-translate
-[submodule "gptel"]
-	path = lib/gptel
-	url = https://github.com/karthink/gptel
 [submodule "grugru"]
 	path = lib/grugru
 	url = https://github.com/ROCKTAKEY/grugru
@@ -297,9 +288,6 @@
 [submodule "leaf"]
 	path = lib/leaf
 	url = https://github.com/conao3/leaf.el
-[submodule "libgit"]
-	path = lib/libgit
-	url = https://github.com/magit/libegit2
 [submodule "link-hint"]
 	path = lib/link-hint
 	url = https://github.com/noctuid/link-hint.el
@@ -344,9 +332,6 @@
 [submodule "mathjax"]
 	path = lib/mathjax
 	url = https://github.com/astoff/mathjax.el
-[submodule "mcp"]
-	path = lib/mcp
-	url = https://github.com/lizqwerscott/mcp.el
 [submodule "migemo"]
 	path = lib/migemo
 	url = https://github.com/emacs-jp/migemo
