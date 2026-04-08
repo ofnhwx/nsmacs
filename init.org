@@ -1754,6 +1754,12 @@
   "*" '(e:consult-ripgrep-dwim :wk "ripgrep(dwim)")
   "/" '(consult-ripgrep :wk "ripgrap")
   ";" 'evilnc-comment-operator
+  "@ ESC" 'claude-send-tmux-send-escape
+  "@1" 'claude-send-tmux-send-1
+  "@2" 'claude-send-tmux-send-2
+  "@3" 'claude-send-tmux-send-3
+  "@@" 'claude-send-tmux-message
+  "@q" 'claude-send-tmux-send-q
   "^" 'ace-window
   "|" 'shell-command-on-region
   "1" '(winum-select-window-1 :wk "window 1")
