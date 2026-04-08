@@ -752,8 +752,7 @@
 #+begin_src emacs-lisp
 (e:deferred-config! evil-org
   :hook (org-mode-hook . evil-org-mode)
-  :defun (evil-org-set-key-theme
-          evil-org-agenda-set-keys)
+  :defun (evil-org-set-key-theme)
   :defer-config
   (setopt evil-org-key-theme
           '(navigation
@@ -765,9 +764,15 @@
             ;; todo
             ;; heading
             calendar))
-  (evil-org-set-key-theme)
-  (when (require 'evil-org-agenda nil t)
-    (evil-org-agenda-set-keys)))
+  (evil-org-set-key-theme))
+#+end_src
+** evil-org-agenda
+#+begin_src emacs-lisp
+(e:deferred-config! evil-org-agenda
+  :after (evil-org)
+  :defun (evil-org-agenda-set-keys)
+  :config
+  (evil-org-agenda-set-keys))
 #+end_src
 ** org
 #+begin_src emacs-lisp
@@ -1147,22 +1152,6 @@
   :advice (:override magit-repos-alist ad:magit-repos-alist@override)
   :defun (magit-add-section-hook)
   :defer-config
-  (setopt forge-add-default-bindings nil)
-  (when (require 'forge nil t)
-    (set-face-attribute 'forge-topic-slug-open nil :foreground "#f5f5f5" :inherit nil)
-    (set-face-attribute 'forge-topic-unread nil :foreground "#00fa9a" :weight 'normal :box nil)
-    (set-face-attribute 'forge-topic-pending nil :weight 'normal)
-    (set-face-attribute 'forge-topic-done nil :inherit 'forge-dimmed :slant 'normal)
-    (set-face-attribute 'forge-pullreq-open nil :foreground 'unspecified)
-    (set-face-attribute 'forge-pullreq-merged nil :foreground 'unspecified :inherit 'forge-dimmed)
-    (set-face-attribute 'forge-pullreq-rejected nil :foreground 'unspecified :inherit 'forge-dimmed)
-    (when (require 'forge-review-overlay nil t)
-      (setopt forge-review-overlay-ignored-reviewers
-              '("claude"
-                "copilot-pull-request-reviewer"
-                "gemini-code-assist"
-                "github-actions"))
-      (add-hook 'magit-status-mode-hook #'forge-review-overlay-mode)))
   (setopt magit-delete-by-moving-to-trash nil)
   (setopt magit-diff-refine-hunk 'all)
   (setopt magit-diff-refine-ignore-whitespace t)
@@ -1179,6 +1168,33 @@
   (let ((argments '("--graph" "-n256" "--decorate" "--date-order" "--show-signature")))
     (put 'magit-log-mode 'magit-log-default-arguments argments)
     (put 'magit-log-select-mode 'magit-log-default-arguments argments)))
+#+end_src
+*** forge
+#+begin_src emacs-lisp
+(setopt forge-add-default-bindings nil)
+(e:deferred-config! forge
+  :after (magit)
+  :config
+  (set-face-attribute 'forge-topic-slug-open nil :foreground "#f5f5f5" :inherit nil)
+  (set-face-attribute 'forge-topic-unread nil :foreground "#00fa9a" :weight 'normal :box nil)
+  (set-face-attribute 'forge-topic-pending nil :weight 'normal)
+  (set-face-attribute 'forge-topic-done nil :inherit 'forge-dimmed :slant 'normal)
+  (set-face-attribute 'forge-issue-open nil :foreground 'unspecified)
+  (set-face-attribute 'forge-issue-completed nil :foreground 'unspecified :inherit 'forge-dimmed)
+  (set-face-attribute 'forge-pullreq-open nil :foreground 'unspecified)
+  (set-face-attribute 'forge-pullreq-merged nil :foreground 'unspecified :inherit 'forge-dimmed))
+#+end_src
+*** forge-review-overlay
+#+begin_src emacs-lisp
+(e:deferred-config! forge-review-overlay
+  :after (forge)
+  :config
+  (setopt forge-review-overlay-ignored-reviewers
+          '("claude"
+            "copilot-pull-request-reviewer"
+            "gemini-code-assist"
+            "github-actions"))
+  (add-hook 'magit-status-mode-hook #'forge-review-overlay-mode))
 #+end_src
 *** magit-delta
 #+begin_src emacs-lisp
