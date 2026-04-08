@@ -770,6 +770,7 @@
 #+begin_src emacs-lisp
 (e:deferred-config! evil-org-agenda
   :after (evil-org)
+  :require t
   :defun (evil-org-agenda-set-keys)
   :config
   (evil-org-agenda-set-keys))
@@ -993,6 +994,17 @@
   (setopt denote-directory (expand-file-name "denote" org-directory))
   (setopt denote-known-keywords '("memo" "task")))
 #+end_src
+** diff-hl
+#+begin_src emacs-lisp
+(e:deferred-config! diff-hl
+  :defun (diff-hl-magit-pre-refresh diff-hl-magit-post-refresh)
+  :config
+  (global-diff-hl-mode 1)
+  (diff-hl-flydiff-mode 1)
+  (add-hook 'magit-pre-refresh-hook  #'diff-hl-magit-pre-refresh)
+  (add-hook 'magit-post-refresh-hook #'diff-hl-magit-post-refresh)
+  (add-hook 'dired-mode-hook #'diff-hl-dired-mode))
+#+end_src
 ** doom-modeline
 #+begin_src emacs-lisp
 (e:deferred-config! doom-modeline
@@ -1083,32 +1095,22 @@
   (setopt flycheck-posframe-border-width 1)
   (setopt flycheck-posframe-position 'frame-bottom-right-corner))
 #+end_src
-** git-gutter
-#+begin_src emacs-lisp
-(e:deferred-config! git-gutter
-  :config
-  (global-git-gutter-mode 1))
-#+end_src
 ** helm
 #+begin_src emacs-lisp
 (e:deferred-config! helm
   :bind (([remap eval-expression] . helm-eval-expression-with-eldoc)))
-#+end_src
-** highlight-indentation
-#+begin_src emacs-lisp
-(e:deferred-config! highlight-indentation
-  :commands (highlight-indentation-mode-on)
-  :config
-  (setopt highlight-indentation-offset 2)
-  :defer-config
-  (set-face-attribute 'highlight-indentation-face nil :background "#404040" :inherit nil)
-  (e:define-minor-mode-switch highlight-indentation-mode))
 #+end_src
 ** hl-todo
 #+begin_src emacs-lisp
 (e:deferred-config! hl-todo
   :config
   (global-hl-todo-mode 1))
+#+end_src
+** indent-bars
+#+begin_src emacs-lisp
+(e:deferred-config! indent-bars
+  :config
+  (setopt indent-bars-treesit-support t))
 #+end_src
 ** jinx
 #+begin_src emacs-lisp
@@ -1174,6 +1176,7 @@
 (setopt forge-add-default-bindings nil)
 (e:deferred-config! forge
   :after (magit)
+  :require t
   :config
   (set-face-attribute 'forge-topic-slug-open nil :foreground "#f5f5f5" :inherit nil)
   (set-face-attribute 'forge-topic-unread nil :foreground "#00fa9a" :weight 'normal :box nil)
@@ -1188,6 +1191,7 @@
 #+begin_src emacs-lisp
 (e:deferred-config! forge-review-overlay
   :after (forge)
+  :require t
   :config
   (setopt forge-review-overlay-ignored-reviewers
           '("claude"
@@ -1548,7 +1552,7 @@
 (e:deferred-config! haml-mode
   :hook ((haml-mode-hook . e:setup-haml-mode)
          (haml-mode-hook . emmet-mode)
-         (haml-mode-hook . highlight-indentation-mode-on)))
+         (haml-mode-hook . indent-bars-mode)))
 #+end_src
 *** projectile-rails
 #+begin_src emacs-lisp
@@ -1725,7 +1729,7 @@
   :commands (yaml-indent-line))
 (e:deferred-config! yaml-ts-mode
   :hook ((yaml-ts-mode-hook . lsp-deferred)
-         (yaml-ts-mode-hook . highlight-indentation-mode-on))
+         (yaml-ts-mode-hook . indent-bars-mode))
   :defer-config
   (general-def yaml-ts-mode-map
     "TAB" 'yaml-indent-line))
