@@ -334,6 +334,11 @@
   :defer-config
   (blink-cursor-mode 0))
 #+end_src
+** hideshow
+#+begin_src emacs-lisp
+(e:deferred-config! hideshow
+  :hook (prog-mode-hook . hs-minor-mode))
+#+end_src
 ** google-translate
 #+begin_src emacs-lisp
 (e:deferred-config! google-translate
@@ -730,11 +735,6 @@
   :config
   (setq orderless-matching-styles '(orderless-literal orderless-regexp orderless-migemo)))
 #+end_src
-** origami
-#+begin_src emacs-lisp
-(e:deferred-config! origami
-  :hook (prog-mode-hook . origami-mode))
-#+end_src
 ** vertico
 #+begin_src emacs-lisp
 (e:deferred-config! vertico
@@ -1043,6 +1043,7 @@
 #+begin_src emacs-lisp
 (e:deferred-config! emacs-cdp
   :defvar (emacs-cdp-mode)
+  :defun (evil-emacs-state evil-normal-state)
   :defer-config
   (setopt emacs-cdp-profile-directory (f-expand "~/.config/chrome-debug"))
   (add-hook 'emacs-cdp-mode-hook
@@ -1170,6 +1171,7 @@
   :advice (:override magit-repos-alist ad:magit-repos-alist@override)
   :defun (magit-add-section-hook)
   :defer-config
+  (setopt forge-add-default-bindings nil)
   (when (require 'forge nil t)
     (set-face-attribute 'forge-topic-slug-open nil :foreground "#f5f5f5" :inherit nil)
     (set-face-attribute 'forge-topic-unread nil :foreground "#00fa9a" :weight 'normal :box nil)
@@ -1740,6 +1742,7 @@
 ** Space
 *** スペースがプレフィックスとして使用できない場合の代替キー
 #+begin_src emacs-lisp
+(declare-function general-simulate-SPC "general")
 (general-def '(motion normal visual)
   "M-m" (general-simulate-key "SPC"))
 #+end_src
@@ -2114,6 +2117,7 @@
 * 設定完了
 ** 起動時間高速化のための設定を元に戻す
 #+begin_src emacs-lisp
+(declare-function e:restore-startup-config "early-init")
 (e:deferred-config! restore-startup-config
   :config
   (e:restore-startup-config))
@@ -2124,7 +2128,8 @@
   :config
   (run-with-timer 1.0 nil #'e:deferred-config-stats)
   (when init-file-debug
-    (eval-when-compile (require 'profiler))
+    (declare-function profiler-report "profiler")
+    (declare-function profiler-stop "profiler")
     (profiler-report)
     (profiler-stop)))
 #+end_src
