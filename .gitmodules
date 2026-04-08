@@ -507,6 +507,9 @@
 [submodule "treesit-auto"]
 	path = lib/treesit-auto
 	url = https://github.com/renzmann/treesit-auto
+[submodule "treesit-fold"]
+	path = lib/treesit-fold
+	url = https://github.com/emacs-tree-sitter/treesit-fold
 [submodule "undo-fu"]
 	path = lib/undo-fu
 	url = https://codeberg.org/ideasman42/emacs-undo-fu

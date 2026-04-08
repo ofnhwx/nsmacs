@@ -334,11 +334,6 @@
   :defer-config
   (blink-cursor-mode 0))
 #+end_src
-** hideshow
-#+begin_src emacs-lisp
-(e:deferred-config! hideshow
-  :hook (prog-mode-hook . hs-minor-mode))
-#+end_src
 ** google-translate
 #+begin_src emacs-lisp
 (e:deferred-config! google-translate
@@ -1384,6 +1379,12 @@
   :defer-config
   (setopt transient-default-level 7)
   (e:var! transient-values-file "transient-values.el"))
+#+end_src
+** treesit-fold
+#+begin_src emacs-lisp
+(e:deferred-config! treesit-fold
+  :config
+  (global-treesit-fold-mode 1))
 #+end_src
 ** undo-fu
 #+begin_src emacs-lisp
