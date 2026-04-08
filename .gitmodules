@@ -4,9 +4,6 @@
 [submodule "affe"]
 	path = lib/affe
 	url = https://github.com/minad/affe
-[submodule "ag"]
-	path = lib/ag
-	url = https://github.com/Wilfred/ag.el
 [submodule "annalist"]
 	path = lib/annalist
 	url = https://github.com/noctuid/annalist.el
@@ -222,9 +219,6 @@
 [submodule "findr"]
 	path = lib/findr
 	url = https://github.com/emacsorphanage/findr
-[submodule "flx"]
-	path = lib/flx
-	url = https://github.com/lewang/flx
 [submodule "flycheck"]
 	path = lib/flycheck
 	url = https://github.com/flycheck/flycheck
