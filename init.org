@@ -1156,13 +1156,6 @@
   :defer-config
   (setopt magit-delta-hide-plus-minus-markers nil))
 #+end_src
-*** magit-file-icons
-#+begin_src emacs-lisp
-;; (e:deferred-config! magit-file-icons
-;;   :after (magit)
-;;   :config
-;;   (magit-file-icons-mode 1))
-#+end_src
 ** mise
 #+begin_src emacs-lisp
 (e:deferred-config! mise

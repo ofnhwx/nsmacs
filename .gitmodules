@@ -317,9 +317,6 @@
 [submodule "magit-delta"]
 	path = lib/magit-delta
 	url = https://github.com/dandavison/magit-delta
-[submodule "magit-file-icons"]
-	path = lib/magit-file-icons
-	url = https://github.com/gekoke/magit-file-icons.git
 [submodule "marginalia"]
 	path = lib/marginalia
 	url = https://github.com/minad/marginalia
