@@ -46,12 +46,6 @@
 [submodule "closql"]
 	path = lib/closql
 	url = https://github.com/emacscollective/closql
-[submodule "company"]
-	path = lib/company
-	url = https://github.com/company-mode/company-mode
-[submodule "company-org-block"]
-	path = lib/company-org-block
-	url = https://github.com/xenodium/company-org-block
 [submodule "compat"]
 	path = lib/compat
 	url = https://github.com/emacs-compat/compat
@@ -81,6 +75,9 @@
 	url = https://github.com/minad/corfu
 	load-path = .
 	load-path = extensions
+[submodule "corg"]
+	path = lib/corg
+	url = https://github.com/isamert/corg.el
 [submodule "csv-mode"]
 	path = lib/csv-mode
 	url = https://github.com/emacsmirror/csv-mode

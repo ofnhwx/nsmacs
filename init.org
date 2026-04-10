@@ -630,10 +630,9 @@
 #+begin_src emacs-lisp
 (e:deferred-config! cape
   :hook ((prog-mode-hook . e:setup-capf/default)
+         (org-mode-hook . corg-setup)
          (org-mode-hook . e:setup-capf/org)
-         (lsp-completion-mode-hook . e:setup-capf/lsp))
-  :defer-config
-  (setopt company-org-block-edit-style 'inline))
+         (lsp-completion-mode-hook . e:setup-capf/lsp)))
 #+end_src
 ** consult
 #+begin_src emacs-lisp
