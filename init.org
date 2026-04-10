@@ -650,30 +650,6 @@
     (setf (plist-get consult-projectile--source-projectile-file :category) 'project-file)
     (setf (plist-get consult-projectile--source-projectile-recentf :category) 'project-file)))
 #+end_src
-** copilot
-#+begin_src emacs-lisp
-(e:deferred-config! copilot
-  :advice ((:before-until corfu-complete ad:copilot-accept-completion)
-           (:before-until indent-for-tab-command ad:copilot-accept-completion)
-           (:before corfu-quick-complete ad:copilot-clear-overlay))
-  :hook ((prog-mode-hook . copilot-mode)
-         ;; (org-mode-hook . copilot-mode)
-         )
-  :init
-  (e:var! copilot-install-dir "copilot")
-  :defer-config
-  (setopt copilot-indent-offset-warning-disable t)
-  (setopt copilot-max-char 200000)
-  ;; (add-to-list 'copilot-enable-predicates 'ignore)
-  (general-def copilot-mode-map
-   "<backtab>" 'copilot-complete
-   "C-z" 'copilot-complete)
-  (general-def copilot-completion-map
-   "<escape>" 'copilot-clear-overlay
-   "C-n" 'copilot-next-completion
-   "C-p" 'copilot-previous-completion
-   "C-z" 'copilot-complete))
-#+end_src
 ** corfu
 #+begin_src emacs-lisp
 (e:deferred-config! corfu

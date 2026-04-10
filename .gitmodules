@@ -67,9 +67,6 @@
 [submodule "consult-todo"]
 	path = lib/consult-todo
 	url = https://github.com/liuyinz/consult-todo
-[submodule "copilot"]
-	path = lib/copilot
-	url = https://github.com/copilot-emacs/copilot.el
 [submodule "corfu"]
 	path = lib/corfu
 	url = https://github.com/minad/corfu
