@@ -117,30 +117,6 @@
   (setenv "LC_ALL" value))
 (e:debug-log "done: set locale.")
 #+end_src
-*** NixOS
-#+begin_src emacs-lisp
-(e:if! (--find (s-match "^/nix/.+?/jinx" it) load-path)
-  (setopt load-path (--reject (s-match "lib/jinx$" it) load-path))
-  (e:debug-log "done: NixOS config."))
-#+end_src
-*** Mac
-#+begin_src emacs-lisp
-(e:if! (eq system-type 'darwin)
-  ;; タイトルバーの見た目を変更
-  ;; (--each '((ns-transparent-titlebar . t)
-  ;;           (ns-appearance . dark))
-  ;;   (assq-delete-all (car it) initial-frame-alist)
-  ;;   (assq-delete-all (car it) default-frame-alist)
-  ;;   (add-to-list 'initial-frame-alist it)
-  ;;   (add-to-list 'default-frame-alist it))
-  ;; 特殊キーの設定
-  (setopt ns-command-modifier 'meta)
-  (setopt ns-right-command-modifier 'super)
-  (setopt ns-alternate-modifier 'none)
-  ;; ちょっと行間を広げる
-  (e:default! line-spacing 2)
-  (e:debug-log "done: Mac config."))
-#+end_src
 * Config: Emacs
 ** Alias
 #+begin_src emacs-lisp
