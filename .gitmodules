@@ -168,9 +168,6 @@
 [submodule "evil-collection"]
 	path = lib/evil-collection
 	url = https://github.com/emacs-evil/evil-collection
-[submodule "evil-easymotion"]
-	path = lib/evil-easymotion
-	url = https://github.com/PythonNut/evil-easymotion
 [submodule "evil-goggles"]
 	path = lib/evil-goggles
 	url = https://github.com/edkolev/evil-goggles
@@ -207,6 +204,9 @@
 [submodule "findr"]
 	path = lib/findr
 	url = https://github.com/emacsorphanage/findr
+[submodule "flash"]
+	path = lib/flash
+	url = https://github.com/Prgebish/flash
 [submodule "flycheck"]
 	path = lib/flycheck
 	url = https://github.com/flycheck/flycheck

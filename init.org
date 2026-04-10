@@ -490,18 +490,6 @@
   (general-def evil-inner-text-objects-map "a" 'evil-inner-arg)
   (general-def evil-outer-text-objects-map "a" 'evil-outer-arg))
 #+end_src
-** evil-easymotion
-#+begin_src emacs-lisp
-(e:deferred-config! evil-easymotion
-  :after (evil)
-  :defvar (evilem-map)
-  :config
-  (evilem-default-keybindings "s")
-  (general-def evilem-map
-    "s" 'evil-avy-goto-char-timer)
-  (general-def 'normal "s" evilem-map)
-  (general-def 'visual "x" evilem-map))
-#+end_src
 ** evil-goggles
 #+begin_src emacs-lisp
 (e:deferred-config! evil-goggles
@@ -902,16 +890,18 @@
 ** avy
 #+begin_src emacs-lisp
 (e:deferred-config! avy
-  :config
-  (with-eval-after-load 'evil
-    (general-def '(normal motion)
-      "S" 'evil-avy-goto-word-0
-      "gj" 'evil-avy-goto-line-below
-      "gk" 'evil-avy-goto-line-above))
   :defer-config
   (setopt avy-keys (number-sequence ?a ?z))
   (setopt avy-all-windows t)
   (setopt avy-all-windows-alt nil))
+#+end_src
+** flash
+#+begin_src emacs-lisp
+(e:deferred-config! flash
+  :after (evil)
+  :config
+  (general-def 'normal "s" 'flash-evil-jump)
+  (general-def 'visual "x" 'flash-evil-jump))
 #+end_src
 ** chezmoi
 #+begin_src emacs-lisp
