@@ -310,13 +310,6 @@
   :defer-config
   (blink-cursor-mode 0))
 #+end_src
-** google-translate
-#+begin_src emacs-lisp
-(e:deferred-config! google-translate
-  :config
-  (setopt google-translate-default-source-language "en")
-  (setopt google-translate-default-target-language "ja"))
-#+end_src
 ** hl-line
 #+begin_src emacs-lisp
 (e:deferred-config! hl-line
@@ -1040,11 +1033,6 @@
   :defer-config
   (setopt flycheck-posframe-border-width 1)
   (setopt flycheck-posframe-position 'frame-bottom-right-corner))
-#+end_src
-** helm
-#+begin_src emacs-lisp
-(e:deferred-config! helm
-  :bind (([remap eval-expression] . helm-eval-expression-with-eldoc)))
 #+end_src
 ** hl-todo
 #+begin_src emacs-lisp
@@ -1850,7 +1838,7 @@
   "d" '(:ignore t :wk "describe")
   "dF" 'e:consult-faces
   "dK" 'describe-keymap
-  "da" 'helm-apropos
+  "da" 'describe-symbol
   "dd" '(:ignore t :wk "devdocs")
   "ddd" 'devdocs-lookup
   "ddi" 'devdocs-install
@@ -2001,12 +1989,8 @@
   "dl" 'delete-blank-lines
   "du" 'delete-duplicate-lines
   "dw" 'delete-trailing-whitespace
-  "g" '(:ignore t :wk "google/grugru")
-  "gQ" 'google-translate-query-translate-reverse
-  "gT" 'google-translate-at-point-reverse
+  "g" '(:ignore t :wk "grugru")
   "gg" 'grugru
-  "gq" 'google-translate-query-translate
-  "gt" 'google-translate-at-point
   "i" '(:ignore t :wk "inflection")
   "i-" '(string-inflection-kebab-case :wk "kebab-case")
   "iC" '(string-inflection-camelcase :wk "CamelCase")
