@@ -308,6 +308,9 @@
 [submodule "magit-delta"]
 	path = lib/magit-delta
 	url = https://github.com/dandavison/magit-delta
+[submodule "magit-prime"]
+	path = lib/magit-prime
+	url = https://github.com/Azkae/magit-prime
 [submodule "marginalia"]
 	path = lib/marginalia
 	url = https://github.com/minad/marginalia

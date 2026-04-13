@@ -1134,6 +1134,13 @@
   :defer-config
   (setopt magit-delta-hide-plus-minus-markers nil))
 #+end_src
+*** magit-prime
+#+begin_src emacs-lisp
+(e:deferred-config! magit-prime
+  :after (magit)
+  :config
+  (magit-prime-mode 1))
+#+end_src
 ** mise
 #+begin_src emacs-lisp
 (e:deferred-config! mise
