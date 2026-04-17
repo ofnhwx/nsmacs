@@ -52,6 +52,9 @@
 [submodule "cond-let"]
 	path = lib/cond-let
 	url = https://github.com/tarsius/cond-let
+[submodule "conflict-buttons"]
+	path = lib/conflict-buttons
+	url = https://git.andros.dev/andros/conflict-buttons.el
 [submodule "consult"]
 	path = lib/consult
 	url = https://github.com/minad/consult
@@ -61,9 +64,6 @@
 [submodule "consult-lsp"]
 	path = lib/consult-lsp
 	url = https://github.com/gagbo/consult-lsp
-[submodule "consult-projectile"]
-	path = lib/consult-projectile
-	url = https://gitlab.com/OlMon/consult-projectile
 [submodule "consult-todo"]
 	path = lib/consult-todo
 	url = https://github.com/liuyinz/consult-todo
@@ -410,12 +410,9 @@
 [submodule "prodigy"]
 	path = lib/prodigy
 	url = https://github.com/rejeep/prodigy.el
-[submodule "projectile"]
-	path = lib/projectile
-	url = https://github.com/bbatsov/projectile
-[submodule "projectile-rails"]
-	path = lib/projectile-rails
-	url = https://github.com/asok/projectile-rails
+[submodule "project-rails"]
+	path = lib/project-rails
+	url = https://github.com/harrybournis/project.el-rails
 [submodule "rails-routes"]
 	path = lib/rails-routes
 	url = https://github.com/otavioschwanck/rails-routes.el

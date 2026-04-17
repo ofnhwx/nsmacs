@@ -329,6 +329,18 @@
   :config
   (setopt disabled-command-function nil))
 #+end_src
+** project
+#+begin_src emacs-lisp
+(e:deferred-config! project
+  :defer-config
+  (e:setup-project-known-projects)
+  (setopt project-switch-commands
+          '((project-find-dir     "Find directory" ?d)
+            (project-eshell       "Eshell"         ?e)
+            (project-find-file    "Find file"      ?f)
+            (consult-ripgrep      "Ripgrep"        ?g)
+            (magit-project-status "Magit"          ?v))))
+#+end_src
 ** recentf
 #+begin_src emacs-lisp
 (e:deferred-config! recentf
@@ -597,15 +609,6 @@
   :advice (:around consult-line ad:consult-line@with-orderless)
   :defer-config
   (setopt consult-line-start-from-top t))
-#+end_src
-** consult-projectile
-#+begin_src emacs-lisp
-(e:deferred-config! consult-projectile
-  :defer-config
-  (e:eval!
-    (setf (plist-get consult-projectile--source-projectile-dir :category) 'project-file)
-    (setf (plist-get consult-projectile--source-projectile-file :category) 'project-file)
-    (setf (plist-get consult-projectile--source-projectile-recentf :category) 'project-file)))
 #+end_src
 ** corfu
 #+begin_src emacs-lisp
@@ -914,6 +917,11 @@
              chezmoi-write)
   :hook (find-file-hook . e:reopen-in-chezmoi-mode))
 #+end_src
+** conflict-buttons
+#+begin_src emacs-lisp
+(e:deferred-config! conflict-buttons
+  :hook (smerge-mode-hook . conflict-buttons-mode))
+#+end_src
 ** denote
  denote
 #+begin_src emacs-lisp
@@ -1213,12 +1221,6 @@
     :name 'rails
     :ready-message "Use Ctrl-C to stop"))
 #+end_src
-** projectile
-#+begin_src emacs-lisp
-(e:deferred-config! projectile
-  :defer-config
-  (e:setup-projectile-known-projects))
-#+end_src
 ** scratch
 *** scratch
 #+begin_src emacs-lisp
@@ -1264,7 +1266,7 @@
             ("*Make*"                         :align bottom :ratio 0.35)
             ("*Warnings*"                     :align bottom :ratio 0.35)
             ("*compilation*"                  :align bottom :ratio 0.35)
-            ("*projectile-rails-compilation*" :align bottom :ratio 0.35)
+            ("*project-rails-compilation*"    :align bottom :ratio 0.35)
             ("*rspec-compilation*"            :align bottom :ratio 0.35)
             ("*trace-output*"                 :align bottom :ratio 0.35)
             ))
@@ -1491,78 +1493,85 @@
          (haml-mode-hook . emmet-mode)
          (haml-mode-hook . indent-bars-mode)))
 #+end_src
-*** projectile-rails
+*** project-rails
 #+begin_src emacs-lisp
-(e:deferred-config! projectile-rails
+(e:deferred-config! project-rails
+  :defun (project-rails-global-mode)
+  :defvar (project-rails-fixture-dirs)
+  :advice ((:override project-rails--choices ad:project-rails--choices@override))
   :init
-  (projectile-rails-global-mode 1)
+  (project-rails-global-mode 1)
   :config
-  (e:setup-projectile-rails-views-re)
+  (e:setup-project-rails-views-re)
   (e:var! rake-cache-file "rake.cache")
   (setopt rake-completion-system 'completing-read-default)
-  (e:setup-projectile-rails-annotation controller "app/controllers" "*")
-  (e:setup-projectile-rails-annotation environment "config")
-  (e:setup-projectile-rails-annotation helper "app/helpers" "_helper")
-  (e:setup-projectile-rails-annotation job "app/jobs" "_job")
-  (e:setup-projectile-rails-annotation layout "app/views/layouts")
-  (e:setup-projectile-rails-annotation lib "lib")
-  (e:setup-projectile-rails-annotation locale "config/locales")
-  (e:setup-projectile-rails-annotation mailer "app/mailers")
-  (e:setup-projectile-rails-annotation migration "db/migrate")
-  (e:setup-projectile-rails-annotation model "app/models")
-  (e:setup-projectile-rails-annotation spec "spec" "_spec")
-  (e:setup-projectile-rails-annotation validator "app/validators" "_validator")
-  (e:setup-projectile-rails-annotation view "app/views")
-  (e:minor-mode-key-def projectile-rails-mode
+  (e:setup-project-rails-annotation controller "app/controllers" "*")
+  (e:setup-project-rails-annotation environment "config")
+  (e:setup-project-rails-annotation fixture project-rails-fixture-dirs)
+  (e:setup-project-rails-annotation helper "app/helpers" "_helper")
+  (e:setup-project-rails-annotation initializer "config/initializers")
+  (e:setup-project-rails-annotation job "app/jobs" "*")
+  (e:setup-project-rails-annotation layout "app/views/layouts")
+  (e:setup-project-rails-annotation lib "lib")
+  (e:setup-project-rails-annotation locale "config/locales")
+  (e:setup-project-rails-annotation log "log")
+  (e:setup-project-rails-annotation mailer "app/mailers")
+  (e:setup-project-rails-annotation migration "db/migrate")
+  (e:setup-project-rails-annotation model "app/models")
+  (e:setup-project-rails-annotation spec "spec" "_spec")
+  (e:setup-project-rails-annotation validator "app/validators" "*")
+  (e:setup-project-rails-annotation view "app/views")
+  (e:setup-project-rails-annotation decorator "app/decorators" nil e:project-rails-find-decorator)
+  (e:setup-project-rails-annotation form "app/forms" nil e:project-rails-find-form)
+  (e:setup-project-rails-annotation view-components "app/components" nil e:project-rails-find-view-components)
+  (e:setup-project-rails-annotation graphql "app/graphql" nil e:project-rails-find-graphql)
+  (e:setup-project-rails-annotation route "config" nil e:project-rails-find-route)
+  (e:minor-mode-key-def project-rails-mode
     "f" "rails"
-    "f:" '("rake" . projectile-rails-rake)
+    "f:" '("rake" . rake)
     "fc" "generate/destroy"
-    "fcc" '("generate" . projectile-rails-generate)
-    "fcd" '("destroy" . projectile-rails-destroy)
+    "fcc" '("generate" . project-rails-generate)
+    "fcd" '("destroy" . project-rails-destroy)
     "ff" "find"
-    "ff@" '("mailer" . projectile-rails-find-mailer)
-    "ffF" '("feature" . projectile-rails-find-feature)
-    "ffR" '("rake task" . projectile-rails-find-rake-task)
-    "ffV" '("view component" . e:projectile-rails-find-view-components)
-    "ffa" '("locale" . projectile-rails-find-locale)
-    "ffb" '("job" . projectile-rails-find-job)
-    "ffc" '("controller" . projectile-rails-find-controller)
-    "ffd" '("decorator" . e:projectile-rails-find-decorator)
-    "ffe" '("environment" . projectile-rails-find-environment)
-    "fff" '("form" . e:projectile-rails-find-form)
-    "ffg" '("graphql" . e:projectile-rails-find-graphql)
-    "ffh" '("helper" . projectile-rails-find-helper)
-    "ffi" '("initializer" . projectile-rails-find-initializer)
-    "ffj" '("javascript" . projectile-rails-find-javascript)
-    "ffl" '("lib" . projectile-rails-find-lib)
-    "ffm" '("model" . projectile-rails-find-model)
-    "ffn" '("migration" . projectile-rails-find-migration)
-    "ffo" '("log" . projectile-rails-find-log)
-    "ffp" '("spec" . projectile-rails-find-spec)
-    "ffr" '("route" . e:projectile-rails-find-route)
-    "ffs" '("stylesheet" . projectile-rails-find-stylesheet)
-    "fft" '("test" . projectile-rails-find-test)
-    "ffu" '("fixture" . projectile-rails-find-fixture)
-    "ffv" '("view" . projectile-rails-find-view)
-    "ffw" '("webpack" . projectile-rails-find-webpack)
-    "ffy" '("layout" . projectile-rails-find-layout)
+    "ff@" '("mailer" . project-rails-find-mailer)
+    "ffF" '("feature" . project-rails-find-feature)
+    "ffR" '("rake task" . rake-find-task)
+    "ffV" '("view component" . e:project-rails-find-view-components)
+    "ffa" '("locale" . project-rails-find-locale)
+    "ffb" '("job" . project-rails-find-job)
+    "ffc" '("controller" . project-rails-find-controller)
+    "ffd" '("decorator" . e:project-rails-find-decorator)
+    "ffe" '("environment" . project-rails-find-environment)
+    "fff" '("form" . e:project-rails-find-form)
+    "ffg" '("graphql" . e:project-rails-find-graphql)
+    "ffh" '("helper" . project-rails-find-helper)
+    "ffi" '("initializer" . project-rails-find-initializer)
+    "ffj" '("javascript" . project-rails-find-javascript)
+    "ffl" '("lib" . project-rails-find-lib)
+    "ffm" '("model" . project-rails-find-model)
+    "ffn" '("migration" . project-rails-find-migration)
+    "ffo" '("log" . project-rails-find-log)
+    "ffp" '("spec" . project-rails-find-spec)
+    "ffr" '("route" . e:project-rails-find-route)
+    "ffs" '("stylesheet" . project-rails-find-stylesheet)
+    "fft" '("test" . project-rails-find-test)
+    "ffu" '("fixture" . project-rails-find-fixture)
+    "ffv" '("view" . project-rails-find-view)
+    "ffy" '("layout" . project-rails-find-layout)
     "fg" "goto"
-    "fg." '("point" . projectile-rails-goto-file-at-point)
-    "fgc" '("controller" . projectile-rails-find-current-controller)
-    "fgd" '("schema" . projectile-rails-goto-schema)
-    "fge" '("seeds" . projectile-rails-goto-seeds)
-    "fgg" '("gemfile" . projectile-rails-goto-gemfile)
-    "fgh" '("helper" . projectile-rails-find-current-helper)
-    "fgj" '("javascript" . projectile-rails-find-current-javascript)
-    "fgm" '("model" . projectile-rails-find-current-model)
-    "fgn" '("migration" . projectile-rails-find-current-migration)
-    "fgp" '("spec" . projectile-rails-find-current-spec)
-    "fgr" '("routes" . projectile-rails-goto-routes)
-    "fgs" '("stylesheet" . projectile-rails-find-current-stylesheet)
-    "fgt" '("test" . projectile-rails-find-current-test)
-    "fgu" '("fixture" . projectile-rails-find-current-fixture)
-    "fgv" '("view" . projectile-rails-find-current-view)
-    "fgz" '("helper" . projectile-rails-goto-spec-helper)
+    "fgc" '("controller" . project-rails-find-current-controller)
+    "fgd" '("schema" . project-rails-goto-schema)
+    "fge" '("seeds" . project-rails-goto-seeds)
+    "fgg" '("gemfile" . project-rails-goto-gemfile)
+    "fgh" '("helper" . project-rails-find-current-helper)
+    "fgm" '("model" . project-rails-find-current-model)
+    "fgn" '("migration" . project-rails-find-current-migration)
+    "fgp" '("spec" . project-rails-find-current-spec)
+    "fgr" '("routes" . project-rails-goto-routes)
+    "fgt" '("test" . project-rails-find-current-test)
+    "fgu" '("fixture" . project-rails-find-current-fixture)
+    "fgv" '("view" . project-rails-find-current-view)
+    "fgz" '("helper" . project-rails-goto-spec-helper)
     "i" "insert"
     "iR" '("route" . rails-routes-insert-no-cache)
     "ir" '("route" . rails-routes-insert)))
@@ -1901,27 +1910,19 @@
 #+begin_src emacs-lisp
 (e:key-def project p
   "" '(:ignore t :wk "project")
-  "!" 'projectile-run-shell-command-in-root
-  "%" 'projectile-replace-regexp
-  "&" 'projectile-run-async-shell-command-in-root
-  "D" 'projectile-dired
-  "F" 'projectile-find-file-dwim
-  "G" 'projectile-regenerate-tags
-  "I" 'projectile-invalidate-cache
-  "P" 'consult-projectile
-  "R" 'projectile-replace
-  "T" 'projectile-test-project
-  "a" 'projectile-toggle-between-implementation-and-test
-  "b" 'consult-projectile-switch-to-buffer
-  "c" 'projectile-compile-project
-  "d" 'consult-projectile-find-dir
-  "e" 'projectile-edit-dir-locals
-  "f" 'consult-projectile-find-file
-  "g" 'projectile-find-tag
-  "k" 'projectile-kill-buffers
-  "p" 'consult-projectile-switch-project
-  "r" 'consult-projectile-recentf
-  "v" 'projectile-vc)
+  "!" 'project-shell-command
+  "%" 'project-query-replace-regexp
+  "&" 'project-async-shell-command
+  "b" 'project-switch-to-buffer
+  "c" 'project-compile
+  "d" 'project-dired
+  "e" 'e:project-edit-dir-locals
+  "f" 'project-find-file
+  "g" 'project-find-regexp
+  "k" 'project-kill-buffers
+  "p" 'project-switch-project
+  "r" 'consult-project-buffer
+  "v" 'project-vc-dir)
 #+end_src
 *** [q] quit
 #+begin_src emacs-lisp
