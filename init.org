@@ -1077,6 +1077,7 @@
 (e:deferred-config! magit
   :advice (:override magit-repos-alist ad:magit-repos-alist@override)
   :defun (magit-add-section-hook)
+  :defvar (magit-git-environment)
   :defer-config
   (setopt magit-delete-by-moving-to-trash nil)
   (setopt magit-diff-refine-hunk 'all)
@@ -1084,7 +1085,11 @@
   (setopt magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1)
   (setopt magit-log-margin '(t "%Y-%m-%d %H:%M" magit-log-margin-width t 15))
   (setopt magit-log-margin-show-committer-date t)
+  (setopt magit-process-apply-ansi-colors 'filter)
   (setopt magit-refs-show-branch-descriptions t)
+  ;; pre-commit hook などの CLI ツールに非対話モードで出力させる
+  ;; (add-to-list 'magit-git-environment "CI=1")
+  (add-to-list 'magit-git-environment "FORCE_COLOR=0")
   (e:setup-magit-repository-directories)
   (e:setup-marginalia-magit)
   ;; magit-status で表示するセクションを追加
