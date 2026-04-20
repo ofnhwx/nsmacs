@@ -446,7 +446,8 @@
 ;; 遅延ロードすると逆に遅くなるので直接ロードする
 (leaf evil
   :priority :high
-  :defun (evil-get-auxiliary-keymap
+  :defun (evil-define-minor-mode-key
+          evil-get-auxiliary-keymap
           evil-half-cursor
           evil-normalize-keymaps
           evil-set-command-property)
