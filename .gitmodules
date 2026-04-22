@@ -311,6 +311,9 @@
 [submodule "magit-prime"]
 	path = lib/magit-prime
 	url = https://github.com/Azkae/magit-prime
+[submodule "magit-submodule-cache"]
+	path = lib/magit-submodule-cache
+	url = git@github.com:ofnhwx/magit-submodule-cache.el.git
 [submodule "marginalia"]
 	path = lib/marginalia
 	url = https://github.com/minad/marginalia

@@ -1157,6 +1157,13 @@
   :config
   (magit-prime-mode 1))
 #+end_src
+*** magit-submodule-cache
+#+begin_src emacs-lisp
+(e:deferred-config! magit-submodule-cache
+  :after (magit)
+  :config
+  (magit-submodule-cache-setup))
+#+end_src
 ** mise
 #+begin_src emacs-lisp
 (e:deferred-config! mise
@@ -1260,6 +1267,7 @@
             ("*Flycheck errors*"  :align bottom :ratio 0.35 :select t)
             ("*Google Translate*" :align bottom :ratio 0.35 :select t)
             ("*Help*"             :align bottom :ratio 0.35 :select t)
+            (helpful-mode         :align bottom :ratio 0.35 :select t)
             ;;
             ("*Async Shell Command*"          :align bottom :ratio 0.35)
             ("*Bundler*"                      :align bottom :ratio 0.35)
