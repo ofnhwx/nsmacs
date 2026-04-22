@@ -1705,6 +1705,7 @@
   "!" 'shell-command
   "%" 'query-replace
   "&" 'async-shell-command
+  "'" 'shell-pop
   "*" '(e:consult-ripgrep-dwim :wk "ripgrep(dwim)")
   "/" '(consult-ripgrep :wk "ripgrap")
   ";" 'evilnc-comment-operator
