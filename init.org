@@ -503,6 +503,12 @@
   (general-def evil-inner-text-objects-map "a" 'evil-inner-arg)
   (general-def evil-outer-text-objects-map "a" 'evil-outer-arg))
 #+end_src
+** evil-ghostel
+#+begin_src emacs-lisp
+(e:deferred-config! evil-ghostel
+  :after (evil)
+  :hook (ghostel-mode-hook . evil-ghostel-mode))
+#+end_src
 ** evil-goggles
 #+begin_src emacs-lisp
 (e:deferred-config! evil-goggles
