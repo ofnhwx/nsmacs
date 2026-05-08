@@ -92,7 +92,7 @@
 	url = https://github.com/conao3/ddskk-posframe.el
 [submodule "denote"]
 	path = lib/denote
-	url = https://git.sr.ht/~protesilaos/denote
+	url = https://github.com/protesilaos/denote
 [submodule "denote-menu"]
 	path = lib/denote-menu
 	url = https://github.com/namilus/denote-menu
