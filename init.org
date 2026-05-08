@@ -153,6 +153,7 @@
             (executable-find "sh")))
 (setopt system-time-locale "C")
 (setopt truncate-partial-width-windows nil)
+(setopt truncate-string-ellipsis "...")
 (setopt undo-limit 67108864)         ;; => 64mb.
 (setopt undo-strong-limit 100663296) ;; => 96mb.
 (setopt undo-outer-limit 1006632960) ;; => 960mb.
@@ -937,6 +938,15 @@
   (eval-and-compile (require 'org))
   (setopt denote-directory (expand-file-name "denote" org-directory))
   (setopt denote-known-keywords '("memo" "task")))
+#+end_src
+** denote-menu
+#+begin_src emacs-lisp
+(e:deferred-config! denote-menu
+  :defer-config
+  (setopt denote-menu-show-file-signature t)
+  (setopt denote-menu-signature-column-width 25)
+  (setopt denote-menu-title-column-width 50)
+  (setopt denote-menu-keywords-column-width 28))
 #+end_src
 ** diff-hl
 #+begin_src emacs-lisp
