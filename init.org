@@ -324,6 +324,12 @@
   :defer-config
   (setopt standard-indent 2))
 #+end_src
+** kkp
+#+begin_src emacs-lisp
+(e:deferred-config! kkp
+  :config
+  (global-kkp-mode 1))
+#+end_src
 ** novice
 #+begin_src emacs-lisp
 (e:deferred-config! novice

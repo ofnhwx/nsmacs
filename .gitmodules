@@ -272,6 +272,9 @@
 [submodule "kind-icon"]
 	path = lib/kind-icon
 	url = https://github.com/jdtsmith/kind-icon
+[submodule "kkp"]
+	path = lib/kkp
+	url = https://github.com/benotn/kkp
 [submodule "komunan-lisp-library"]
 	path = lib/komunan-lisp-library
 	url = git@github.com:ofnhwx/komunan-lisp-library.git
