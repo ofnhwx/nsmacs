@@ -339,8 +339,8 @@
 ** project
 #+begin_src emacs-lisp
 (e:deferred-config! project
+  :advice (:before project-prompt-project-dir ad:project-prompt-project-dir@update)
   :defer-config
-  (e:setup-project-known-projects)
   (setopt project-switch-commands
           '((project-find-dir     "Find directory" ?d)
             (project-eshell       "Eshell"         ?e)
@@ -1106,7 +1106,9 @@
 *** magit
 #+begin_src emacs-lisp
 (e:deferred-config! magit
-  :advice (:override magit-repos-alist ad:magit-repos-alist@override)
+  :advice ((:before   magit-read-repository  ad:magit-update-repository-directories)
+           (:before   magit-repolist-setup   ad:magit-update-repository-directories)
+           (:override magit-repos-alist      ad:magit-repos-alist@override))
   :defun (magit-add-section-hook)
   :defvar (magit-git-environment)
   :defer-config
@@ -1121,7 +1123,6 @@
   ;; pre-commit hook などの CLI ツールに非対話モードで出力させる
   ;; (add-to-list 'magit-git-environment "CI=1")
   (add-to-list 'magit-git-environment "FORCE_COLOR=0")
-  (e:setup-magit-repository-directories)
   (e:setup-marginalia-magit)
   ;; magit-status で表示するセクションを追加
   (--each '(magit-insert-skip-worktree-files magit-insert-modules-overview)
