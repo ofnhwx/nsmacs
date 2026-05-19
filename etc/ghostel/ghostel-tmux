@@ -1,0 +1,2 @@
+#!/bin/sh
+exec tmux new -A -s "${GHOSTEL_TMUX_SESSION:-emacs}" "$@"

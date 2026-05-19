@@ -406,6 +406,9 @@
 [submodule "poporg"]
 	path = lib/poporg
 	url = https://github.com/QBobWatson/poporg
+[submodule "popterm"]
+	path = lib/popterm
+	url = https://github.com/CsBigDataHub/popterm.el
 [submodule "popup"]
 	path = lib/popup
 	url = https://github.com/auto-complete/popup-el

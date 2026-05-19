@@ -1235,6 +1235,12 @@
   :config
   (pdf-loader-install))
 #+end_src
+** popterm
+#+begin_src emacs-lisp
+(e:deferred-config! popterm
+  :defer-config
+  (popterm-global-mode 1))
+#+end_src
 ** pr-review
 #+begin_src emacs-lisp
 (e:deferred-config! pr-review
@@ -1304,17 +1310,6 @@
             ))
   (shackle-mode 1))
 #+end_src
-** shell-pop
-#+begin_src emacs-lisp
-(e:deferred-config! shell-pop
-  :advice (:around shell-pop ad:shell-pop@auto-session-name)
-  :config
-  (setopt shell-pop-shell-type '("vterm" "*vterm-default*" (lambda () (vterm))))
-  :defer-config
-  (setopt shell-pop-autocd-to-working-dir nil)
-  (setopt shell-pop-full-span t)
-  (setopt shell-pop-window-size 50))
-#+end_src
 ** smartparens
 #+begin_src emacs-lisp
 (e:deferred-config! smartparens
@@ -1372,10 +1367,7 @@
 (e:deferred-config! vterm
   :defer-config
   (setopt vterm-max-scrollback 20000)
-  (setopt vterm-shell "tmux new -A -s emacs-default")
   (general-def vterm-mode-map
-    ;; "<wheel-down>" 'ignore
-    ;; "<wheel-up>" 'ignore
     "C-c C-g" 'keyboard-quit
     "C-g" 'vterm--self-insert)
   (general-def 'insert vterm-mode-map
@@ -1728,7 +1720,7 @@
   "!" 'shell-command
   "%" 'query-replace
   "&" 'async-shell-command
-  "'" 'shell-pop
+  "'" 'popterm-ghostel-tmux
   "*" '(e:consult-ripgrep-dwim :wk "ripgrep(dwim)")
   "/" '(consult-ripgrep :wk "ripgrap")
   ";" 'evilnc-comment-operator
@@ -2046,7 +2038,7 @@
   "C-<return>" 'embark-act
   "C-*" '(e:org-popup-note :wk "memo.org")
   "C-:" '(e:org-popup-tasks :wk "tasks.org")
-  "C-;" 'shell-pop
+  "C-;" 'popterm-ghostel-tmux
   "C-<" 'evil-jump-backward
   "C->" 'evil-jump-forward
   "C-^" 'ace-window)
