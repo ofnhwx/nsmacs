@@ -457,9 +457,6 @@
 [submodule "shackle"]
 	path = lib/shackle
 	url = https://depp.brause.cc/shackle.git
-[submodule "shell-pop"]
-	path = lib/shell-pop
-	url = https://github.com/kyagi/shell-pop-el
 [submodule "shrink-path"]
 	path = lib/shrink-path
 	url = https://gitlab.com/bennya/shrink-path.el

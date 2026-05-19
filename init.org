@@ -414,6 +414,9 @@
 #+begin_src emacs-lisp
 (e:deferred-config! vc-hooks
   :defer-config
+  (defvar original-vc-ignore-dir-regexp vc-ignore-dir-regexp)
+  (setopt vc-ignore-dir-regexp
+          (format "\\(%s\\)\\|\\(%s\\)" original-vc-ignore-dir-regexp tramp-file-name-regexp))
   (setopt vc-follow-symlinks t))
 #+end_src
 ** whitespace
