@@ -417,7 +417,8 @@
   (defvar original-vc-ignore-dir-regexp vc-ignore-dir-regexp)
   (setopt vc-ignore-dir-regexp
           (format "\\(%s\\)\\|\\(%s\\)" original-vc-ignore-dir-regexp tramp-file-name-regexp))
-  (setopt vc-follow-symlinks t))
+  (setopt vc-follow-symlinks t)
+  (setopt vc-handled-backends '(Git)))
 #+end_src
 ** whitespace
 #+begin_src emacs-lisp
@@ -927,12 +928,32 @@
 #+begin_src emacs-lisp
 (e:deferred-config! chezmoi
   :commands (chezmoi-diff
+             chezmoi-diff-x
              chezmoi-find
+             chezmoi-find-x
              chezmoi-open-other
+             chezmoi-open-other-x
              chezmoi-sync-files
+             chezmoi-sync-files-x
              chezmoi-template-buffer-display
-             chezmoi-write)
-  :hook (find-file-hook . e:reopen-in-chezmoi-mode))
+             chezmoi-template-buffer-display-x
+             chezmoi-write
+             chezmoi-write-x)
+  :hook (find-file-hook . e:reopen-in-chezmoi-mode)
+  :config
+  (--each '(chezmoi-diff
+            chezmoi-find
+            chezmoi-open-other
+            chezmoi-sync-files
+            chezmoi-template-buffer-display
+            chezmoi-write)
+    (let ((name (intern (format "%s-x" it)))
+          (orig it))
+      (defalias name
+        (lambda ()
+          (interactive)
+          (dlet ((chezmoi-command "x"))
+            (call-interactively orig)))))))
 #+end_src
 ** conflict-buttons
 #+begin_src emacs-lisp
@@ -1757,6 +1778,12 @@
 (e:key-def application a
   "" '(:ignore t :wk "application")
   "c" '(:ignore t :wk "chezmoi")
+  "cD" 'chezmoi-diff-x
+  "cF" 'chezmoi-find-x
+  "cO" 'chezmoi-open-other-x
+  "cS" 'chezmoi-sync-files-x
+  "cT" 'chezmoi-template-buffer-display-x
+  "cW" 'chezmoi-write-x
   "cd" 'chezmoi-diff
   "cf" 'chezmoi-find
   "co" 'chezmoi-open-other
