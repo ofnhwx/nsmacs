@@ -80,6 +80,12 @@
 (e:debug-log "done: load libraries.")
 #+end_src
 ** 環境設定
+*** Env
+#+begin_src emacs-lisp
+(e:load-env-file "~/.config/env")
+(unless (getenv "SSH_AUTH_SOCK")
+  (setenv "SSH_AUTH_SOCK" (expand-file-name "~/.bitwarden-ssh-agent.sock")))
+#+end_src
 *** Theme
 #+begin_src emacs-lisp
 (require-theme 'modus-themes)
@@ -1040,13 +1046,6 @@
                   (evil-emacs-state)
                 (evil-normal-state)))))
 #+end_src
-** exec-path-from-shell
-#+begin_src emacs-lisp
-(e:deferred-config! exec-path-from-shell
-  :config
-  (when (memq window-system '(mac ns x))
-    (exec-path-from-shell-initialize)))
-#+end_src
 ** fancy-compilation
 #+begin_src emacs-lisp
 (e:deferred-config! fancy-compilation
@@ -1059,6 +1058,7 @@
   :advice (:around flycheck-start-command-checker ad:flycheck-start-command-checker@with-cwd)
   :config
   (setopt flycheck-check-syntax-automatically '(save idle-change mode-enabled))
+  (setopt flycheck-disabled-checkers '(org-lint))
   (setopt flycheck-emacs-lisp-load-path 'inherit)
   (setopt flycheck-idle-change-delay 5.0)
   (setopt flycheck-temp-prefix ".flycheck")
