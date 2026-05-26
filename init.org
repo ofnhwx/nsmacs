@@ -1273,7 +1273,7 @@
 ** prodigy
 #+begin_src emacs-lisp
 (e:deferred-config! prodigy
-  :advice (:around prodigy-start-service ad:prodigy-start-service@with-vterm)
+  :advice (:around prodigy-start-service ad:prodigy-start-service@with-ghostel)
   :defun (prodigy-find-service prodigy-start-service)
   :defer-config
   (setopt prodigy-view-buffer-maximum-size 2048)
