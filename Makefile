@@ -6,6 +6,7 @@ bootstrap-borg:
 	@git submodule--helper clone --name borg --path $(DRONES_DIR)/borg --url git@github.com:emacscollective/borg.git
 	@cd $(DRONES_DIR)/borg; git symbolic-ref HEAD refs/heads/main
 	@cd $(DRONES_DIR)/borg; git reset --hard HEAD
+	@git config diff.ignoreSubmodules dirty
 
 ## Fast (rebuild only drones whose submodule hash changed)
 
