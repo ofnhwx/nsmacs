@@ -601,7 +601,7 @@
   :after (skk)
   :preface
   (setopt skk-server-prog (executable-find "yaskkserv2"))
-  (setopt yaskkserv2-dictionary (f-expand "~/sync/share/dictionary.yaskkserv2"))
+  (setopt yaskkserv2-dictionary (f-expand "~/sync/drive/share/dictionary.yaskkserv2"))
   :if (and (bound-and-true-p skk-server-prog)
            (f-exists? yaskkserv2-dictionary))
   :config
