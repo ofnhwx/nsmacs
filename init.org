@@ -1716,6 +1716,13 @@
     "C-c C-j" 'emmet-expand-line
     "C-j" nil))
 #+end_src
+** SQL
+*** sqlformat
+#+begin_src emacs-lisp
+(e:deferred-config! sqlformat
+  :init
+  (setopt sqlformat-command 'pgformatter))
+#+end_src
 ** Text
 *** yaml-ts-mode
 #+begin_src emacs-lisp
