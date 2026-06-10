@@ -89,7 +89,7 @@
 *** Theme
 #+begin_src emacs-lisp
 (require-theme 'modus-themes)
-(load-theme 'modus-vivendi-tinted :no-confirm)
+(load-theme (if (display-graphic-p) 'modus-vivendi-tinted 'modus-vivendi) :no-confirm)
 (e:debug-log "done: load theme.")
 #+end_src
 *** Font
