@@ -266,9 +266,6 @@
 [submodule "jump"]
 	path = lib/jump
 	url = https://github.com/eschulte/jump.el
-[submodule "keymap-popup"]
-	path = lib/keymap-popup
-	url = https://codeberg.org/thanosapollo/emacs-keymap-popup
 [submodule "kind-icon"]
 	path = lib/kind-icon
 	url = https://github.com/jdtsmith/kind-icon
