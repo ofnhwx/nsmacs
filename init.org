@@ -1263,6 +1263,8 @@
 #+begin_src emacs-lisp
 (e:deferred-config! popterm
   :defer-config
+  (setopt popterm-display-method 'window)
+  (setopt popterm-window-height-ratio 0.5)
   (popterm-global-mode 1))
 #+end_src
 ** pr-review
