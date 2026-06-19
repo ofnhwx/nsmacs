@@ -1158,7 +1158,6 @@
 #+end_src
 *** forge
 #+begin_src emacs-lisp
-(setopt forge-add-default-bindings nil)
 (e:deferred-config! forge
   :after (magit)
   :require t
