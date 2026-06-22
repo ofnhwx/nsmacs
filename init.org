@@ -1184,6 +1184,8 @@
             "copilot-pull-request-reviewer"
             "gemini-code-assist"
             "github-actions"))
+  (setopt forge-review-overlay-highlighted-reviewer
+          (e:shell-output! "gh api user -q .login"))
   (add-hook 'magit-status-mode-hook #'forge-review-overlay-mode))
 #+end_src
 *** magit-delta
