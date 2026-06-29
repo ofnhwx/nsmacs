@@ -1188,6 +1188,14 @@
           (e:shell-output! "gh api user -q .login"))
   (add-hook 'magit-status-mode-hook #'forge-review-overlay-mode))
 #+end_src
+*** forge-review-section
+#+begin_src emacs-lisp
+(e:deferred-config! forge-review-section
+  :after (forge)
+  :require t
+  :config
+  (forge-review-section-mode 1))
+#+end_src
 *** magit-delta
 #+begin_src emacs-lisp
 (e:deferred-config! magit-delta
