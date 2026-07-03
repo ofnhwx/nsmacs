@@ -274,7 +274,9 @@
 (e:deferred-config! ediff
   :commands (ediff-setup-windows-plain)
   :defer-config
-  (setopt ediff-window-setup-function #'ediff-setup-windows-plain))
+  (setopt ediff-window-setup-function #'ediff-setup-windows-plain)
+  (setopt ediff-split-window-function #'split-window-horizontally)
+  (setopt ediff-merge-split-window-function #'split-window-horizontally))
 #+end_src
 ** emacs-lock
 #+begin_src emacs-lisp
@@ -1137,9 +1139,13 @@
   :defvar (magit-git-environment)
   :defer-config
   (setopt magit-delete-by-moving-to-trash nil)
+  (setopt magit-diff-highlight-indentation '(("" . tabs)))
+  (setopt magit-diff-highlight-trailing t)
+  (setopt magit-diff-paint-whitespace t)
   (setopt magit-diff-refine-hunk 'all)
   (setopt magit-diff-refine-ignore-whitespace t)
   (setopt magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1)
+  (setopt magit-ediff-dwim-show-on-hunks t)
   (setopt magit-log-margin '(t "%Y-%m-%d %H:%M" magit-log-margin-width t 15))
   (setopt magit-log-margin-show-committer-date t)
   (setopt magit-process-apply-ansi-colors 'filter)
@@ -1226,18 +1232,6 @@
   :config
   (global-mise-mode 1))
 #+end_src
-** nerd-icons-completion
-#+begin_src emacs-lisp
-(e:deferred-config! nerd-icons-completion
-  :hook (marginalia-mode-hook . nerd-icons-completion-marginalia-setup)
-  :init
-  (nerd-icons-completion-mode))
-#+end_src
-** nerd-icons-dired
-#+begin_src emacs-lisp
-(e:deferred-config! nerd-icons-dired
-  :hook (dired-mode-hook . nerd-icons-dired-mode))
-#+end_src
 ** migemo
 #+begin_src emacs-lisp
 (e:deferred-config! migemo
@@ -1255,6 +1249,18 @@
 (e:deferred-config! minions
   :config
   (minions-mode 1))
+#+end_src
+** nerd-icons-completion
+#+begin_src emacs-lisp
+(e:deferred-config! nerd-icons-completion
+  :hook (marginalia-mode-hook . nerd-icons-completion-marginalia-setup)
+  :init
+  (nerd-icons-completion-mode))
+#+end_src
+** nerd-icons-dired
+#+begin_src emacs-lisp
+(e:deferred-config! nerd-icons-dired
+  :hook (dired-mode-hook . nerd-icons-dired-mode))
 #+end_src
 ** open-junk-file
 #+begin_src emacs-lisp
