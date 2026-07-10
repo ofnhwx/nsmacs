@@ -276,7 +276,9 @@
   :defer-config
   (setopt ediff-window-setup-function #'ediff-setup-windows-plain)
   (setopt ediff-split-window-function #'split-window-horizontally)
-  (setopt ediff-merge-split-window-function #'split-window-horizontally))
+  (setopt ediff-merge-split-window-function #'split-window-horizontally)
+  (add-hook 'ediff-before-setup-hook #'e:ediff-save-window-configuration)
+  (add-hook 'ediff-quit-hook #'e:ediff-restore-window-configuration))
 #+end_src
 ** emacs-lock
 #+begin_src emacs-lisp
@@ -1279,7 +1281,7 @@
 (e:deferred-config! popterm
   :defer-config
   (setopt popterm-display-method 'window)
-  (setopt popterm-window-height-ratio 0.5)
+  (setopt popterm-window-height-ratio 0.6)
   (popterm-global-mode 1))
 #+end_src
 ** pr-review
