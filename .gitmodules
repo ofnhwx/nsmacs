@@ -526,6 +526,9 @@
 [submodule "vue-ts-mode"]
 	path = lib/vue-ts-mode
 	url = https://github.com/8uff3r/vue-ts-mode
+[submodule "vulpea"]
+	path = lib/vulpea
+	url = https://github.com/d12frosted/vulpea
 [submodule "wakatime-mode"]
 	path = lib/wakatime-mode
 	url = https://github.com/wakatime/wakatime-mode
