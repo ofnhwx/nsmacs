@@ -1169,7 +1169,8 @@
 (e:deferred-config! forge
   :after (magit)
   :require t
-  :advice (:filter-return forge--list-topics-2 ad:forge--list-topics-2@multi-author)
+  :advice ((:filter-return forge--list-topics-2 ad:forge--list-topics-2@multi-author)
+           (:filter-return forge--list-topics   ad:forge--list-topics@draft-last))
   :config
   (set-face-attribute 'forge-topic-slug-open nil :foreground "#f5f5f5" :inherit nil)
   (set-face-attribute 'forge-topic-unread nil :foreground "#00fa9a" :weight 'normal :box nil)
@@ -1177,6 +1178,7 @@
   (set-face-attribute 'forge-topic-done nil :inherit 'forge-dimmed :slant 'normal)
   (set-face-attribute 'forge-issue-open nil :foreground 'unspecified)
   (set-face-attribute 'forge-issue-completed nil :foreground 'unspecified :inherit 'forge-dimmed)
+  (set-face-attribute 'forge-pullreq-draft nil :foreground "#525252" :inherit nil)
   (set-face-attribute 'forge-pullreq-open nil :foreground 'unspecified)
   (set-face-attribute 'forge-pullreq-merged nil :foreground 'unspecified :inherit 'forge-dimmed)
   (e:setup-forge-multi-author-filter))
