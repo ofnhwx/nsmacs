@@ -176,7 +176,10 @@
   (let ((private-config (f-expand "private/config" user-emacs-directory)))
     (condition-case err
         (load private-config)
-      (display-warning :warning err))))
+      (error
+       (display-warning 'initialization
+                        (format "Failed to load private-config: %s" (error-message-string err))
+                        :warning)))))
 #+end_src
 ** auth-source
 #+begin_src emacs-lisp
@@ -1418,6 +1421,12 @@
   (general-def 'insert vterm-mode-map
     "<escape>" 'vterm-send-escape
     "C-z" 'vterm--self-insert))
+#+end_src
+** vulpea
+#+begin_src emacs-lisp
+(e:deferred-config! vulpea
+  :defer-config
+  (e:var! vulpea-db-location "vulpea/vulpea.db"))
 #+end_src
 ** wakatime-mode
 #+begin_src emacs-lisp
