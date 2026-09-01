@@ -217,7 +217,7 @@
   :defer-config
   (setopt native-comp-async-jobs-number 4)
   (setopt native-comp-async-report-warnings-errors nil)
-  (setopt native-comp-speed 3))
+  (setopt native-comp-speed 2))
 #+end_src
 ** compile
 #+begin_src emacs-lisp
@@ -1226,6 +1226,14 @@
   :config
   (magit-prime-mode 1))
 #+end_src
+*** magit-status
+#+begin_src emacs-lisp
+(e:deferred-config! magit-status
+  :defer-config
+  ;; magit のデフォルトは --ignore-submodules=none で diff.ignoreSubmodules を上書きしてしまう
+  (put 'magit-status-mode 'magit-diff-default-arguments
+       '("--no-ext-diff" "--ignore-submodules=dirty")))
+#+end_src
 *** magit-submodule-cache
 #+begin_src emacs-lisp
 (e:deferred-config! magit-submodule-cache
@@ -1249,7 +1257,7 @@
   (e:if! (eq system-type 'darwin)
     (setopt migemo-dictionary "/usr/local/share/migemo/utf-8/migemo-dict"))
   (e:if! (eq system-type 'gnu/linux)
-    (setopt migemo-dictionary "/usr/share/migemo/utf-8/migemo-dict")))
+    (setopt migemo-dictionary "/usr/share/cmigemo/utf-8/migemo-dict")))
 #+end_src
 ** minions
 #+begin_src emacs-lisp
