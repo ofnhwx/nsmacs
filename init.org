@@ -1071,7 +1071,6 @@
   (setopt flycheck-temp-prefix ".flycheck")
   (global-flycheck-mode 1)
   (e:eval! ;; haml-lint
-    (flycheck-add-next-checker 'haml 'haml-lint)
     (flycheck-def-config-file-var flycheck-haml-lintrc haml-lint ".haml-lint.yml" :safe #'stringp)
     (setf (flycheck-checker-get 'haml-lint 'command)
           '("haml-lint" "--no-color" "--no-summary"
@@ -1583,12 +1582,14 @@
 #+begin_src emacs-lisp
 (e:deferred-config! project-rails
   :defun (project-rails-global-mode)
-  :defvar (project-rails-fixture-dirs)
-  :advice ((:override project-rails--choices ad:project-rails--choices@override))
+  :defvar (project-rails-fixture-dirs project-rails-javascript-dirs)
+  :advice ((:override project-rails--choices        ad:project-rails--choices@override)
+           (:override project-rails-find-javascript ad:project-rails-find-javascript@override))
   :init
   (project-rails-global-mode 1)
   :config
   (e:setup-project-rails-views-re)
+  (add-to-list 'project-rails-javascript-dirs "app/frontend/")
   (e:var! rake-cache-file "rake.cache")
   (setopt rake-completion-system 'completing-read-default)
   (e:setup-project-rails-annotation controller "app/controllers" "*")
@@ -1596,6 +1597,7 @@
   (e:setup-project-rails-annotation fixture project-rails-fixture-dirs)
   (e:setup-project-rails-annotation helper "app/helpers" "_helper")
   (e:setup-project-rails-annotation initializer "config/initializers")
+  (e:setup-project-rails-annotation javascript project-rails-javascript-dirs)
   (e:setup-project-rails-annotation job "app/jobs" "*")
   (e:setup-project-rails-annotation layout "app/views/layouts")
   (e:setup-project-rails-annotation lib "lib")
